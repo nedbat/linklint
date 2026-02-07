@@ -147,7 +147,7 @@ def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
 
     issues = []
     issues.extend(find_self_links(work))
-    # issues.extend(find_duplicate_refs_in_paragraph(doctree))
+    # issues.extend(find_duplicate_refs_in_paragraph(work))
 
     if fix and work.fixed:
         path.write_text("".join(work.content_lines))
