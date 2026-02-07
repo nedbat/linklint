@@ -104,6 +104,8 @@ def main():
     exit_code = 0
     for filepath in sys.argv[1:]:
         path = Path(filepath)
+        # This runs Sphinx on each file separately, which seems slow, but is
+        # faster than running it once on all the files.
         issues = lint_file(path)
         for issue in issues:
             print(f"{filepath}:{issue.line}: {issue.message}")
