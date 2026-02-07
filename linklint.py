@@ -36,7 +36,7 @@ def parse_rst_file(filepath: Path) -> nodes.document:
             confdir=str(tmppath),
             outdir=str(outdir),
             doctreedir=str(doctreedir),
-            buildername="html",
+            buildername="dummy",
             freshenv=True,
             status=None,
             warning=None,
