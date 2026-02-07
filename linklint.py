@@ -50,8 +50,11 @@ def find_self_links(doctree: nodes.document):
     """Find :mod: references that link to modules declared in the same section."""
     for section in doctree.findall(nodes.section):
         declared_modules = set()
+        section_names = set(section.get("names", []))
         for section_id in section.get("ids", []):
-            if section_id.startswith("module-"):
+            # Explicit targets like `.. _module-foo:` appear in both ids
+            # and names; actual `.. module::` directives only appear in ids.
+            if section_id.startswith("module-") and section_id not in section_names:
                 module_name = section_id[7:]
                 declared_modules.add(module_name)
 
