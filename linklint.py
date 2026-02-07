@@ -1,4 +1,4 @@
-"""Linter to find self-referential links in RST files."""
+"""Linter to find link problems in RST files."""
 
 # Run with:
 #   uv run linklint.py **/*.rst
@@ -10,11 +10,13 @@
 # ]
 # ///
 
+import argparse
 import sys
 import tempfile
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Iterable
 
 from docutils import nodes
 from sphinx.application import Sphinx
@@ -25,9 +27,10 @@ from sphinx.addnodes import pending_xref
 class LintIssue:
     line: int
     message: str
+    fixed: bool = False
 
 
-def parse_rst_file(filepath: Path) -> nodes.document:
+def parse_rst_file(content: str) -> nodes.document:
     """Parse an RST file using Sphinx and return the doctree."""
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)
@@ -38,7 +41,6 @@ def parse_rst_file(filepath: Path) -> nodes.document:
         (tmppath / "conf.py").write_text("extensions = []\n")
 
         # Copy the RST file as index.rst
-        content = filepath.read_text()
         (tmppath / "index.rst").write_text(content)
 
         app = Sphinx(
@@ -56,9 +58,36 @@ def parse_rst_file(filepath: Path) -> nodes.document:
         return app.env.get_doctree("index")
 
 
-def find_self_links(doctree: nodes.document):
+@dataclass
+class LintWork:
+    doctree: nodes.document
+    content_lines: list[str]
+    fix: bool
+    fixed: bool
+
+
+def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
+    """Replace a line in the content lines, adjusting underline lengths if needed."""
+    old_line = lines[line_num - 1]
+    lines[line_num - 1] = new_line
+    # Adjust underline if the next line is an underline of the same length
+    if line_num < len(lines):
+        next_line = lines[line_num]
+        if len(next_line) == len(old_line) and len(set(next_line.rstrip())) == 1:
+            lines[line_num] = next_line[0] * len(new_line.rstrip()) + next_line[-1]
+
+
+def replace_in_rst_line(lines: list[str], line_num: int, old: str, new: str) -> None:
+    """Replace a substring in a line, adjusting underline lengths if needed."""
+    old_line = lines[line_num - 1]
+    new_line = old_line.replace(old, new)
+    if new_line != old_line:
+        replace_rst_line(lines, line_num, new_line)
+
+
+def find_self_links(work: LintWork) -> Iterable[LintIssue]:
     """Find :mod: references that link to modules declared in the same section."""
-    for section in doctree.findall(nodes.section):
+    for section in work.doctree.findall(nodes.section):
         declared_modules = set()
         section_names = set(section.get("names", []))
         for section_id in section.get("ids", []):
@@ -75,12 +104,16 @@ def find_self_links(doctree: nodes.document):
             if ref.get("reftype") == "mod":
                 target = ref.get("reftarget")
                 if target in declared_modules:
-                    yield LintIssue(ref.line, f"self-link to module '{target}'")
+                    fixed = False
+                    if work.fix:
+                        replace_in_rst_line(work.content_lines, ref.line, f":mod:`{target}`", f":mod:`!{target}`")
+                        work.fixed = fixed = True
+                    yield LintIssue(ref.line, f"self-link to module '{target}'", fixed=fixed)
 
 
-def find_duplicate_refs_in_paragraph(doctree: nodes.document):
+def find_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
     """Find references that appear more than once in the same paragraph."""
-    for para in doctree.findall(nodes.paragraph):
+    for para in work.doctree.findall(nodes.paragraph):
         refs_by_target = defaultdict(list)
         for ref in para.findall(pending_xref):
             reftype = ref.get("reftype")
@@ -97,35 +130,48 @@ def find_duplicate_refs_in_paragraph(doctree: nodes.document):
                     )
 
 
-def lint_file(filepath: Path) -> list[LintIssue]:
+def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
     """Lint a single RST file.
 
     Returns a list of LintIssue objects.
     """
-    doctree = parse_rst_file(filepath)
+    path = Path(filepath)
+    content = path.read_text()
+    doctree = parse_rst_file(content)
+    work = LintWork(
+        content_lines=content.splitlines(keepends=True),
+        doctree=doctree,
+        fix=fix,
+        fixed=False,
+    )
+
     issues = []
-    issues.extend(find_self_links(doctree))
+    issues.extend(find_self_links(work))
     # issues.extend(find_duplicate_refs_in_paragraph(doctree))
+
+    if fix and work.fixed:
+        path.write_text("".join(work.content_lines))
+
     return issues
 
 
-def main():
-    if len(sys.argv) < 2:
-        print("Usage: linklint.py <file.rst> [file2.rst ...]", file=sys.stderr)
-        sys.exit(1)
+def main(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--fix", help="Fix the issues in place", action="store_true")
+    parser.add_argument("files", nargs="+", help="RST files to lint")
+    args = parser.parse_args(argv)
 
     exit_code = 0
-    for filepath in sys.argv[1:]:
-        path = Path(filepath)
+    for filepath in args.files:
         # This runs Sphinx on each file separately, which seems slow, but is
         # faster than running it once on all the files.
-        issues = lint_file(path)
-        for issue in issues:
-            print(f"{filepath}:{issue.line}: {issue.message}")
+        for issue in lint_file(filepath, args.fix):
+            fixed_suffix = " (fixed)" if issue.fixed else ""
+            print(f"{filepath}:{issue.line}: {issue.message}{fixed_suffix}")
             exit_code = 1
 
-    sys.exit(exit_code)
+    return exit_code
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv[1:]))
