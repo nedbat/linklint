@@ -1,5 +1,15 @@
 """Linter to find self-referential links in RST files."""
 
+# Run with:
+#   uv run linklint.py **/*.rst
+
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "Sphinx",
+# ]
+# ///
+
 import sys
 import tempfile
 from collections import defaultdict
@@ -95,7 +105,7 @@ def lint_file(filepath: Path) -> list[LintIssue]:
     doctree = parse_rst_file(filepath)
     issues = []
     issues.extend(find_self_links(doctree))
-    #issues.extend(find_duplicate_refs_in_paragraph(doctree))
+    # issues.extend(find_duplicate_refs_in_paragraph(doctree))
     return issues
 
 
