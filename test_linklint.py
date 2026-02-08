@@ -42,6 +42,36 @@ LintTestCase = namedtuple(
                 + This is the :mod:`!mymodule` documentation.
             """,
         ),
+        # Is the line-munging correct?
+        LintTestCase(
+            rst="""\
+                Another
+                =======
+
+                Look at :mod:`mymodule` for more info.
+
+                My Module
+                =========
+
+                .. module:: mymodule
+
+                This is the :mod:`mymodule` documentation.
+
+                Also check :mod:`othermodule` for related functionality.
+
+                Other Section
+                =============
+
+                This section references :mod:`mymodule` which is fine.
+                """,
+            expected_issues=[
+                LintIssue(11, "self-link to module 'mymodule'", fixed=True),
+            ],
+            diff="""\
+                - This is the :mod:`mymodule` documentation.
+                + This is the :mod:`!mymodule` documentation.
+            """,
+        ),
         # Check that `.. _module-foo` isn't confused for a module section.
         LintTestCase(
             rst="""\
