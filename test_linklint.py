@@ -76,24 +76,6 @@ LintTestCase = namedtuple(
                 + =======================
             """,
         ),
-        # Tilde references are also fixed.
-        LintTestCase(
-            rst="""\
-                My Module
-                =========
-
-                .. module:: mymodule
-
-                This is the :mod:`~mymodule` documentation.
-                """,
-            expected_issues=[
-                LintIssue(6, "self-link to module 'mymodule'", fixed=True),
-            ],
-            diff="""\
-                - This is the :mod:`~mymodule` documentation.
-                + This is the :mod:`~!mymodule` documentation.
-            """,
-        ),
         # Self-link on a continuation line inside a list item.
         LintTestCase(
             rst="""\

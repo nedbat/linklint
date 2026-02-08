@@ -127,8 +127,8 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                         resub_in_rst_line(
                             work.content_lines,
                             actual_line,
-                            rf"(:mod:`~?){re.escape(target)}`",
-                            rf"\1!{target}`",
+                            rf":mod:`{re.escape(target)}`",
+                            rf":mod:`!{target}`",
                         )
                         work.fixed = fixed = True
                     yield LintIssue(
