@@ -106,9 +106,16 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                 if target in declared_modules:
                     fixed = False
                     if work.fix:
-                        replace_in_rst_line(work.content_lines, ref.line, f":mod:`{target}`", f":mod:`!{target}`")
+                        replace_in_rst_line(
+                            work.content_lines,
+                            ref.line,
+                            f":mod:`{target}`",
+                            f":mod:`!{target}`",
+                        )
                         work.fixed = fixed = True
-                    yield LintIssue(ref.line, f"self-link to module '{target}'", fixed=fixed)
+                    yield LintIssue(
+                        ref.line, f"self-link to module '{target}'", fixed=fixed
+                    )
 
 
 def find_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
@@ -137,6 +144,20 @@ def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
     """
     path = Path(filepath)
     content = path.read_text()
+    result = lint_content(content, fix)
+    if fix and result.fixed:
+        path.write_text(result.content)
+    return result.issues
+
+
+@dataclass
+class LintResult:
+    content: str
+    issues: list[LintIssue]
+    fixed: bool
+
+
+def lint_content(content: str, fix: bool) -> LintResult:
     doctree = parse_rst_file(content)
     work = LintWork(
         content_lines=content.splitlines(keepends=True),
@@ -149,13 +170,16 @@ def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
     issues.extend(find_self_links(work))
     # issues.extend(find_duplicate_refs_in_paragraph(work))
 
-    if fix and work.fixed:
-        path.write_text("".join(work.content_lines))
+    result = LintResult(
+        content="".join(work.content_lines),
+        issues=issues,
+        fixed=work.fixed,
+    )
 
-    return issues
+    return result
 
 
-def main(argv):
+def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fix", help="Fix the issues in place", action="store_true")
     parser.add_argument("files", nargs="+", help="RST files to lint")
