@@ -81,8 +81,7 @@ def replace_in_rst_line(lines: list[str], line_num: int, old: str, new: str) -> 
     """Replace a substring in a line, adjusting underline lengths if needed."""
     old_line = lines[line_num - 1]
     new_line = old_line.replace(old, new)
-    if new_line != old_line:
-        replace_rst_line(lines, line_num, new_line)
+    replace_rst_line(lines, line_num, new_line)
 
 
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
