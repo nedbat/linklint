@@ -11,6 +11,7 @@
 # ///
 
 import argparse
+import re
 import sys
 import tempfile
 from collections import defaultdict
@@ -77,10 +78,10 @@ def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
             lines[line_num] = next_line[0] * len(new_line.rstrip()) + next_line[-1]
 
 
-def replace_in_rst_line(lines: list[str], line_num: int, old: str, new: str) -> None:
+def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> None:
     """Replace a substring in a line, adjusting underline lengths if needed."""
     old_line = lines[line_num - 1]
-    new_line = old_line.replace(old, new)
+    new_line = re.sub(pat, repl, old_line)
     replace_rst_line(lines, line_num, new_line)
 
 
@@ -105,11 +106,11 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                 if target in declared_modules:
                     fixed = False
                     if work.fix:
-                        replace_in_rst_line(
+                        resub_in_rst_line(
                             work.content_lines,
                             ref.line,
-                            f":mod:`{target}`",
-                            f":mod:`!{target}`",
+                            rf"(:mod:`~?){target}`",
+                            rf"\1!{target}`",
                         )
                         work.fixed = fixed = True
                     yield LintIssue(

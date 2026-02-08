@@ -42,7 +42,7 @@ LintTestCase = namedtuple(
                 + This is the :mod:`!mymodule` documentation.
             """,
         ),
-        # Check that `.. _module-foo` isn't confusing.
+        # Check that `.. _module-foo` isn't confused for a module section.
         LintTestCase(
             rst="""\
                 .. _module-xyzzy:
@@ -74,6 +74,24 @@ LintTestCase = namedtuple(
                 + :mod:`!mymodule` Module
                 - ======================
                 + =======================
+            """,
+        ),
+        # Tilde references are also fixed.
+        LintTestCase(
+            rst="""\
+                My Module
+                =========
+
+                .. module:: mymodule
+
+                This is the :mod:`~mymodule` documentation.
+                """,
+            expected_issues=[
+                LintIssue(6, "self-link to module 'mymodule'", fixed=True),
+            ],
+            diff="""\
+                - This is the :mod:`~mymodule` documentation.
+                + This is the :mod:`~!mymodule` documentation.
             """,
         ),
     ],
