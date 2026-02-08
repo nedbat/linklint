@@ -94,6 +94,26 @@ LintTestCase = namedtuple(
                 + This is the :mod:`~!mymodule` documentation.
             """,
         ),
+        # Self-link on a continuation line inside a list item.
+        LintTestCase(
+            rst="""\
+                My Module
+                =========
+
+                .. module:: mymodule
+
+                - First item talks about something.
+                  And continues with :mod:`mymodule` here.
+                - Second item.
+                """,
+            expected_issues=[
+                LintIssue(7, "self-link to module 'mymodule'", fixed=True),
+            ],
+            diff="""\
+                -   And continues with :mod:`mymodule` here.
+                +   And continues with :mod:`!mymodule` here.
+            """,
+        ),
     ],
 )
 def test_self_link(rst, expected_issues, diff):

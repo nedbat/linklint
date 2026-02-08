@@ -85,6 +85,11 @@ def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> N
     replace_rst_line(lines, line_num, new_line)
 
 
+def find_pattern_lines(lines: list[str], pattern: str) -> list[int]:
+    """Return 1-based line numbers of lines matching pattern."""
+    return [i + 1 for i, line in enumerate(lines) if re.search(pattern, line)]
+
+
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
     """Find :mod: references that link to modules declared in the same section."""
     for section in work.doctree.findall(nodes.section):
@@ -100,21 +105,36 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
         if not declared_modules:
             continue
 
+        # Pre-scan for actual line numbers of each target
+        target_lines: dict[str, list[int]] = {}
+        for ref in section.findall(pending_xref):
+            if ref.get("reftype") == "mod":
+                target = ref.get("reftarget")
+                if target in declared_modules and target not in target_lines:
+                    pat = rf":mod:`~?{re.escape(target)}`"
+                    target_lines[target] = find_pattern_lines(
+                        work.content_lines, pat
+                    )
+
         for ref in section.findall(pending_xref):
             if ref.get("reftype") == "mod":
                 target = ref.get("reftarget")
                 if target in declared_modules:
+                    lines_list = target_lines[target]
+                    actual_line = lines_list.pop(0) if lines_list else ref.line
                     fixed = False
                     if work.fix:
                         resub_in_rst_line(
                             work.content_lines,
-                            ref.line,
-                            rf"(:mod:`~?){target}`",
+                            actual_line,
+                            rf"(:mod:`~?){re.escape(target)}`",
                             rf"\1!{target}`",
                         )
                         work.fixed = fixed = True
                     yield LintIssue(
-                        ref.line, f"self-link to module '{target}'", fixed=fixed
+                        actual_line,
+                        f"self-link to module '{target}'",
+                        fixed=fixed,
                     )
 
 
