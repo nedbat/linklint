@@ -85,9 +85,48 @@ def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> N
     replace_rst_line(lines, line_num, new_line)
 
 
-def find_pattern_lines(lines: list[str], pattern: str) -> list[int]:
-    """Return 1-based line numbers of lines matching pattern."""
-    return [i + 1 for i, line in enumerate(lines) if re.search(pattern, line)]
+def find_pattern_lines(
+    lines: list[str], pattern: str, start: int = 1, end: int = 0
+) -> list[int]:
+    """Return 1-based line numbers of lines matching pattern.
+
+    Only searches lines in the range [start, end] (1-based, inclusive).
+    If end is 0, searches to the end of the list.
+    """
+    if end == 0:
+        end = len(lines)
+    return [
+        i + 1
+        for i, line in enumerate(lines)
+        if start <= i + 1 <= end and re.search(pattern, line)
+    ]
+
+
+def _section_line_range(
+    section: nodes.section, total_lines: int
+) -> tuple[int, int]:
+    """Return the 1-based (start, end) line range for a section."""
+    start = 1
+    for node in section.findall():
+        if node.line:
+            start = node.line
+            break
+
+    end = total_lines
+    parent = section.parent
+    if parent is not None:
+        found = False
+        for sibling in parent.children:
+            if found and isinstance(sibling, nodes.section):
+                for node in sibling.findall():
+                    if node.line:
+                        end = node.line - 1
+                        break
+                break
+            if sibling is section:
+                found = True
+
+    return (start, end)
 
 
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
@@ -105,7 +144,11 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
         if not declared_modules:
             continue
 
-        # Pre-scan for actual line numbers of each target
+        sec_start, sec_end = _section_line_range(
+            section, len(work.content_lines)
+        )
+
+        # Pre-scan for actual line numbers of each target within this section
         target_lines: dict[str, list[int]] = {}
         for ref in section.findall(pending_xref):
             if ref.get("reftype") == "mod":
@@ -113,7 +156,7 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                 if target in declared_modules and target not in target_lines:
                     pat = rf":mod:`~?{re.escape(target)}`"
                     target_lines[target] = find_pattern_lines(
-                        work.content_lines, pat
+                        work.content_lines, pat, sec_start, sec_end
                     )
 
         for ref in section.findall(pending_xref):
