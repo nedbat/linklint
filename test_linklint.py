@@ -126,6 +126,48 @@ LintTestCase = namedtuple(
                 +   And continues with :mod:`!mymodule` here.
             """,
         ),
+        # Don't get confused about sub-modules.
+        LintTestCase(
+            rst="""\
+                :mod:`dbm` --- Interfaces to Unix "databases"
+                =============================================
+
+                .. module:: dbm
+                :synopsis: Interfaces to various Unix "database" formats.
+
+                **Source code:** :source:`Lib/dbm/__init__.py`
+
+                --------------
+
+                :mod:`dbm` is a generic interface to variants of the DBM database:
+
+                * :mod:`dbm.sqlite3`
+                * :mod:`dbm.gnu`
+                * :mod:`dbm.ndbm`
+
+                If none of these modules are installed, the
+                slow-but-simple implementation in module :mod:`dbm.dumb` will be used. There
+                is a `third party interface <https://www.jcea.es/programacion/pybsddb.htm>`_ to
+                the Oracle Berkeley DB.
+
+                .. note::
+                None of the underlying modules will automatically shrink the disk space used by
+                the database file. However, :mod:`dbm.sqlite3`, :mod:`dbm.gnu` and :mod:`dbm.dumb`
+                provide a :meth:`!reorganize` method that can be used for this purpose.
+                """,
+            expected_issues=[
+                LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
+                LintIssue(line=11, message="self-link to module 'dbm'", fixed=True),
+            ],
+            diff="""\
+                - :mod:`dbm` --- Interfaces to Unix "databases"
+                + :mod:`!dbm` --- Interfaces to Unix "databases"
+                - =============================================
+                + ==============================================
+                - :mod:`dbm` is a generic interface to variants of the DBM database:
+                + :mod:`!dbm` is a generic interface to variants of the DBM database:
+            """,
+        ),
     ],
 )
 def test_self_link(rst, expected_issues, diff):
