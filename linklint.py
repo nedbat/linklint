@@ -85,48 +85,28 @@ def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> N
     replace_rst_line(lines, line_num, new_line)
 
 
-def find_pattern_lines(
-    lines: list[str], pattern: str, start: int = 1, end: int = 0
-) -> list[int]:
-    """Return 1-based line numbers of lines matching pattern.
+BLOCK_NODES = (nodes.paragraph,)
 
-    Only searches lines in the range [start, end] (1-based, inclusive).
-    If end is 0, searches to the end of the list.
+
+def fix_node_lines(doctree: nodes.document) -> None:
+    """Fix line numbers for inline nodes within block elements.
+
+    Doctree block nodes (paragraphs, titles) have correct line numbers, but
+    their inline children all inherit the block's start line.  Walk each block's
+    descendants counting newlines in text nodes to compute each inline node's
+    actual line.
     """
-    if end == 0:
-        end = len(lines)
-    return [
-        i + 1
-        for i, line in enumerate(lines)
-        if start <= i + 1 <= end and re.search(pattern, line)
-    ]
-
-
-def _section_line_range(
-    section: nodes.section, total_lines: int
-) -> tuple[int, int]:
-    """Return the 1-based (start, end) line range for a section."""
-    start = 1
-    for node in section.findall():
-        if node.line:
-            start = node.line
-            break
-
-    end = total_lines
-    parent = section.parent
-    if parent is not None:
-        found = False
-        for sibling in parent.children:
-            if found and isinstance(sibling, nodes.section):
-                for node in sibling.findall():
-                    if node.line:
-                        end = node.line - 1
-                        break
-                break
-            if sibling is section:
-                found = True
-
-    return (start, end)
+    for block in doctree.findall(lambda n: isinstance(n, BLOCK_NODES)):
+        if not block.line:
+            continue
+        newline_count = 0
+        for node in block.findall():
+            if node is block:
+                continue
+            if isinstance(node, nodes.Text):
+                newline_count += str(node).count("\n")
+            else:
+                node.line = block.line + newline_count
 
 
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
@@ -144,38 +124,21 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
         if not declared_modules:
             continue
 
-        sec_start, sec_end = _section_line_range(
-            section, len(work.content_lines)
-        )
-
-        # Pre-scan for actual line numbers of each target within this section
-        target_lines: dict[str, list[int]] = {}
-        for ref in section.findall(pending_xref):
-            if ref.get("reftype") == "mod":
-                target = ref.get("reftarget")
-                if target in declared_modules and target not in target_lines:
-                    pat = rf":mod:`~?{re.escape(target)}`"
-                    target_lines[target] = find_pattern_lines(
-                        work.content_lines, pat, sec_start, sec_end
-                    )
-
         for ref in section.findall(pending_xref):
             if ref.get("reftype") == "mod":
                 target = ref.get("reftarget")
                 if target in declared_modules:
-                    lines_list = target_lines[target]
-                    actual_line = lines_list.pop(0) if lines_list else ref.line
                     fixed = False
                     if work.fix:
                         resub_in_rst_line(
                             work.content_lines,
-                            actual_line,
+                            ref.line,
                             rf":mod:`{re.escape(target)}`",
                             rf":mod:`!{target}`",
                         )
                         work.fixed = fixed = True
                     yield LintIssue(
-                        actual_line,
+                        ref.line,
                         f"self-link to module '{target}'",
                         fixed=fixed,
                     )
@@ -222,6 +185,7 @@ class LintResult:
 
 def lint_content(content: str, fix: bool) -> LintResult:
     doctree = parse_rst_file(content)
+    fix_node_lines(doctree)
     work = LintWork(
         content_lines=content.splitlines(keepends=True),
         doctree=doctree,
