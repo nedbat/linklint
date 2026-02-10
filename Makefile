@@ -5,8 +5,8 @@ test:
 	coverage report -m
 	coverage html
 
-CHECKABLE := linklint.py test_linklint.py
+EXCLUDE := --exclude dump.py
 
 quality:
-	uvx ty check ${CHECKABLE}
-	uvx ruff check ${CHECKABLE}
+	uvx ty check ${EXCLUDE}
+	uvx ruff check ${EXCLUDE}
