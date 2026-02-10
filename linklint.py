@@ -92,19 +92,6 @@ def find_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
                     )
 
 
-def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
-    """Lint a single RST file.
-
-    Returns a list of LintIssue objects.
-    """
-    path = Path(filepath)
-    content = path.read_text()
-    result = lint_content(content, fix)
-    if fix and result.fixed:
-        path.write_text(result.content)
-    return result.issues
-
-
 @dataclass
 class LintResult:
     content: str
@@ -132,6 +119,19 @@ def lint_content(content: str, fix: bool) -> LintResult:
     )
 
     return result
+
+
+def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
+    """Lint a single RST file.
+
+    Returns a list of LintIssue objects.
+    """
+    path = Path(filepath)
+    content = path.read_text()
+    result = lint_content(content, fix)
+    if fix and result.fixed:
+        path.write_text(result.content)
+    return result.issues
 
 
 def main(argv: list[str]) -> int:
