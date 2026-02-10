@@ -122,6 +122,30 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 + =======================
             """,
         ),
+        # Check that overline headers get fixed too.
+        LintTestCase(
+            id="header-selflink",
+            rst="""\
+                ***********************
+                This is :mod:`mymodule`
+                ***********************
+
+                .. module:: mymodule
+
+                This is a great module!
+                """,
+            expected_issues=[
+                LintIssue(2, "self-link to module 'mymodule'", fixed=True),
+            ],
+            diff="""\
+                - ***********************
+                + ************************
+                - This is :mod:`mymodule`
+                + This is :mod:`!mymodule`
+                - ***********************
+                + ************************
+            """,
+        ),
         # Self-link on a continuation line inside a list item.
         LintTestCase(
             id="continuation-line",

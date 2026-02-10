@@ -70,14 +70,16 @@ class LintWork:
 
 
 def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
-    """Replace a line in the content lines, adjusting underline lengths if needed."""
-    old_line = lines[line_num - 1]
-    lines[line_num - 1] = new_line
-    # Adjust underline if the next line is an underline of the same length
-    if line_num < len(lines):
-        next_line = lines[line_num]
-        if len(next_line) == len(old_line) and len(set(next_line.rstrip())) == 1:
-            lines[line_num] = next_line[0] * len(new_line.rstrip()) + next_line[-1]
+    """Replace a line in the content lines, adjusting header lengths if needed."""
+    line_num -= 1
+    old_line = lines[line_num]
+    lines[line_num] = new_line
+    # Adjust adjacent lines if it's a header line.
+    for adj_line_num in (line_num - 1, line_num + 1):
+        if adj_line_num in range(len(lines)):
+            adj_line = lines[adj_line_num]
+            if len(adj_line) == len(old_line) and len(set(adj_line.rstrip())) == 1:
+                lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
 
 
 def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> None:
