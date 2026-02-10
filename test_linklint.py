@@ -6,6 +6,16 @@ import pytest
 from linklint import LintIssue, lint_content
 
 
+def diff_lines(text1, text2):
+    """Return a diff of just the lines that differ between text1 and text2."""
+    differ = Differ().compare(
+        text1.splitlines(keepends=True),
+        text2.splitlines(keepends=True),
+    )
+    min_diff = "".join(line for line in differ if line.startswith(("-", "+")))
+    return min_diff
+
+
 def LintTestCase(*, rst, expected_issues, diff, id=None):
     """Helper to create pytest parameters for linting tests."""
     return pytest.param(
@@ -181,9 +191,4 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
 def test_self_link(rst, expected_issues, diff):
     result = lint_content(rst, fix=True)
     assert result.issues == expected_issues
-    differ = Differ().compare(
-        rst.splitlines(keepends=True),
-        result.content.splitlines(keepends=True),
-    )
-    min_diff = "".join(l for l in differ if l.startswith(("-", "+")))
-    assert min_diff == diff
+    assert diff_lines(rst, result.content) == diff
