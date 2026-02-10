@@ -1,5 +1,3 @@
-from collections import namedtuple
-from dataclasses import dataclass
 from difflib import Differ
 from textwrap import dedent
 
@@ -8,10 +6,14 @@ import pytest
 from linklint import LintIssue, lint_content
 
 
-LintTestCase = namedtuple(
-    "LintTestCase",
-    ["rst", "expected_issues", "diff"],
-)
+def LintTestCase(*, rst, expected_issues, diff, id=None):
+    """Helper to create pytest parameters for linting tests."""
+    return pytest.param(
+        dedent(rst),
+        expected_issues,
+        dedent(diff),
+        id=id,
+    )
 
 
 @pytest.mark.parametrize(
@@ -19,6 +21,7 @@ LintTestCase = namedtuple(
     [
         # Check a self-link in the module description.
         LintTestCase(
+            id="selflink",
             rst="""\
                 My Module
                 =========
@@ -44,6 +47,7 @@ LintTestCase = namedtuple(
         ),
         # Is the line-munging correct?
         LintTestCase(
+            id="second-section",
             rst="""\
                 Another
                 =======
@@ -74,6 +78,7 @@ LintTestCase = namedtuple(
         ),
         # Check that `.. _module-foo` isn't confused for a module section.
         LintTestCase(
+            id="module-target",
             rst="""\
                 .. _module-xyzzy:
 
@@ -88,6 +93,7 @@ LintTestCase = namedtuple(
         ),
         # Check that headers get fixed too.
         LintTestCase(
+            id="header-selflink",
             rst="""\
                 :mod:`mymodule` Module
                 ======================
@@ -108,6 +114,7 @@ LintTestCase = namedtuple(
         ),
         # Self-link on a continuation line inside a list item.
         LintTestCase(
+            id="continuation-line",
             rst="""\
                 My Module
                 =========
@@ -128,6 +135,7 @@ LintTestCase = namedtuple(
         ),
         # Don't get confused about sub-modules.
         LintTestCase(
+            id="submodule",
             rst="""\
                 :mod:`dbm` --- Interfaces to Unix "databases"
                 =============================================
@@ -171,7 +179,6 @@ LintTestCase = namedtuple(
     ],
 )
 def test_self_link(rst, expected_issues, diff):
-    rst = dedent(rst)
     result = lint_content(rst, fix=True)
     assert result.issues == expected_issues
     differ = Differ().compare(
@@ -179,4 +186,4 @@ def test_self_link(rst, expected_issues, diff):
         result.content.splitlines(keepends=True),
     )
     min_diff = "".join(l for l in differ if l.startswith(("-", "+")))
-    assert min_diff == dedent(diff)
+    assert min_diff == diff
