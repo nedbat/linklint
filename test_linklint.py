@@ -133,6 +133,10 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 .. module:: mymodule
 
                 This is a great module!
+
+                .. deprecated:: 3.8
+
+                    Maybe it's not so great after all.
                 """,
             expected_issues=[
                 LintIssue(2, "self-link to module 'mymodule'", fixed=True),
