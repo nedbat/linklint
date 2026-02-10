@@ -24,13 +24,6 @@ from sphinx.application import Sphinx
 from sphinx.addnodes import pending_xref
 
 
-@dataclass
-class LintIssue:
-    line: int
-    message: str
-    fixed: bool = False
-
-
 def parse_rst_file(content: str) -> nodes.document:
     """Parse an RST file using Sphinx and return the doctree."""
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -61,34 +54,6 @@ def parse_rst_file(content: str) -> nodes.document:
         return doctree
 
 
-@dataclass
-class LintWork:
-    doctree: nodes.document
-    content_lines: list[str]
-    fix: bool
-    fixed: bool
-
-
-def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
-    """Replace a line in the content lines, adjusting header lengths if needed."""
-    line_num -= 1
-    old_line = lines[line_num]
-    lines[line_num] = new_line
-    # Adjust adjacent lines if it's a header line.
-    for adj_line_num in (line_num - 1, line_num + 1):
-        if adj_line_num in range(len(lines)):
-            adj_line = lines[adj_line_num]
-            if len(adj_line) == len(old_line) and len(set(adj_line.rstrip())) == 1:
-                lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
-
-
-def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> None:
-    """Replace a substring in a line, adjusting underline lengths if needed."""
-    old_line = lines[line_num - 1]
-    new_line = re.sub(pat, repl, old_line)
-    replace_rst_line(lines, line_num, new_line)
-
-
 BLOCK_NODES = (nodes.paragraph,)
 
 
@@ -111,6 +76,41 @@ def fix_node_lines(doctree: nodes.document) -> None:
                 newline_count += str(node).count("\n")
             else:
                 node.line = block.line + newline_count
+
+
+def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
+    """Replace a line in the content lines, adjusting header lengths if needed."""
+    line_num -= 1
+    old_line = lines[line_num]
+    lines[line_num] = new_line
+    # Adjust adjacent lines if it's a header line.
+    for adj_line_num in (line_num - 1, line_num + 1):
+        if adj_line_num in range(len(lines)):
+            adj_line = lines[adj_line_num]
+            if len(adj_line) == len(old_line) and len(set(adj_line.rstrip())) == 1:
+                lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
+
+
+def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> None:
+    """Replace a substring in a line, adjusting underline lengths if needed."""
+    old_line = lines[line_num - 1]
+    new_line = re.sub(pat, repl, old_line)
+    replace_rst_line(lines, line_num, new_line)
+
+
+@dataclass
+class LintIssue:
+    line: int
+    message: str
+    fixed: bool = False
+
+
+@dataclass
+class LintWork:
+    doctree: nodes.document
+    content_lines: list[str]
+    fix: bool
+    fixed: bool
 
 
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
