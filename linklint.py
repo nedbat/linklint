@@ -60,13 +60,12 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                 if target in declared_modules:
                     fixed = False
                     if work.fix:
-                        resub_in_rst_line(
+                        work.fixed = fixed = resub_in_rst_line(
                             work.content_lines,
                             ref.line - 1,
-                            rf":mod:`{re.escape(target)}`",
-                            rf":mod:`!{target}`",
+                            rf":mod:`~?{re.escape(target)}`",
+                            rf":mod:`!{ref.astext()}`",
                         )
-                        work.fixed = fixed = True
                     yield LintIssue(
                         ref.line,
                         f"self-link to module '{target}'",

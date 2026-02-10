@@ -87,7 +87,10 @@ def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
                 )
 
 
-def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> None:
+def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> bool:
     """Replace a substring in a line, adjusting header lengths if needed."""
     new_line = re.sub(pat, repl, lines[line_num])
-    replace_rst_line(lines, line_num, new_line)
+    changed = new_line != lines[line_num]
+    if changed:
+        replace_rst_line(lines, line_num, new_line)
+    return changed

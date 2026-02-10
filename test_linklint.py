@@ -214,6 +214,46 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 + :mod:`!dbm` is a generic interface to variants of the DBM database:
             """,
         ),
+        # Fix ~ references if needed.
+        LintTestCase(
+            id="tilde",
+            rst="""\
+                :mod:`email.encoders`: Encoders
+                -------------------------------
+
+                .. module:: email.encoders
+
+                This module is deprecated in Python 3.  The functions provided here
+                should not be called explicitly since the :class:`~email.mime.text.MIMEText`
+                class sets the content type and CTE header using the *_subtype* and *_charset*
+                values passed during the instantiation of that class.
+
+                The :mod:`email` package provides some convenient encoders in its
+                :mod:`~email.encoders` module.  These encoders are actually used by the
+                :class:`~email.mime.audio.MIMEAudio` and :class:`~email.mime.image.MIMEImage`
+                class constructors to provide default encodings.
+                """,
+            expected_issues=[
+                LintIssue(
+                    line=1,
+                    message="self-link to module 'email.encoders'",
+                    fixed=True,
+                ),
+                LintIssue(
+                    line=12,
+                    message="self-link to module 'email.encoders'",
+                    fixed=True,
+                ),
+            ],
+            diff="""\
+                - :mod:`email.encoders`: Encoders
+                + :mod:`!email.encoders`: Encoders
+                - -------------------------------
+                + --------------------------------
+                - :mod:`~email.encoders` module.  These encoders are actually used by the
+                + :mod:`!encoders` module.  These encoders are actually used by the
+            """,
+        ),
     ],
 )
 def test_self_link(rst, expected_issues, diff):
