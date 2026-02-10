@@ -56,7 +56,9 @@ def parse_rst_file(content: str) -> nodes.document:
         )
 
         app.build()
-        return app.env.get_doctree("index")
+        doctree = app.env.get_doctree("index")
+        fix_node_lines(doctree)
+        return doctree
 
 
 @dataclass
@@ -185,7 +187,6 @@ class LintResult:
 
 def lint_content(content: str, fix: bool) -> LintResult:
     doctree = parse_rst_file(content)
-    fix_node_lines(doctree)
     work = LintWork(
         content_lines=content.splitlines(keepends=True),
         doctree=doctree,
