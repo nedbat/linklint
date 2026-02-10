@@ -12,6 +12,7 @@
 
 import argparse
 import re
+import string
 import sys
 import tempfile
 from collections import defaultdict
@@ -78,23 +79,33 @@ def fix_node_lines(doctree: nodes.document) -> None:
                 node.line = block.line + newline_count
 
 
+def is_header_line(line: str, text_line: str) -> bool:
+    """Check if a line is a header underline/overline for `text_line`."""
+    stripped = line.rstrip()
+    return (
+        len(stripped) >= len(text_line.rstrip())
+        and len(set(stripped)) == 1
+        and stripped[0] in string.punctuation
+    )
+
+
 def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
     """Replace a line in the content lines, adjusting header lengths if needed."""
-    line_num -= 1
     old_line = lines[line_num]
     lines[line_num] = new_line
-    # Adjust adjacent lines if it's a header line.
-    for adj_line_num in (line_num - 1, line_num + 1):
+    # Adjust adjacent lines if they are header lines.
+    for adj_line_num in [line_num - 1, line_num + 1]:
         if adj_line_num in range(len(lines)):
             adj_line = lines[adj_line_num]
-            if len(adj_line) == len(old_line) and len(set(adj_line.rstrip())) == 1:
-                lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
+            if is_header_line(adj_line, old_line):
+                lines[adj_line_num] = (
+                    adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
+                )
 
 
 def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str) -> None:
-    """Replace a substring in a line, adjusting underline lengths if needed."""
-    old_line = lines[line_num - 1]
-    new_line = re.sub(pat, repl, old_line)
+    """Replace a substring in a line, adjusting header lengths if needed."""
+    new_line = re.sub(pat, repl, lines[line_num])
     replace_rst_line(lines, line_num, new_line)
 
 
@@ -136,7 +147,7 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                     if work.fix:
                         resub_in_rst_line(
                             work.content_lines,
-                            ref.line,
+                            ref.line - 1,
                             rf":mod:`{re.escape(target)}`",
                             rf":mod:`!{target}`",
                         )
