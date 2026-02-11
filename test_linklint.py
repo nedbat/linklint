@@ -219,7 +219,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
             id="tilde",
             rst="""\
                 :mod:`email.encoders`: Encoders
-                -------------------------------
+                ----------------------------------
 
                 .. module:: email.encoders
 
@@ -248,7 +248,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
             diff="""\
                 - :mod:`email.encoders`: Encoders
                 + :mod:`!email.encoders`: Encoders
-                - -------------------------------
+                - ----------------------------------
                 + --------------------------------
                 - :mod:`~email.encoders` module.  These encoders are actually used by the
                 + :mod:`!encoders` module.  These encoders are actually used by the
