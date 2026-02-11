@@ -257,6 +257,6 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
     ],
 )
 def test_self_link(rst, expected_issues, diff):
-    result = lint_content(rst, fix=True)
+    result = lint_content(rst, fix=True, checks={"self"})
     assert result.issues == expected_issues
     assert diff_lines(rst, result.content) == diff

@@ -39,6 +39,20 @@ class LintWork:
     fixed: bool
 
 
+CHECKS = {}
+
+
+def check(name: str):
+    """Decorator to register a lint check function."""
+
+    def decorator(func):
+        CHECKS[name] = func
+        return func
+
+    return decorator
+
+
+@check("self")
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
     """Find :mod: references that link to modules declared in the same section."""
     for section in work.doctree.findall(nodes.section):
@@ -73,6 +87,7 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                     )
 
 
+@check("paradup")
 def find_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
     """Find references that appear more than once in the same paragraph."""
     for para in work.doctree.findall(nodes.paragraph):
@@ -99,7 +114,7 @@ class LintResult:
     fixed: bool
 
 
-def lint_content(content: str, fix: bool) -> LintResult:
+def lint_content(content: str, fix: bool, checks: set[str]) -> LintResult:
     doctree = parse_rst_file(content)
     work = LintWork(
         content_lines=content.splitlines(keepends=True),
@@ -109,8 +124,8 @@ def lint_content(content: str, fix: bool) -> LintResult:
     )
 
     issues = []
-    issues.extend(find_self_links(work))
-    # issues.extend(find_duplicate_refs_in_paragraph(work))
+    for check_name in checks:
+        issues.extend(CHECKS[check_name](work))
 
     result = LintResult(
         content="".join(work.content_lines),
@@ -121,14 +136,14 @@ def lint_content(content: str, fix: bool) -> LintResult:
     return result
 
 
-def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
+def lint_file(filepath: str, fix: bool, checks: set[str]) -> list[LintIssue]:
     """Lint a single RST file.
 
     Returns a list of LintIssue objects.
     """
     path = Path(filepath)
     content = path.read_text()
-    result = lint_content(content, fix)
+    result = lint_content(content, fix, checks)
     if fix and result.fixed:
         path.write_text(result.content)
     return result.issues
@@ -136,20 +151,34 @@ def lint_file(filepath: str, fix: bool) -> list[LintIssue]:
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check",
+        help=f"comma-separated checks to run ({', '.join(CHECKS)}, all)",
+        default="all",
+    )
     parser.add_argument("--fix", help="Fix the issues in place", action="store_true")
     parser.add_argument("files", nargs="+", help="RST files to lint")
     args = parser.parse_args(argv)
 
-    exit_code = 0
+    checks = set(args.check.split(","))
+    unknown = checks - set(CHECKS.keys()) - {"all"}
+    if unknown:
+        print(f"Unknown checks: {', '.join(unknown)}", file=sys.stderr)
+        return 2
+    if "all" in checks:
+        checks = set(CHECKS.keys())
+
+    issues = 0
     for filepath in args.files:
         # This runs Sphinx on each file separately, which seems slow, but is
         # faster than running it once on all the files.
-        for issue in lint_file(filepath, args.fix):
+        for issue in lint_file(filepath, args.fix, checks):
             fixed_suffix = " (fixed)" if issue.fixed else ""
             print(f"{filepath}:{issue.line}: {issue.message}{fixed_suffix}")
-            exit_code = 1
+            issues += 1
 
-    return exit_code
+    print(f"Checked {len(args.files)} file(s), found {issues} issue(s).")
+    return issues > 0
 
 
 if __name__ == "__main__":
