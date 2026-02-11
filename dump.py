@@ -1,3 +1,5 @@
+import sys
+
 from linklint import *
 
 
@@ -24,7 +26,7 @@ def dump_doctree(node: nodes.Node, indent: int = 0) -> None:
             dump_doctree(child, indent + 1)
 
 
-with open("weakref.rst") as f:
+with open(sys.argv[1]) as f:
     tree = parse_rst_file(f.read())
 
 dump_doctree(tree)
