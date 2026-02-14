@@ -5,7 +5,7 @@ from linklint import *
 
 def dump_doctree(node: nodes.Node, indent: int = 0) -> None:
     """Print a nicely formatted tree of a docutils doctree."""
-    prefix = "  " * indent
+    prefix = "    " * indent
     if isinstance(node, nodes.Text):
         text = node.astext()
         # if len(text) > 60:
