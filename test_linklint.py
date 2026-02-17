@@ -124,7 +124,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
         ),
         # Check that overline headers get fixed too.
         LintTestCase(
-            id="header-selflink",
+            id="overline",
             rst="""\
                 ***********************
                 This is :mod:`mymodule`
