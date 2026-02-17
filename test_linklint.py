@@ -254,9 +254,140 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 + :mod:`!encoders` module.  These encoders are actually used by the
             """,
         ),
+        # Fix dotted references
+        LintTestCase(
+            id="dotted",
+            rst="""\
+                :mod:`!html.parser` --- Simple HTML and XHTML parser
+                ====================================================
+
+                .. module:: html.parser
+                   :synopsis: A simple parser that can handle HTML and XHTML.
+
+                --------------
+
+                This module defines a class :class:`HTMLParser` which serves as the basis for
+                parsing text files formatted in HTML (HyperText Mark-up Language) and XHTML.
+
+                .. class:: HTMLParser(*, convert_charrefs=True, scripting=False)
+
+                   Create a parser instance able to parse invalid markup.
+
+                   An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
+                   when start tags, end tags, text, comments, and other markup elements are
+                   encountered.  The user should subclass :class:`.HTMLParser` and override its
+                   methods to implement the desired behavior.
+            """,
+            expected_issues=[
+                LintIssue(
+                    line=9, message="self-link to class 'HTMLParser'", fixed=True
+                ),
+                LintIssue(
+                    line=16, message="self-link to class 'HTMLParser'", fixed=True
+                ),
+                LintIssue(
+                    line=18, message="self-link to class 'HTMLParser'", fixed=True
+                ),
+            ],
+            diff="""\
+                - This module defines a class :class:`HTMLParser` which serves as the basis for
+                + This module defines a class :class:`!HTMLParser` which serves as the basis for
+                -    An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
+                +    An :class:`!HTMLParser` instance is fed HTML data and calls handler methods
+                -    encountered.  The user should subclass :class:`.HTMLParser` and override its
+                +    encountered.  The user should subclass :class:`!HTMLParser` and override its
+            """,
+        ),
+        # Class self-linking.
+        LintTestCase(
+            id="selflink-class",
+            rst="""\
+                Queue
+                =====
+
+                .. class:: Queue(maxsize=0)
+
+                A first in, first out (FIFO) queue.
+
+                .. method:: shutdown(immediate=False)
+
+                    Put a :class:`Queue` instance into a shutdown mode.
+                """,
+            expected_issues=[
+                LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
+            ],
+            diff="""\
+                -     Put a :class:`Queue` instance into a shutdown mode.
+                +     Put a :class:`!Queue` instance into a shutdown mode.
+            """,
+        ),
+        # Some implicit references have no line number?
+        # Optional[Anchor] makes a reference to Anchor with no line number and
+        # we can't fix it anyway.
+        LintTestCase(
+            id="implicit-ref",
+            rst="""\
+                :mod:`!importlib.resources` -- Package resource reading, opening and access
+                ---------------------------------------------------------------------------
+
+                .. module:: importlib.resources
+
+                .. class:: Anchor
+
+                    Represents an anchor for resources, either a :class:`module object
+                    <types.ModuleType>` or a module name as a string. Defined as
+                    ``Union[str, ModuleType]``.
+
+                .. function:: files(anchor: Optional[Anchor] = None)
+
+                    *anchor* is an optional :class:`Anchor`. If the anchor is a
+                    package, resources are resolved from that package. If a module,
+                    resources are resolved adjacent to that module (in the same package
+                    or the package root). If the anchor is omitted, the caller's module
+                    is used.
+                """,
+            expected_issues=[
+                LintIssue(line=14, message="self-link to class 'Anchor'", fixed=True),
+            ],
+            diff="""\
+                -     *anchor* is an optional :class:`Anchor`. If the anchor is a
+                +     *anchor* is an optional :class:`!Anchor`. If the anchor is a
+            """,
+        ),
+        # Some directives had the wrong line number.
+        LintTestCase(
+            id="note",
+            rst="""\
+                ZipFile objects
+                ---------------
+
+                .. class:: ZipFile(file, mode='r', compression=ZIP_STORED, allowZip64=True)
+
+                   Open a ZIP file, where *file* can be a path to a file (a string), a
+                   file-like object or a :term:`path-like object`.
+
+                   .. versionchanged:: 3.2
+                      Added the ability to use :class:`ZipFile` as a context manager.
+                      Also did many other good things.
+
+                   .. note::
+                      Added the ability to use :class:`ZipFile` as a context manager.
+                      Also did many other good things.
+                """,
+            expected_issues=[
+                LintIssue(line=10, message="self-link to class 'ZipFile'", fixed=True),
+                LintIssue(line=14, message="self-link to class 'ZipFile'", fixed=True),
+            ],
+            diff="""\
+                -       Added the ability to use :class:`ZipFile` as a context manager.
+                +       Added the ability to use :class:`!ZipFile` as a context manager.
+                -       Added the ability to use :class:`ZipFile` as a context manager.
+                +       Added the ability to use :class:`!ZipFile` as a context manager.
+            """,
+        ),
     ],
 )
 def test_self_link(rst, expected_issues, diff):
-    result = lint_content(rst, fix=True, checks={"self"})
+    result = lint_content(rst, fix=True, checks={"self", "selfclass"})
     assert result.issues == expected_issues
     assert diff_lines(rst, result.content) == diff

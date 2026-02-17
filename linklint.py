@@ -53,36 +53,57 @@ def check(name: str):
 
 
 @check("self")
-def find_self_links(work: LintWork) -> Iterable[LintIssue]:
+def find_self_modules(work: LintWork) -> Iterable[LintIssue]:
     """Find :mod: references that link to modules declared in the same section."""
+    return find_self_links(work, "module", "mod")
+
+
+@check("selfclass")
+def find_self_classes(work: LintWork) -> Iterable[LintIssue]:
+    """Find :mod: references that link to classes declared in the same section."""
+    return find_self_links(work, "class", "class")
+
+
+def find_self_links(work: LintWork, long: str, short: str) -> Iterable[LintIssue]:
+    """Find references that link to their own section."""
     for section in work.doctree.findall(nodes.section):
-        declared_modules = set()
+        declared_sections = set()
         section_names = set(section.get("names", []))
         for section_id in section.get("ids", []):
             # Explicit targets like `.. _module-foo:` appear in both ids
             # and names; actual `.. module::` directives only appear in ids.
-            if section_id.startswith("module-") and section_id not in section_names:
-                module_name = section_id[7:]
-                declared_modules.add(module_name)
+            if section_id.startswith(f"{long}-") and section_id not in section_names:
+                name = section_id[len(long) + 1 :]
+                declared_sections.add(name)
 
-        if not declared_modules:
+        if not declared_sections:
             continue
 
         for ref in section.findall(pending_xref):
-            if ref.get("reftype") == "mod":
+            if ref.line is None:
+                continue
+            if ref.get("reftype") == short:
                 target = ref.get("reftarget")
-                if target in declared_modules:
+                if target in declared_sections:
                     fixed = False
                     if work.fix:
                         work.fixed = fixed = resub_in_rst_line(
-                            work.content_lines,
-                            ref.line - 1,
-                            rf":mod:`~?{re.escape(target)}`",
-                            rf":mod:`!{ref.astext()}`",
+                            lines=work.content_lines,
+                            line_num=ref.line - 1,
+                            pat=rf":{short}:`[~.]?{re.escape(target)}`",
+                            repl=rf":{short}:`!{ref.astext()}`",
                         )
+                        if not fixed:
+                            print(
+                                f"Line {ref.line}: tried",
+                                repr(rf":{short}:`[~.]?{re.escape(target)}`"),
+                                "to",
+                                repr(rf":{short}:`!{ref.astext()}`"),
+                            )
+                            print(f"Line was: {repr(work.content_lines[ref.line - 1])}")
                     yield LintIssue(
                         ref.line,
-                        f"self-link to module '{target}'",
+                        f"self-link to {long} '{target}'",
                         fixed=fixed,
                     )
 

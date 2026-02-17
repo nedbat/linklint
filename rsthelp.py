@@ -6,7 +6,24 @@ import tempfile
 from pathlib import Path
 
 from docutils import nodes
+from sphinx import addnodes
 from sphinx.application import Sphinx
+
+
+def on_doctree_read(app, doctree):
+    for node in doctree.findall(addnodes.desc):
+        if node.get("domain") == "py":
+            sig = node.children[0]  # desc_signature
+            ntype = node.get("objtype")
+            while node is not None:
+                if isinstance(node, nodes.section):
+                    node.get('ids').append(f"{ntype}-{sig.get('fullname')}")
+                    break
+                node = node.parent
+
+
+def setup(app):
+    app.connect("doctree-read", on_doctree_read)
 
 
 def parse_rst_file(content: str) -> nodes.document:
@@ -17,7 +34,7 @@ def parse_rst_file(content: str) -> nodes.document:
         doctreedir = outdir / ".doctrees"
 
         # Create minimal conf.py
-        (tmppath / "conf.py").write_text("extensions = []\n")
+        (tmppath / "conf.py").write_text("extensions = ['rsthelp']\n")
 
         # Copy the RST file as index.rst
         (tmppath / "index.rst").write_text(content)
