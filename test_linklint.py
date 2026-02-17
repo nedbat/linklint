@@ -385,6 +385,27 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 +       Added the ability to use :class:`!ZipFile` as a context manager.
             """,
         ),
+        # Sometimes there are two to fix in one line.
+        LintTestCase(
+            id="two-in-one-line",
+            rst="""\
+                ZipFile objects
+                ---------------
+
+                .. class:: ZipFile(file, mode='r', compression=ZIP_STORED, allowZip64=True)
+
+                   This is :class:`ZipFile` and also :class:`ZipFile` again.
+                   It's great.
+                """,
+            expected_issues=[
+                LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
+                LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
+            ],
+            diff="""\
+                -    This is :class:`ZipFile` and also :class:`ZipFile` again.
+                +    This is :class:`!ZipFile` and also :class:`!ZipFile` again.
+            """,
+        ),
     ],
 )
 def test_self_link(rst, expected_issues, diff):

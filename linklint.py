@@ -92,6 +92,7 @@ def find_self_links(work: LintWork, long: str, short: str) -> Iterable[LintIssue
                             line_num=ref.line - 1,
                             pat=rf":{short}:`[~.]?{re.escape(target)}`",
                             repl=rf":{short}:`!{ref.astext()}`",
+                            count=1,
                         )
                         if not fixed:
                             print(
