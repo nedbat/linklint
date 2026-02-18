@@ -16,18 +16,13 @@ def diff_lines(text1, text2):
     return min_diff
 
 
-def LintTestCase(*, rst, expected_issues, diff, id=None):
+def LintTestCase(*, rst, issues, diff, id="linklint"):
     """Helper to create pytest parameters for linting tests."""
-    return pytest.param(
-        dedent(rst),
-        expected_issues,
-        dedent(diff),
-        id=id,
-    )
+    return pytest.param(dedent(rst), issues, dedent(diff), id=id)
 
 
 @pytest.mark.parametrize(
-    "rst, expected_issues, diff",
+    "rst, issues, diff",
     [
         # Check a self-link in the module description.
         LintTestCase(
@@ -47,7 +42,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
 
                 This section references :mod:`mymodule` which is fine.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(6, "self-link to module 'mymodule'", fixed=True),
             ],
             diff="""\
@@ -78,7 +73,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
 
                 This section references :mod:`mymodule` which is fine.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(11, "self-link to module 'mymodule'", fixed=True),
             ],
             diff="""\
@@ -98,7 +93,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 Xyzzy is a magical word that does nothing in particular.
                 See :mod:`xyzzy` for more info.
                 """,
-            expected_issues=[],
+            issues=[],
             diff="",
         ),
         # Check that headers get fixed too.
@@ -112,7 +107,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
 
                 This is a great module!
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(1, "self-link to module 'mymodule'", fixed=True),
             ],
             diff="""\
@@ -138,7 +133,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
 
                     Maybe it's not so great after all.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(2, "self-link to module 'mymodule'", fixed=True),
             ],
             diff="""\
@@ -163,7 +158,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                   And continues with :mod:`mymodule` here.
                 - Second item.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(7, "self-link to module 'mymodule'", fixed=True),
             ],
             diff="""\
@@ -201,7 +196,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 the database file. However, :mod:`dbm.sqlite3`, :mod:`dbm.gnu` and :mod:`dbm.dumb`
                 provide a :meth:`!reorganize` method that can be used for this purpose.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
                 LintIssue(line=11, message="self-link to module 'dbm'", fixed=True),
             ],
@@ -233,7 +228,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                 :class:`~email.mime.audio.MIMEAudio` and :class:`~email.mime.image.MIMEImage`
                 class constructors to provide default encodings.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(
                     line=1,
                     message="self-link to module 'email.encoders'",
@@ -278,7 +273,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                    encountered.  The user should subclass :class:`.HTMLParser` and override its
                    methods to implement the desired behavior.
             """,
-            expected_issues=[
+            issues=[
                 LintIssue(
                     line=9, message="self-link to class 'HTMLParser'", fixed=True
                 ),
@@ -313,7 +308,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
 
                     Put a :class:`Queue` instance into a shutdown mode.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
             ],
             diff="""\
@@ -346,7 +341,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                     or the package root). If the anchor is omitted, the caller's module
                     is used.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(line=14, message="self-link to class 'Anchor'", fixed=True),
             ],
             diff="""\
@@ -374,7 +369,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                       Added the ability to use :class:`ZipFile` as a context manager.
                       Also did many other good things.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(line=10, message="self-link to class 'ZipFile'", fixed=True),
                 LintIssue(line=14, message="self-link to class 'ZipFile'", fixed=True),
             ],
@@ -397,7 +392,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
                    This is :class:`ZipFile` and also :class:`ZipFile` again.
                    It's great.
                 """,
-            expected_issues=[
+            issues=[
                 LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
                 LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
             ],
@@ -408,7 +403,7 @@ def LintTestCase(*, rst, expected_issues, diff, id=None):
         ),
     ],
 )
-def test_self_link(rst, expected_issues, diff):
+def test_self_link(rst, issues, diff):
     result = lint_content(rst, fix=True, checks={"self", "selfclass"})
-    assert result.issues == expected_issues
+    assert result.issues == issues
     assert diff_lines(rst, result.content) == diff
