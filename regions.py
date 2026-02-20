@@ -47,11 +47,7 @@ class RegionFinder:
                 name = child0.get("fullname")
                 start = child0.line
 
-        last_line = None
-        if hasattr(node, "get"):
-            last_line = node.get("line")  # type: ignore
-        if last_line is None:
-            last_line = getattr(node, "line", None)
+        last_line = getattr(node, "line", None)
         if last_line is not None:
             self.last_line = last_line + node.astext().count("\n")
 
