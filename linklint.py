@@ -198,6 +198,18 @@ def lint_file(filepath: str, fix: bool, checks: set[str]) -> list[LintIssue]:
     return result.issues
 
 
+def plural(n: int, thing: str = "", things: str = "") -> str:
+    """Pluralize a word.
+
+    If n is 1, return thing.  Otherwise return things, or thing+s.
+    """
+    if n == 1:
+        noun = thing
+    else:
+        noun = things or (thing + "s")
+    return f"{n} {noun}"
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -218,15 +230,23 @@ def main(argv: list[str]) -> int:
         checks = set(CHECKS.keys())
 
     issues = 0
+    fixed = 0
     for filepath in args.files:
         # This runs Sphinx on each file separately, which seems slow, but is
         # faster than running it once on all the files.
         for issue in lint_file(filepath, args.fix, checks):
-            fixed_suffix = " (fixed)" if issue.fixed else ""
+            fixed_suffix = ""
+            if issue.fixed:
+                fixed_suffix = " (fixed)"
+                fixed += 1
             print(f"{filepath}:{issue.line}: {issue.message}{fixed_suffix}")
             issues += 1
 
-    print(f"Checked {len(args.files)} file(s), found {issues} issue(s).")
+    summary = f"Checked {plural(len(args.files), 'file')}, found {plural(issues, 'issue')}"
+    if args.fix:
+        summary += f", fixed {fixed}"
+    print(f"{summary}.")
+
     return issues > 0
 
 
