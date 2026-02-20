@@ -21,13 +21,11 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
     return pytest.param(dedent(rst), issues, dedent(diff), id=id)
 
 
-@pytest.mark.parametrize(
-    "rst, issues, diff",
-    [
-        # Check a self-link in the module description.
-        LintTestCase(
-            id="selflink",
-            rst="""\
+TEST_CASES = [
+    # Check a self-link in the module description.
+    LintTestCase(
+        id="selflink",
+        rst="""\
                 My Module
                 =========
 
@@ -42,18 +40,18 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
 
                 This section references :mod:`mymodule` which is fine.
                 """,
-            issues=[
-                LintIssue(6, "self-link to module 'mymodule'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(6, "self-link to module 'mymodule'", fixed=True),
+        ],
+        diff="""\
                 - This is the :mod:`mymodule` documentation.
                 + This is the :mod:`!mymodule` documentation.
             """,
-        ),
-        # Is the line-munging correct?
-        LintTestCase(
-            id="second-section",
-            rst="""\
+    ),
+    # Is the line-munging correct?
+    LintTestCase(
+        id="second-section",
+        rst="""\
                 Another
                 =======
 
@@ -73,18 +71,18 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
 
                 This section references :mod:`mymodule` which is fine.
                 """,
-            issues=[
-                LintIssue(11, "self-link to module 'mymodule'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(11, "self-link to module 'mymodule'", fixed=True),
+        ],
+        diff="""\
                 - This is the :mod:`mymodule` documentation.
                 + This is the :mod:`!mymodule` documentation.
             """,
-        ),
-        # Check that `.. _module-foo` isn't confused for a module section.
-        LintTestCase(
-            id="module-target",
-            rst="""\
+    ),
+    # Check that `.. _module-foo` isn't confused for a module section.
+    LintTestCase(
+        id="module-target",
+        rst="""\
                 .. _module-xyzzy:
 
                 About Xyzzy
@@ -93,13 +91,13 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 Xyzzy is a magical word that does nothing in particular.
                 See :mod:`xyzzy` for more info.
                 """,
-            issues=[],
-            diff="",
-        ),
-        # Check that headers get fixed too.
-        LintTestCase(
-            id="header-selflink",
-            rst="""\
+        issues=[],
+        diff="",
+    ),
+    # Check that headers get fixed too.
+    LintTestCase(
+        id="header-selflink",
+        rst="""\
                 :mod:`mymodule` Module
                 ======================
 
@@ -107,20 +105,20 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
 
                 This is a great module!
                 """,
-            issues=[
-                LintIssue(1, "self-link to module 'mymodule'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(1, "self-link to module 'mymodule'", fixed=True),
+        ],
+        diff="""\
                 - :mod:`mymodule` Module
                 + :mod:`!mymodule` Module
                 - ======================
                 + =======================
             """,
-        ),
-        # Check that overline headers get fixed too.
-        LintTestCase(
-            id="overline",
-            rst="""\
+    ),
+    # Check that overline headers get fixed too.
+    LintTestCase(
+        id="overline",
+        rst="""\
                 ***********************
                 This is :mod:`mymodule`
                 ***********************
@@ -133,10 +131,10 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
 
                     Maybe it's not so great after all.
                 """,
-            issues=[
-                LintIssue(2, "self-link to module 'mymodule'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(2, "self-link to module 'mymodule'", fixed=True),
+        ],
+        diff="""\
                 - ***********************
                 + ************************
                 - This is :mod:`mymodule`
@@ -144,11 +142,11 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 - ***********************
                 + ************************
             """,
-        ),
-        # Self-link on a continuation line inside a list item.
-        LintTestCase(
-            id="continuation-line",
-            rst="""\
+    ),
+    # Self-link on a continuation line inside a list item.
+    LintTestCase(
+        id="continuation-line",
+        rst="""\
                 My Module
                 =========
 
@@ -158,18 +156,18 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                   And continues with :mod:`mymodule` here.
                 - Second item.
                 """,
-            issues=[
-                LintIssue(7, "self-link to module 'mymodule'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(7, "self-link to module 'mymodule'", fixed=True),
+        ],
+        diff="""\
                 -   And continues with :mod:`mymodule` here.
                 +   And continues with :mod:`!mymodule` here.
             """,
-        ),
-        # Don't get confused about sub-modules.
-        LintTestCase(
-            id="submodule",
-            rst="""\
+    ),
+    # Don't get confused about sub-modules.
+    LintTestCase(
+        id="submodule",
+        rst="""\
                 :mod:`dbm` --- Interfaces to Unix "databases"
                 =============================================
 
@@ -196,11 +194,11 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 the database file. However, :mod:`dbm.sqlite3`, :mod:`dbm.gnu` and :mod:`dbm.dumb`
                 provide a :meth:`!reorganize` method that can be used for this purpose.
                 """,
-            issues=[
-                LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
-                LintIssue(line=11, message="self-link to module 'dbm'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
+            LintIssue(line=11, message="self-link to module 'dbm'", fixed=True),
+        ],
+        diff="""\
                 - :mod:`dbm` --- Interfaces to Unix "databases"
                 + :mod:`!dbm` --- Interfaces to Unix "databases"
                 - =============================================
@@ -208,11 +206,11 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 - :mod:`dbm` is a generic interface to variants of the DBM database:
                 + :mod:`!dbm` is a generic interface to variants of the DBM database:
             """,
-        ),
-        # Fix ~ references if needed.
-        LintTestCase(
-            id="tilde",
-            rst="""\
+    ),
+    # Fix ~ references if needed.
+    LintTestCase(
+        id="tilde",
+        rst="""\
                 :mod:`email.encoders`: Encoders
                 ----------------------------------
 
@@ -228,19 +226,19 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 :class:`~email.mime.audio.MIMEAudio` and :class:`~email.mime.image.MIMEImage`
                 class constructors to provide default encodings.
                 """,
-            issues=[
-                LintIssue(
-                    line=1,
-                    message="self-link to module 'email.encoders'",
-                    fixed=True,
-                ),
-                LintIssue(
-                    line=12,
-                    message="self-link to module 'email.encoders'",
-                    fixed=True,
-                ),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(
+                line=1,
+                message="self-link to module 'email.encoders'",
+                fixed=True,
+            ),
+            LintIssue(
+                line=12,
+                message="self-link to module 'email.encoders'",
+                fixed=True,
+            ),
+        ],
+        diff="""\
                 - :mod:`email.encoders`: Encoders
                 + :mod:`!email.encoders`: Encoders
                 - ----------------------------------
@@ -248,11 +246,11 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 - :mod:`~email.encoders` module.  These encoders are actually used by the
                 + :mod:`!email.encoders` module.  These encoders are actually used by the
             """,
-        ),
-        # Fix dotted references
-        LintTestCase(
-            id="dotted",
-            rst="""\
+    ),
+    # Fix dotted references
+    LintTestCase(
+        id="dotted",
+        rst="""\
                 :mod:`!html.parser` --- Simple HTML and XHTML parser
                 ====================================================
 
@@ -273,21 +271,21 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                    encountered.  The user should subclass :class:`.HTMLParser` and override its
                    methods to implement the desired behavior.
             """,
-            issues=[
-                LintIssue(line=16, message="self-link to class 'HTMLParser'", fixed=True),
-                LintIssue(line=18, message="self-link to class 'HTMLParser'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(line=16, message="self-link to class 'HTMLParser'", fixed=True),
+            LintIssue(line=18, message="self-link to class 'HTMLParser'", fixed=True),
+        ],
+        diff="""\
                 -    An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
                 +    An :class:`!HTMLParser` instance is fed HTML data and calls handler methods
                 -    encountered.  The user should subclass :class:`.HTMLParser` and override its
                 +    encountered.  The user should subclass :class:`!HTMLParser` and override its
             """,
-        ),
-        # Class self-linking.
-        LintTestCase(
-            id="selflink-class",
-            rst="""\
+    ),
+    # Class self-linking.
+    LintTestCase(
+        id="selflink-class",
+        rst="""\
                 Queue
                 =====
 
@@ -299,20 +297,20 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
 
                       Put a :class:`Queue` instance into a shutdown mode.
                 """,
-            issues=[
-                LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
+        ],
+        diff="""\
                 -       Put a :class:`Queue` instance into a shutdown mode.
                 +       Put a :class:`!Queue` instance into a shutdown mode.
             """,
-        ),
-        # Some implicit references have no line number?
-        # Optional[Anchor] makes a reference to Anchor with no line number and
-        # we can't fix it anyway.
-        LintTestCase(
-            id="implicit-ref",
-            rst="""\
+    ),
+    # Some implicit references have no line number?
+    # Optional[Anchor] makes a reference to Anchor with no line number and
+    # we can't fix it anyway.
+    LintTestCase(
+        id="implicit-ref",
+        rst="""\
                 :mod:`!importlib.resources` -- Package resource reading, opening and access
                 ---------------------------------------------------------------------------
 
@@ -332,13 +330,13 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                     or the package root). If the anchor is omitted, the caller's module
                     is used.
                 """,
-            issues=[],
-            diff="",
-        ),
-        # Some directives had the wrong line number.
-        LintTestCase(
-            id="note",
-            rst="""\
+        issues=[],
+        diff="",
+    ),
+    # Some directives had the wrong line number.
+    LintTestCase(
+        id="note",
+        rst="""\
                 ZipFile objects
                 ---------------
 
@@ -355,21 +353,21 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                       Added the ability to use :class:`ZipFile` as a context manager.
                       Also did many other good things.
                 """,
-            issues=[
-                LintIssue(line=10, message="self-link to class 'ZipFile'", fixed=True),
-                LintIssue(line=14, message="self-link to class 'ZipFile'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(line=10, message="self-link to class 'ZipFile'", fixed=True),
+            LintIssue(line=14, message="self-link to class 'ZipFile'", fixed=True),
+        ],
+        diff="""\
                 -       Added the ability to use :class:`ZipFile` as a context manager.
                 +       Added the ability to use :class:`!ZipFile` as a context manager.
                 -       Added the ability to use :class:`ZipFile` as a context manager.
                 +       Added the ability to use :class:`!ZipFile` as a context manager.
             """,
-        ),
-        # Sometimes there are two to fix in one line.
-        LintTestCase(
-            id="two-in-one-line",
-            rst="""\
+    ),
+    # Sometimes there are two to fix in one line.
+    LintTestCase(
+        id="two-in-one-line",
+        rst="""\
                 ZipFile objects
                 ---------------
 
@@ -378,20 +376,20 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                    This is :class:`ZipFile` and also :class:`ZipFile` again.
                    It's great.
                 """,
-            issues=[
-                LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
-                LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
-            ],
-            diff="""\
+        issues=[
+            LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
+            LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
+        ],
+        diff="""\
                 -    This is :class:`ZipFile` and also :class:`ZipFile` again.
                 +    This is :class:`!ZipFile` and also :class:`!ZipFile` again.
             """,
-        ),
-        # References can be in a section, but still be forward references, so
-        # they aren't linking to the section you are already reading.
-        LintTestCase(
-            id="case-sensitive",
-            rst="""\
+    ),
+    # References can be in a section, but still be forward references, so
+    # they aren't linking to the section you are already reading.
+    LintTestCase(
+        id="case-sensitive",
+        rst="""\
                 :mod:`!uuid` --- UUID objects according to :rfc:`9562`
                 ======================================================
 
@@ -407,11 +405,13 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
 
                    Create a UUID from either a string of 32 hexadecimal digits, a string of 16
                 """,
-            issues=[],
-            diff="",
-        ),
-    ],
-)
+        issues=[],
+        diff="",
+    ),
+]
+
+
+@pytest.mark.parametrize("rst, issues, diff", TEST_CASES)
 def test_self_link(rst, issues, diff):
     result = lint_content(rst, fix=True, checks={"self"})
     assert result.issues == issues
