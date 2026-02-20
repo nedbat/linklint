@@ -1,5 +1,4 @@
 # This file is for unifying the coding style for different editors and IDEs.
-# It is not reqired for a project, but can be very helpful.
 # More information at http://EditorConfig.org
 
 root = true
@@ -12,6 +11,12 @@ indent_style = space
 insert_final_newline = true
 max_line_length = 80
 trim_trailing_whitespace = true
+
+[*.py]
+max_line_length = 120
+
+[*.yml]
+indent_size = 2
 
 [*.rst]
 max_line_length = 79
