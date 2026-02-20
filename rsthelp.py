@@ -6,24 +6,7 @@ import tempfile
 from pathlib import Path
 
 from docutils import nodes
-from sphinx import addnodes
 from sphinx.application import Sphinx
-
-
-def on_doctree_read(app, doctree):
-    for node in doctree.findall(addnodes.desc):
-        if node.get("domain") == "py":
-            sig = node.children[0]  # desc_signature
-            ntype = node.get("objtype")
-            while node is not None:
-                if isinstance(node, nodes.section):
-                    node.get('ids').append(f"{ntype}-{sig.get('fullname')}")
-                    break
-                node = node.parent
-
-
-def setup(app):
-    app.connect("doctree-read", on_doctree_read)
 
 
 def parse_rst_file(content: str) -> nodes.document:
@@ -34,7 +17,7 @@ def parse_rst_file(content: str) -> nodes.document:
         doctreedir = outdir / ".doctrees"
 
         # Create minimal conf.py
-        (tmppath / "conf.py").write_text("extensions = ['rsthelp']\n")
+        (tmppath / "conf.py").write_text("extensions = []\n")
 
         # Copy the RST file as index.rst
         (tmppath / "index.rst").write_text(content)
@@ -74,20 +57,15 @@ def fix_node_lines(doctree: nodes.document) -> None:
         for node in block.findall():
             if node is block:
                 continue
+            node.line = block.line + newline_count
             if isinstance(node, nodes.Text):
                 newline_count += str(node).count("\n")
-            else:
-                node.line = block.line + newline_count
 
 
 def is_header_line(line: str, text_line: str) -> bool:
     """Check if a line is a header underline/overline for `text_line`."""
     stripped = line.rstrip()
-    return (
-        len(stripped) >= len(text_line.rstrip())
-        and len(set(stripped)) == 1
-        and stripped[0] in string.punctuation
-    )
+    return len(stripped) >= len(text_line.rstrip()) and len(set(stripped)) == 1 and stripped[0] in string.punctuation
 
 
 def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
@@ -99,9 +77,7 @@ def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
         if adj_line_num in range(len(lines)):
             adj_line = lines[adj_line_num]
             if is_header_line(adj_line, old_line):
-                lines[adj_line_num] = (
-                    adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
-                )
+                lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
 
 
 def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str, count=0) -> bool:

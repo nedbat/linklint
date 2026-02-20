@@ -246,7 +246,7 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 - ----------------------------------
                 + --------------------------------
                 - :mod:`~email.encoders` module.  These encoders are actually used by the
-                + :mod:`!encoders` module.  These encoders are actually used by the
+                + :mod:`!email.encoders` module.  These encoders are actually used by the
             """,
         ),
         # Fix dotted references
@@ -274,19 +274,10 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                    methods to implement the desired behavior.
             """,
             issues=[
-                LintIssue(
-                    line=9, message="self-link to class 'HTMLParser'", fixed=True
-                ),
-                LintIssue(
-                    line=16, message="self-link to class 'HTMLParser'", fixed=True
-                ),
-                LintIssue(
-                    line=18, message="self-link to class 'HTMLParser'", fixed=True
-                ),
+                LintIssue(line=16, message="self-link to class 'HTMLParser'", fixed=True),
+                LintIssue(line=18, message="self-link to class 'HTMLParser'", fixed=True),
             ],
             diff="""\
-                - This module defines a class :class:`HTMLParser` which serves as the basis for
-                + This module defines a class :class:`!HTMLParser` which serves as the basis for
                 -    An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
                 +    An :class:`!HTMLParser` instance is fed HTML data and calls handler methods
                 -    encountered.  The user should subclass :class:`.HTMLParser` and override its
@@ -302,18 +293,18 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
 
                 .. class:: Queue(maxsize=0)
 
-                A first in, first out (FIFO) queue.
+                   A first in, first out (FIFO) queue.
 
-                .. method:: shutdown(immediate=False)
+                   .. method:: shutdown(immediate=False)
 
-                    Put a :class:`Queue` instance into a shutdown mode.
+                      Put a :class:`Queue` instance into a shutdown mode.
                 """,
             issues=[
                 LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
             ],
             diff="""\
-                -     Put a :class:`Queue` instance into a shutdown mode.
-                +     Put a :class:`!Queue` instance into a shutdown mode.
+                -       Put a :class:`Queue` instance into a shutdown mode.
+                +       Put a :class:`!Queue` instance into a shutdown mode.
             """,
         ),
         # Some implicit references have no line number?
@@ -341,13 +332,8 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                     or the package root). If the anchor is omitted, the caller's module
                     is used.
                 """,
-            issues=[
-                LintIssue(line=14, message="self-link to class 'Anchor'", fixed=True),
-            ],
-            diff="""\
-                -     *anchor* is an optional :class:`Anchor`. If the anchor is a
-                +     *anchor* is an optional :class:`!Anchor`. If the anchor is a
-            """,
+            issues=[],
+            diff="",
         ),
         # Some directives had the wrong line number.
         LintTestCase(
@@ -401,9 +387,32 @@ def LintTestCase(*, rst, issues, diff, id="linklint"):
                 +    This is :class:`!ZipFile` and also :class:`!ZipFile` again.
             """,
         ),
+        # References can be in a section, but still be forward references, so
+        # they aren't linking to the section you are already reading.
+        LintTestCase(
+            id="case-sensitive",
+            rst="""\
+                :mod:`!uuid` --- UUID objects according to :rfc:`9562`
+                ======================================================
+
+                .. module:: uuid
+
+                This module provides immutable :class:`UUID` objects (the :class:`UUID` class)
+                and :ref:`functions <uuid-factory-functions>` for generating UUIDs corresponding
+                to a specific UUID version as specified in :rfc:`9562` (which supersedes :rfc:`4122`),
+                for example, :func:`uuid1` for UUID version 1, :func:`uuid3` for UUID version 3, and so on.
+                Note that UUID version 2 is deliberately omitted as it is outside the scope of the RFC.
+
+                .. class:: UUID(hex=None, bytes=None, bytes_le=None, fields=None, int=None, version=None, *, is_safe=SafeUUID.unknown)
+
+                   Create a UUID from either a string of 32 hexadecimal digits, a string of 16
+                """,
+            issues=[],
+            diff="",
+        ),
     ],
 )
 def test_self_link(rst, issues, diff):
-    result = lint_content(rst, fix=True, checks={"self", "selfclass"})
+    result = lint_content(rst, fix=True, checks={"self"})
     assert result.issues == issues
     assert diff_lines(rst, result.content) == diff

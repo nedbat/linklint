@@ -11,6 +11,7 @@
 # ///
 
 import argparse
+import collections
 import re
 import sys
 from collections import defaultdict
@@ -19,9 +20,48 @@ from pathlib import Path
 from typing import Iterable
 
 from docutils import nodes
-from sphinx.addnodes import pending_xref
+from sphinx import addnodes
 
+from regions import Region, find_regions
 from rsthelp import parse_rst_file, resub_in_rst_line
+
+
+class Resolver:
+    # Build a map from reference roles to object types.
+
+    ObjType = lambda _, *refs: refs  # noqa: E731
+    _ = lambda s: 0  # noqa: E731
+
+    # object_types map from sphinx
+    # sphinx/sphinx/domains/python/__init__.py:725
+    object_types = {
+        "function": ObjType(_("function"), "func", "obj"),
+        "data": ObjType(_("data"), "data", "obj"),
+        "class": ObjType(_("class"), "class", "exc", "obj"),
+        "exception": ObjType(_("exception"), "exc", "class", "obj"),
+        "method": ObjType(_("method"), "meth", "obj"),
+        "classmethod": ObjType(_("class method"), "meth", "obj"),
+        "staticmethod": ObjType(_("static method"), "meth", "obj"),
+        "attribute": ObjType(_("attribute"), "attr", "obj"),
+        "property": ObjType(_("property"), "attr", "_prop", "obj"),
+        "type": ObjType(_("type alias"), "type", "class", "obj"),
+        "module": ObjType(_("module"), "mod", "obj"),
+    }
+
+    reftype_to_objtype = collections.defaultdict(list)
+    for objtype, names in object_types.items():
+        for name in names:
+            reftype_to_objtype[name].append(objtype)
+
+    def __init__(self, doctree: nodes.document) -> None:
+        self.region_map = {(r.kind, r.name): r for r in find_regions(doctree)}
+
+    def find_region(self, reftype: str, target: str) -> Region | None:
+        for objtype in self.reftype_to_objtype[reftype]:
+            region = self.region_map.get((objtype, target))
+            if region is not None:
+                return region
+        return None
 
 
 @dataclass
@@ -35,6 +75,7 @@ class LintIssue:
 class LintWork:
     doctree: nodes.document
     content_lines: list[str]
+    resolver: Resolver
     fix: bool
     fixed: bool
 
@@ -52,61 +93,46 @@ def check(name: str):
     return decorator
 
 
-@check("self")
 def find_self_modules(work: LintWork) -> Iterable[LintIssue]:
     """Find :mod: references that link to modules declared in the same section."""
     return find_self_links(work, "module", "mod")
 
 
-@check("selfclass")
-def find_self_classes(work: LintWork) -> Iterable[LintIssue]:
-    """Find :mod: references that link to classes declared in the same section."""
-    return find_self_links(work, "class", "class")
-
-
-def find_self_links(work: LintWork, long: str, short: str) -> Iterable[LintIssue]:
-    """Find references that link to their own section."""
-    for section in work.doctree.findall(nodes.section):
-        declared_sections = set()
-        section_names = set(section.get("names", []))
-        for section_id in section.get("ids", []):
-            # Explicit targets like `.. _module-foo:` appear in both ids
-            # and names; actual `.. module::` directives only appear in ids.
-            if section_id.startswith(f"{long}-") and section_id not in section_names:
-                name = section_id[len(long) + 1 :]
-                declared_sections.add(name)
-
-        if not declared_sections:
+@check("self")
+def find_self_links(work: LintWork) -> Iterable[LintIssue]:
+    for ref in work.doctree.findall(addnodes.pending_xref):
+        if ref.line is None:
+            continue
+        reftype = ref.get("reftype")
+        target = ref.get("reftarget")
+        region = work.resolver.find_region(reftype, target)
+        if region is None:
             continue
 
-        for ref in section.findall(pending_xref):
-            if ref.line is None:
-                continue
-            if ref.get("reftype") == short:
-                target = ref.get("reftarget")
-                if target in declared_sections:
-                    fixed = False
-                    if work.fix:
-                        work.fixed = fixed = resub_in_rst_line(
-                            lines=work.content_lines,
-                            line_num=ref.line - 1,
-                            pat=rf":{short}:`[~.]?{re.escape(target)}`",
-                            repl=rf":{short}:`!{ref.astext()}`",
-                            count=1,
-                        )
-                        if not fixed:
-                            print(
-                                f"Line {ref.line}: tried",
-                                repr(rf":{short}:`[~.]?{re.escape(target)}`"),
-                                "to",
-                                repr(rf":{short}:`!{ref.astext()}`"),
-                            )
-                            print(f"Line was: {repr(work.content_lines[ref.line - 1])}")
-                    yield LintIssue(
-                        ref.line,
-                        f"self-link to {long} '{target}'",
-                        fixed=fixed,
-                    )
+        start = region.start
+        # It might be that we sometimes want end_main, or we want it to be
+        # configurable, or something?
+        end = region.end_total
+        if start <= ref.line <= end:
+            fixed = False
+            if work.fix:
+                pat = rf":{reftype}:`[~.]?{re.escape(target)}`"
+                repl = rf":{reftype}:`!{target}`"
+                work.fixed = fixed = resub_in_rst_line(
+                    lines=work.content_lines,
+                    line_num=ref.line - 1,
+                    pat=pat,
+                    repl=repl,
+                    count=1,
+                )
+                if not fixed:
+                    print(f"Line {ref.line}: tried {pat!r} to {repl!r}")
+                    print(f"Line was: {work.content_lines[ref.line - 1]!r}")
+            yield LintIssue(
+                ref.line,
+                f"self-link to {region.kind} '{target}'",
+                fixed=fixed,
+            )
 
 
 @check("paradup")
@@ -114,7 +140,7 @@ def find_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
     """Find references that appear more than once in the same paragraph."""
     for para in work.doctree.findall(nodes.paragraph):
         refs_by_target = defaultdict(list)
-        for ref in para.findall(pending_xref):
+        for ref in para.findall(addnodes.pending_xref):
             reftype = ref.get("reftype")
             target = ref.get("reftarget")
             if reftype and target:
@@ -141,6 +167,7 @@ def lint_content(content: str, fix: bool, checks: set[str]) -> LintResult:
     work = LintWork(
         content_lines=content.splitlines(keepends=True),
         doctree=doctree,
+        resolver=Resolver(doctree),
         fix=fix,
         fixed=False,
     )
