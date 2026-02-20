@@ -93,11 +93,6 @@ def check(name: str):
     return decorator
 
 
-def find_self_modules(work: LintWork) -> Iterable[LintIssue]:
-    """Find :mod: references that link to modules declared in the same section."""
-    return find_self_links(work, "module", "mod")
-
-
 @check("self")
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
     for ref in work.doctree.findall(addnodes.pending_xref):
