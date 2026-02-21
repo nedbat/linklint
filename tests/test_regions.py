@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from regions import Region, find_regions
-from rsthelp import parse_rst_file
+from linklint.regions import Region, find_regions
+from linklint.rsthelp import parse_rst_file
 
 
 def RegionTestCase(*, rst: str, regions: list[Region], id:str = ""):
@@ -15,7 +15,7 @@ def RegionTestCase(*, rst: str, regions: list[Region], id:str = ""):
         # It's a file name
         assert not id
         id = rst
-        rst = (Path(__file__).parent / rst).read_text()
+        rst = (Path(__file__).parent / "data" / rst).read_text()
     if not id:
         id = "region"
     return pytest.param(rst, regions, id=id)

@@ -9,7 +9,7 @@ from pathlib import Path
 from docutils import nodes
 from sphinx.application import Sphinx
 
-import dump
+from linklint import dump
 
 
 def test_slug() -> str:

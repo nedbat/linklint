@@ -3,7 +3,7 @@ from typing import TextIO
 
 from docutils import nodes
 
-import linklint
+from linklint import linklint
 
 INTERESTING_ATTRS = [
     "ids",

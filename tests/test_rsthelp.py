@@ -1,4 +1,4 @@
-from rsthelp import is_header_line
+from linklint.rsthelp import is_header_line
 
 import pytest
 

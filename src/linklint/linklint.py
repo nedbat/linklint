@@ -1,15 +1,5 @@
 """Linter to find link problems in RST files."""
 
-# Run with:
-#   uv run linklint.py **/*.rst
-
-# /// script
-# requires-python = ">=3.11"
-# dependencies = [
-#   "Sphinx",
-# ]
-# ///
-
 import argparse
 import collections
 import re
@@ -22,8 +12,8 @@ from typing import Iterable
 from docutils import nodes
 from sphinx import addnodes
 
-from regions import Region, find_regions
-from rsthelp import parse_rst_file, resub_in_rst_line
+from linklint.regions import Region, find_regions
+from linklint.rsthelp import parse_rst_file, resub_in_rst_line
 
 
 class Resolver:
@@ -185,7 +175,7 @@ def lint_file(filepath: str, fix: bool, checks: set[str]) -> list[LintIssue]:
 
     Returns a list of LintIssue objects.
     """
-    #print(filepath)
+    # print(filepath)
     path = Path(filepath)
     content = path.read_text()
     result = lint_content(content, fix, checks)
@@ -206,7 +196,7 @@ def plural(n: int, thing: str = "", things: str = "") -> str:
     return f"{n} {noun}"
 
 
-def main(argv: list[str]) -> int:
+def linklint(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--check",
@@ -246,5 +236,5 @@ def main(argv: list[str]) -> int:
     return issues > 0
 
 
-if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+def main():
+    sys.exit(linklint(sys.argv[1:]))

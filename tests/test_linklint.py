@@ -3,7 +3,7 @@ from textwrap import dedent
 
 import pytest
 
-from linklint import LintIssue, lint_content
+from linklint.linklint import LintIssue, lint_content
 
 
 def diff_lines(text1, text2):
