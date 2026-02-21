@@ -451,13 +451,32 @@ TEST_CASES = [
                <dir_fd>` and :ref:`not following symlinks <follow_symlinks>`.  Note however
                that, unlike other functions, the :func:`fwalk` default value for
                *follow_symlinks* is ``False``.
+
+               This function always supports :ref:`paths relative to directory descriptors
+               <dir_fd>`.  Note however that the :func:`fwalk` default value for
+               *follow_symlinks* is ``False``.
+
+            .. function:: expm1(x)
+
+               Return *e* raised to the power *x*, minus 1.  Here *e* is the base of natural
+               logarithms.  For small floats *x*, the subtraction in ``exp(x) - 1``
+               can result in a `significant loss of precision
+               <https://en.wikipedia.org/wiki/Loss_of_significance>`_; the :func:`expm1`
+               function provides a way to compute this quantity to full precision.
+
             """,
         issues=[
             LintIssue(line=5, message="self-link to function 'fwalk'", fixed=True),
+            LintIssue(line=9, message="self-link to function 'fwalk'", fixed=True),
+            LintIssue(line=17, message="self-link to function 'expm1'", fixed=True),
         ],
         diff="""\
             -    that, unlike other functions, the :func:`fwalk` default value for
             +    that, unlike other functions, the :func:`!fwalk` default value for
+            -    <dir_fd>`.  Note however that the :func:`fwalk` default value for
+            +    <dir_fd>`.  Note however that the :func:`!fwalk` default value for
+            -    <https://en.wikipedia.org/wiki/Loss_of_significance>`_; the :func:`expm1`
+            +    <https://en.wikipedia.org/wiki/Loss_of_significance>`_; the :func:`!expm1`
             """,
     ),
 ]
