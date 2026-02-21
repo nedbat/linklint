@@ -85,6 +85,21 @@ def check(name: str):
     return decorator
 
 
+# pat/repl pairs for references styles.
+REF_FIXES = [
+    (
+        # :class:`MyClass` -> :class:`!MyClass`
+        r":{reftype}:`[~.]?{target}`",
+        r":{reftype}:`!{target}`",
+    ),
+    (
+        # :class:`Some Class <mymodule.MyClass>` -> :class:`!Some Class`
+        r":{reftype}:`([^<]+?)\s*<{target}>`",
+        r":{reftype}:`!\1`",
+    ),
+]
+
+
 @check("self")
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
     for ref in work.doctree.findall(addnodes.pending_xref):
@@ -103,19 +118,20 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
         if start <= ref.line <= end:
             fixed = False
             if work.fix:
-                pat = rf":{reftype}:`[~.]?{re.escape(target)}`"
-                repl = rf":{reftype}:`!{target}`"
-                fixed = resub_in_rst_line(
-                    lines=work.content_lines,
-                    line_num=ref.line - 1,
-                    pat=pat,
-                    repl=repl,
-                    count=1,
-                )
-                if not fixed:
-                    print(f"Line {ref.line}: tried {pat!r} to {repl!r}")
-                    print(f"Line was: {work.content_lines[ref.line - 1]!r}")
+                for pat, repl in REF_FIXES:
+                    fixed = resub_in_rst_line(
+                        lines=work.content_lines,
+                        line_num=ref.line - 1,
+                        pat=pat.format(reftype=reftype, target=re.escape(target)),
+                        repl=repl.format(reftype=reftype, target=target),
+                        count=1,
+                    )
+                    if fixed:
+                        break
                 work.fixed |= fixed
+                if not fixed:
+                    print(f"Line {ref.line}: Couldn't fix self-link to {region.kind} '{target}'")
+                    print(f"Line was: {work.content_lines[ref.line - 1]!r}")
             yield LintIssue(
                 ref.line,
                 f"self-link to {region.kind} '{target}'",
