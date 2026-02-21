@@ -36,16 +36,15 @@ class RegionFinder:
                 for section_id in node.get("ids", []):
                     if section_id.startswith("module-") and section_id not in section_names:
                         kind = "module"
-                        name = section_id[len("module-") :]
                         assert node.line is not None
-                        start = node.line - 1
+                        name_starts = [(section_id[len("module-") :], node.line - 1)]
                         break
 
             case addnodes.desc():
                 kind = node.get("objtype")
-                child0 = node.children[0]
-                name = child0.get("fullname")
-                start = child0.line
+                name_starts = [
+                    (kid.get("fullname"), kid.line) for kid in node.children if isinstance(kid, addnodes.desc_signature)
+                ]
 
         last_line = getattr(node, "line", None)
         if last_line is not None:
@@ -59,13 +58,14 @@ class RegionFinder:
                 yield subregion
 
         if kind is not None:
-            yield Region(
-                kind=kind,
-                name=name,
-                start=start,
-                end_main=end_main or self.last_line,
-                end_total=self.last_line,
-            )
+            for name, start in name_starts:
+                yield Region(
+                    kind=kind,
+                    name=name,
+                    start=start,
+                    end_main=end_main or self.last_line,
+                    end_total=self.last_line,
+                )
 
 
 def find_regions(doctree: nodes.document) -> Iterable[Region]:

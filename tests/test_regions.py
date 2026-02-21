@@ -7,7 +7,7 @@ from linklint.regions import Region, find_regions
 from linklint.rsthelp import parse_rst_file
 
 
-def RegionTestCase(*, rst: str, regions: list[Region], id:str = ""):
+def RegionTestCase(*, rst: str, regions: list[Region], id: str = ""):
     """Helper to create pytest parameters for tests."""
     if "\n" in rst:
         assert rst.startswith("\n")
@@ -72,6 +72,26 @@ TEST_CASES = [
             23This section references :mod:`mymodule` which is fine.
             """,
         regions=[Region(kind="module", name="mymodule", start=1, end_main=18, end_total=18)],
+    ),
+    RegionTestCase(
+        id="multiple-functions",
+        rst=r"""
+            The various :func:`exec\* <execl>` functions take a list of arguments for the new
+            program loaded into the process.
+
+            .. function:: execl(path, arg0, arg1, ...)
+                          execle(path, arg0, arg1, ..., env)
+                          execlp(file, arg0, arg1, ...)
+                          execlpe(file, arg0, arg1, ..., env)
+
+               This is a family of similar functions.
+            """,
+        regions=[
+            Region(kind="function", name="execl", start=4, end_main=9, end_total=9),
+            Region(kind="function", name="execle", start=4, end_main=9, end_total=9),
+            Region(kind="function", name="execlp", start=4, end_main=9, end_total=9),
+            Region(kind="function", name="execlpe", start=4, end_main=9, end_total=9),
+        ],
     ),
     RegionTestCase(
         rst="lzma.rst",

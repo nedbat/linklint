@@ -525,12 +525,20 @@ TEST_CASES = [
         issues=[
             LintIssue(line=22, message="self-link to function 'execl'", fixed=True),
             LintIssue(line=24, message="self-link to function 'execl'", fixed=True),
+            LintIssue(line=33, message="self-link to function 'execlp'", fixed=True),
+            LintIssue(line=34, message="self-link to function 'execlpe'", fixed=True),
+            LintIssue(line=34, message="self-link to function 'execvp'", fixed=True),
+            LintIssue(line=34, message="self-link to function 'execvpe'", fixed=True),
         ],
         diff=r"""
             -    :func:`exec\* <execl>` function.
             +    :func:`!exec\*` function.
             -    The "l" and "v" variants of the :func:`exec\* <execl>` functions differ in how
             +    The "l" and "v" variants of the :func:`!exec\*` functions differ in how
+            -    The variants which include a "p" near the end (:func:`execlp`,
+            +    The variants which include a "p" near the end (:func:`!execlp`,
+            -    :func:`execlpe`, :func:`execvp`, and :func:`execvpe`) will use the
+            +    :func:`!execlpe`, :func:`!execvp`, and :func:`!execvpe`) will use the
             """,
     ),
 ]
