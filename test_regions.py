@@ -20,6 +20,27 @@ def RegionTestCase(*, rst, regions, id=""):
 
 
 TEST_CASES = [
+    # The `contents::` directive makes unnumbered paragraphs.
+    RegionTestCase(
+        id="unnumbered",
+        rst="""\
+            ======================
+            Design and History FAQ
+            ======================
+
+            .. only:: html
+
+               .. contents::
+
+            Why does Python use indentation for grouping of statements?
+            -----------------------------------------------------------
+
+            Guido van Rossum believes that using indentation for grouping is extremely
+            elegant and contributes a lot to the clarity of the average Python program.
+            Most people learn to love this feature after a while.
+            """,
+        regions=[],
+    ),
     RegionTestCase(
         id="mymodule",
         rst="""\
