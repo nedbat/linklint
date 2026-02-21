@@ -10,7 +10,8 @@ from linklint.rsthelp import parse_rst_file
 def RegionTestCase(*, rst: str, regions: list[Region], id:str = ""):
     """Helper to create pytest parameters for tests."""
     if "\n" in rst:
-        rst = dedent(rst)
+        assert rst.startswith("\n")
+        rst = dedent(rst[1:])
     else:
         # It's a file name
         assert not id
@@ -25,7 +26,7 @@ TEST_CASES = [
     # The `contents::` directive makes unnumbered paragraphs.
     RegionTestCase(
         id="unnumbered",
-        rst="""\
+        rst="""
             ======================
             Design and History FAQ
             ======================
@@ -45,7 +46,7 @@ TEST_CASES = [
     ),
     RegionTestCase(
         id="mymodule",
-        rst="""\
+        rst="""
             1My Module
             ==========
 

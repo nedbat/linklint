@@ -18,8 +18,8 @@ def diff_lines(text1, text2):
 
 def LintTestCase(*, rst, issues, diff, id="linklint"):
     """Helper to create pytest parameters for linting tests."""
-    if rst.startswith("\n"):
-        rst = rst[1:]
+    assert rst.startswith("\n")
+    rst = rst[1:]
     if diff.startswith("\n"):
         diff = diff[1:]
     return pytest.param(dedent(rst), issues, dedent(diff), id=id)
@@ -29,7 +29,7 @@ TEST_CASES = [
     # Check a self-link in the module description.
     LintTestCase(
         id="selflink",
-        rst="""\
+        rst="""
             My Module
             =========
 
@@ -47,7 +47,7 @@ TEST_CASES = [
         issues=[
             LintIssue(6, "self-link to module 'mymodule'", fixed=True),
         ],
-        diff="""\
+        diff="""
             - This is the :mod:`mymodule` documentation.
             + This is the :mod:`!mymodule` documentation.
             """,
@@ -55,7 +55,7 @@ TEST_CASES = [
     # Is the line-munging correct?
     LintTestCase(
         id="second-section",
-        rst="""\
+        rst="""
             Another
             =======
 
@@ -78,7 +78,7 @@ TEST_CASES = [
         issues=[
             LintIssue(11, "self-link to module 'mymodule'", fixed=True),
         ],
-        diff="""\
+        diff="""
             - This is the :mod:`mymodule` documentation.
             + This is the :mod:`!mymodule` documentation.
             """,
@@ -86,7 +86,7 @@ TEST_CASES = [
     # Check that `.. _module-foo` isn't confused for a module section.
     LintTestCase(
         id="module-target",
-        rst="""\
+        rst="""
             .. _module-xyzzy:
 
             About Xyzzy
@@ -101,7 +101,7 @@ TEST_CASES = [
     # Check that headers get fixed too.
     LintTestCase(
         id="header-selflink",
-        rst="""\
+        rst="""
             :mod:`mymodule` Module
             ======================
 
@@ -112,7 +112,7 @@ TEST_CASES = [
         issues=[
             LintIssue(1, "self-link to module 'mymodule'", fixed=True),
         ],
-        diff="""\
+        diff="""
             - :mod:`mymodule` Module
             + :mod:`!mymodule` Module
             - ======================
@@ -122,7 +122,7 @@ TEST_CASES = [
     # Check that overline headers get fixed too.
     LintTestCase(
         id="overline",
-        rst="""\
+        rst="""
             ***********************
             This is :mod:`mymodule`
             ***********************
@@ -138,7 +138,7 @@ TEST_CASES = [
         issues=[
             LintIssue(2, "self-link to module 'mymodule'", fixed=True),
         ],
-        diff="""\
+        diff="""
             - ***********************
             + ************************
             - This is :mod:`mymodule`
@@ -150,7 +150,7 @@ TEST_CASES = [
     # Self-link on a continuation line inside a list item.
     LintTestCase(
         id="continuation-line",
-        rst="""\
+        rst="""
             My Module
             =========
 
@@ -163,7 +163,7 @@ TEST_CASES = [
         issues=[
             LintIssue(7, "self-link to module 'mymodule'", fixed=True),
         ],
-        diff="""\
+        diff="""
             -   And continues with :mod:`mymodule` here.
             +   And continues with :mod:`!mymodule` here.
             """,
@@ -171,7 +171,7 @@ TEST_CASES = [
     # Don't get confused about sub-modules.
     LintTestCase(
         id="submodule",
-        rst="""\
+        rst="""
             :mod:`dbm` --- Interfaces to Unix "databases"
             =============================================
 
@@ -202,7 +202,7 @@ TEST_CASES = [
             LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
             LintIssue(line=11, message="self-link to module 'dbm'", fixed=True),
         ],
-        diff="""\
+        diff="""
             - :mod:`dbm` --- Interfaces to Unix "databases"
             + :mod:`!dbm` --- Interfaces to Unix "databases"
             - =============================================
@@ -214,7 +214,7 @@ TEST_CASES = [
     # Fix ~ references if needed.
     LintTestCase(
         id="tilde",
-        rst="""\
+        rst="""
             :mod:`email.encoders`: Encoders
             ----------------------------------
 
@@ -242,7 +242,7 @@ TEST_CASES = [
                 fixed=True,
             ),
         ],
-        diff="""\
+        diff="""
             - :mod:`email.encoders`: Encoders
             + :mod:`!email.encoders`: Encoders
             - ----------------------------------
@@ -254,7 +254,7 @@ TEST_CASES = [
     # Fix dotted references
     LintTestCase(
         id="dotted",
-        rst="""\
+        rst="""
             :mod:`!html.parser` --- Simple HTML and XHTML parser
             ====================================================
 
@@ -279,7 +279,7 @@ TEST_CASES = [
             LintIssue(line=16, message="self-link to class 'HTMLParser'", fixed=True),
             LintIssue(line=18, message="self-link to class 'HTMLParser'", fixed=True),
         ],
-        diff="""\
+        diff="""
             -    An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
             +    An :class:`!HTMLParser` instance is fed HTML data and calls handler methods
             -    encountered.  The user should subclass :class:`.HTMLParser` and override its
@@ -289,7 +289,7 @@ TEST_CASES = [
     # Class self-linking.
     LintTestCase(
         id="selflink-class",
-        rst="""\
+        rst="""
             Queue
             =====
 
@@ -304,7 +304,7 @@ TEST_CASES = [
         issues=[
             LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
         ],
-        diff="""\
+        diff="""
             -       Put a :class:`Queue` instance into a shutdown mode.
             +       Put a :class:`!Queue` instance into a shutdown mode.
             """,
@@ -314,7 +314,7 @@ TEST_CASES = [
     # we can't fix it anyway.
     LintTestCase(
         id="implicit-ref",
-        rst="""\
+        rst="""
             :mod:`!importlib.resources` -- Package resource reading, opening and access
             ---------------------------------------------------------------------------
 
@@ -340,7 +340,7 @@ TEST_CASES = [
     # Some directives had the wrong line number.
     LintTestCase(
         id="note",
-        rst="""\
+        rst="""
             ZipFile objects
             ---------------
 
@@ -361,7 +361,7 @@ TEST_CASES = [
             LintIssue(line=10, message="self-link to class 'ZipFile'", fixed=True),
             LintIssue(line=14, message="self-link to class 'ZipFile'", fixed=True),
         ],
-        diff="""\
+        diff="""
             -       Added the ability to use :class:`ZipFile` as a context manager.
             +       Added the ability to use :class:`!ZipFile` as a context manager.
             -       Added the ability to use :class:`ZipFile` as a context manager.
@@ -371,7 +371,7 @@ TEST_CASES = [
     # Sometimes there are two to fix in one line.
     LintTestCase(
         id="two-in-one-line",
-        rst="""\
+        rst="""
             ZipFile objects
             ---------------
 
@@ -384,7 +384,7 @@ TEST_CASES = [
             LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
             LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
         ],
-        diff="""\
+        diff="""
             -    This is :class:`ZipFile` and also :class:`ZipFile` again.
             +    This is :class:`!ZipFile` and also :class:`!ZipFile` again.
             """,
@@ -393,7 +393,7 @@ TEST_CASES = [
     # they aren't linking to the section you are already reading.
     LintTestCase(
         id="case-sensitive",
-        rst="""\
+        rst="""
             :mod:`!uuid` --- UUID objects according to :rfc:`9562`
             ======================================================
 
@@ -416,7 +416,7 @@ TEST_CASES = [
     # and the inline case needed extra fixing.
     LintTestCase(
         id="inline-versionchanged",
-        rst="""\
+        rst="""
             :mod:`!collections` --- Container datatypes
             ===========================================
 
@@ -440,7 +440,7 @@ TEST_CASES = [
         issues=[
             LintIssue(line=15, message="self-link to class 'Counter'", fixed=True),
         ],
-        diff="""\
+        diff="""
             -     .. versionchanged:: 3.7 As a :class:`dict` subclass, :class:`Counter`
             +     .. versionchanged:: 3.7 As a :class:`dict` subclass, :class:`!Counter`
             """,
@@ -448,7 +448,7 @@ TEST_CASES = [
     # A newline at the end of a link is trimmed, so our line count was off.
     LintTestCase(
         id="newline-in-link",
-        rst="""\
+        rst="""
             .. function:: fwalk(top='.', topdown=True, onerror=None, *, follow_symlinks=False, dir_fd=None)
 
                This function always supports :ref:`paths relative to directory descriptors
@@ -474,7 +474,7 @@ TEST_CASES = [
             LintIssue(line=9, message="self-link to function 'fwalk'", fixed=True),
             LintIssue(line=17, message="self-link to function 'expm1'", fixed=True),
         ],
-        diff="""\
+        diff="""
             -    that, unlike other functions, the :func:`fwalk` default value for
             +    that, unlike other functions, the :func:`!fwalk` default value for
             -    <dir_fd>`.  Note however that the :func:`fwalk` default value for
