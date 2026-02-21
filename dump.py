@@ -1,7 +1,9 @@
 import sys
+from typing import TextIO
 
 from docutils import nodes
-from linklint import parse_rst_file
+
+import linklint
 
 INTERESTING_ATTRS = [
     "ids",
@@ -18,30 +20,27 @@ INTERESTING_ATTRS = [
 ]
 
 
-def dump_doctree(node: nodes.Node, indent: int = 0) -> None:
+def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
     """Print a nicely formatted tree of a docutils doctree."""
     prefix = "    " * indent
     if isinstance(node, nodes.Text):
         text = node.astext()
-        # if len(text) > 60:
-        #     text = text[:57] + "..."
-        print(f"{prefix}Text: {text!r}")
+        print(f"{prefix}Text: {text!r}", file=fp)
     else:
         tag = node.__class__.__name__
         attrs = []
         for key in INTERESTING_ATTRS:
-            if val := node.get(key):
+            if val := node.get(key):  # type: ignore
                 attrs.append(f"{key}={val!r}")
         attr_str = f" {{{', '.join(attrs)}}}" if attrs else ""
-        line = node.get("line") or getattr(node, "line", None)
-        line_str = f" L{line}" if line else ""
-        print(f"{prefix}{tag}{attr_str}{line_str}")
-        #print(f"{prefix}{node.attributes}")
+        line = node.line
+        line_str = f" @{line}" if line else ""
+        print(f"{prefix}{tag}{attr_str}{line_str}", file=fp)
+        #print(f"{prefix}{node.attributes}", file=fp)
         for child in node.children:
-            dump_doctree(child, indent + 1)
+            dump_doctree(child, fp, indent + 1)
 
 
-with open(sys.argv[1]) as f:
-    tree = parse_rst_file(f.read())
-
-dump_doctree(tree)
+if __name__ == "__main__":
+    with open(sys.argv[1]) as f:
+        dump_doctree(linklint.parse_rst_file(f.read()), sys.stdout)

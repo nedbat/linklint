@@ -1,5 +1,6 @@
 """Utilities for RST files."""
 
+import os
 import re
 import string
 import tempfile
@@ -7,6 +8,17 @@ from pathlib import Path
 
 from docutils import nodes
 from sphinx.application import Sphinx
+
+import dump
+
+
+def test_slug() -> str:
+    test_name = os.getenv("PYTEST_CURRENT_TEST", "unknown")
+    m = re.fullmatch(r"(?P<file>.*)::(?P<test>.*)(?P<param>\[[-._+/\w]+\])(?: \(\w+\))", test_name)
+    assert m is not None
+    if param := m["param"]:
+        return param.strip("[]")
+    return m["test"]
 
 
 def parse_rst_file(content: str) -> nodes.document:
@@ -36,6 +48,12 @@ def parse_rst_file(content: str) -> nodes.document:
         app.build()
         doctree = app.env.get_doctree("index")
         fix_node_lines(doctree)
+
+        if os.getenv("DUMP_DOCTREE"):
+            os.makedirs("tmp/dump", exist_ok=True)
+            with open(f"tmp/dump/{test_slug()}.txt", "w", encoding="utf-8") as f:
+                dump.dump_doctree(doctree, f)
+
         return doctree
 
 

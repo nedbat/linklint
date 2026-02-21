@@ -1,2 +1,7 @@
 [tool.ruff]
 line-length = 120
+
+[tool.coverage.report]
+exclude_also = [
+    "if __name__ == .__main__.:",
+]

@@ -1,15 +1,13 @@
 .PHONY: test quality clean
 
 test:
-	coverage run --branch --source=. -m pytest
+	DUMP_DOCTREE=1 coverage run --branch --source=. -m pytest
 	coverage report -m
 	coverage html
 
-EXCLUDE := --exclude dump.py
-
 quality:
-	uvx ty check ${EXCLUDE}
-	uvx ruff check ${EXCLUDE}
+	uvx ty check
+	uvx ruff check
 
 clean:
-	rm -rf .coverage htmlcov
+	rm -rf .coverage htmlcov tmp
