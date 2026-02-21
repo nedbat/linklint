@@ -46,30 +46,30 @@ TEST_CASES = [
     RegionTestCase(
         id="mymodule",
         rst="""\
-                1My Module
-                ==========
+            1My Module
+            ==========
 
-                .. module:: mymodule
+            .. module:: mymodule
 
-                6This is the :mod:`mymodule` documentation.
+            6This is the :mod:`mymodule` documentation.
 
-                8Also check :mod:`othermodule` for related functionality.
-                lorem ipsum quia dolor sit amet consectetur adipisci velit, sed quia non
-                numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat
-                voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam
-                12corporis suscipit laboriosam.
+            8Also check :mod:`othermodule` for related functionality.
+            lorem ipsum quia dolor sit amet consectetur adipisci velit, sed quia non
+            numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat
+            voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam
+            12corporis suscipit laboriosam.
 
-                14more about this module
-                ------------------------
+            14more about this module
+            ------------------------
 
-                17lorem ipsum quia dolor sit amet consectetur adipisci velit, sed
-                quia non numquam eius modi tempora incidunt.
+            17lorem ipsum quia dolor sit amet consectetur adipisci velit, sed
+            quia non numquam eius modi tempora incidunt.
 
-                20Other Section
-                ===============
+            20Other Section
+            ===============
 
-                23This section references :mod:`mymodule` which is fine.
-                """,
+            23This section references :mod:`mymodule` which is fine.
+            """,
         regions=[Region(kind="module", name="mymodule", start=1, end_main=18, end_total=18)],
     ),
     RegionTestCase(

@@ -26,71 +26,71 @@ TEST_CASES = [
     LintTestCase(
         id="selflink",
         rst="""\
-                My Module
-                =========
+            My Module
+            =========
 
-                .. module:: mymodule
+            .. module:: mymodule
 
-                This is the :mod:`mymodule` documentation.
+            This is the :mod:`mymodule` documentation.
 
-                Also check :mod:`othermodule` for related functionality.
+            Also check :mod:`othermodule` for related functionality.
 
-                Other Section
-                =============
+            Other Section
+            =============
 
-                This section references :mod:`mymodule` which is fine.
-                """,
+            This section references :mod:`mymodule` which is fine.
+            """,
         issues=[
             LintIssue(6, "self-link to module 'mymodule'", fixed=True),
         ],
         diff="""\
-                - This is the :mod:`mymodule` documentation.
-                + This is the :mod:`!mymodule` documentation.
+            - This is the :mod:`mymodule` documentation.
+            + This is the :mod:`!mymodule` documentation.
             """,
     ),
     # Is the line-munging correct?
     LintTestCase(
         id="second-section",
         rst="""\
-                Another
-                =======
+            Another
+            =======
 
-                Look at :mod:`mymodule` for more info.
+            Look at :mod:`mymodule` for more info.
 
-                My Module
-                =========
+            My Module
+            =========
 
-                .. module:: mymodule
+            .. module:: mymodule
 
-                This is the :mod:`mymodule` documentation.
+            This is the :mod:`mymodule` documentation.
 
-                Also check :mod:`othermodule` for related functionality.
+            Also check :mod:`othermodule` for related functionality.
 
-                Other Section
-                =============
+            Other Section
+            =============
 
-                This section references :mod:`mymodule` which is fine.
-                """,
+            This section references :mod:`mymodule` which is fine.
+            """,
         issues=[
             LintIssue(11, "self-link to module 'mymodule'", fixed=True),
         ],
         diff="""\
-                - This is the :mod:`mymodule` documentation.
-                + This is the :mod:`!mymodule` documentation.
+            - This is the :mod:`mymodule` documentation.
+            + This is the :mod:`!mymodule` documentation.
             """,
     ),
     # Check that `.. _module-foo` isn't confused for a module section.
     LintTestCase(
         id="module-target",
         rst="""\
-                .. _module-xyzzy:
+            .. _module-xyzzy:
 
-                About Xyzzy
-                -----------
+            About Xyzzy
+            -----------
 
-                Xyzzy is a magical word that does nothing in particular.
-                See :mod:`xyzzy` for more info.
-                """,
+            Xyzzy is a magical word that does nothing in particular.
+            See :mod:`xyzzy` for more info.
+            """,
         issues=[],
         diff="",
     ),
@@ -98,134 +98,134 @@ TEST_CASES = [
     LintTestCase(
         id="header-selflink",
         rst="""\
-                :mod:`mymodule` Module
-                ======================
+            :mod:`mymodule` Module
+            ======================
 
-                .. module:: mymodule
+            .. module:: mymodule
 
-                This is a great module!
-                """,
+            This is a great module!
+            """,
         issues=[
             LintIssue(1, "self-link to module 'mymodule'", fixed=True),
         ],
         diff="""\
-                - :mod:`mymodule` Module
-                + :mod:`!mymodule` Module
-                - ======================
-                + =======================
+            - :mod:`mymodule` Module
+            + :mod:`!mymodule` Module
+            - ======================
+            + =======================
             """,
     ),
     # Check that overline headers get fixed too.
     LintTestCase(
         id="overline",
         rst="""\
-                ***********************
-                This is :mod:`mymodule`
-                ***********************
+            ***********************
+            This is :mod:`mymodule`
+            ***********************
 
-                .. module:: mymodule
+            .. module:: mymodule
 
-                This is a great module!
+            This is a great module!
 
-                .. deprecated:: 3.8
+            .. deprecated:: 3.8
 
-                    Maybe it's not so great after all.
-                """,
+                Maybe it's not so great after all.
+            """,
         issues=[
             LintIssue(2, "self-link to module 'mymodule'", fixed=True),
         ],
         diff="""\
-                - ***********************
-                + ************************
-                - This is :mod:`mymodule`
-                + This is :mod:`!mymodule`
-                - ***********************
-                + ************************
+            - ***********************
+            + ************************
+            - This is :mod:`mymodule`
+            + This is :mod:`!mymodule`
+            - ***********************
+            + ************************
             """,
     ),
     # Self-link on a continuation line inside a list item.
     LintTestCase(
         id="continuation-line",
         rst="""\
-                My Module
-                =========
+            My Module
+            =========
 
-                .. module:: mymodule
+            .. module:: mymodule
 
-                - First item talks about something.
-                  And continues with :mod:`mymodule` here.
-                - Second item.
-                """,
+            - First item talks about something.
+              And continues with :mod:`mymodule` here.
+            - Second item.
+            """,
         issues=[
             LintIssue(7, "self-link to module 'mymodule'", fixed=True),
         ],
         diff="""\
-                -   And continues with :mod:`mymodule` here.
-                +   And continues with :mod:`!mymodule` here.
+            -   And continues with :mod:`mymodule` here.
+            +   And continues with :mod:`!mymodule` here.
             """,
     ),
     # Don't get confused about sub-modules.
     LintTestCase(
         id="submodule",
         rst="""\
-                :mod:`dbm` --- Interfaces to Unix "databases"
-                =============================================
+            :mod:`dbm` --- Interfaces to Unix "databases"
+            =============================================
 
-                .. module:: dbm
-                :synopsis: Interfaces to various Unix "database" formats.
+            .. module:: dbm
+            :synopsis: Interfaces to various Unix "database" formats.
 
-                **Source code:** :source:`Lib/dbm/__init__.py`
+            **Source code:** :source:`Lib/dbm/__init__.py`
 
-                --------------
+            --------------
 
-                :mod:`dbm` is a generic interface to variants of the DBM database:
+            :mod:`dbm` is a generic interface to variants of the DBM database:
 
-                * :mod:`dbm.sqlite3`
-                * :mod:`dbm.gnu`
-                * :mod:`dbm.ndbm`
+            * :mod:`dbm.sqlite3`
+            * :mod:`dbm.gnu`
+            * :mod:`dbm.ndbm`
 
-                If none of these modules are installed, the
-                slow-but-simple implementation in module :mod:`dbm.dumb` will be used. There
-                is a `third party interface <https://www.jcea.es/programacion/pybsddb.htm>`_ to
-                the Oracle Berkeley DB.
+            If none of these modules are installed, the
+            slow-but-simple implementation in module :mod:`dbm.dumb` will be used. There
+            is a `third party interface <https://www.jcea.es/programacion/pybsddb.htm>`_ to
+            the Oracle Berkeley DB.
 
-                .. note::
-                   None of the underlying modules will automatically shrink the disk space used by
-                   the database file. However, :mod:`dbm.sqlite3`, :mod:`dbm.gnu` and :mod:`dbm.dumb`
-                   provide a :meth:`!reorganize` method that can be used for this purpose.
-                """,
+            .. note::
+               None of the underlying modules will automatically shrink the disk space used by
+               the database file. However, :mod:`dbm.sqlite3`, :mod:`dbm.gnu` and :mod:`dbm.dumb`
+               provide a :meth:`!reorganize` method that can be used for this purpose.
+            """,
         issues=[
             LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
             LintIssue(line=11, message="self-link to module 'dbm'", fixed=True),
         ],
         diff="""\
-                - :mod:`dbm` --- Interfaces to Unix "databases"
-                + :mod:`!dbm` --- Interfaces to Unix "databases"
-                - =============================================
-                + ==============================================
-                - :mod:`dbm` is a generic interface to variants of the DBM database:
-                + :mod:`!dbm` is a generic interface to variants of the DBM database:
+            - :mod:`dbm` --- Interfaces to Unix "databases"
+            + :mod:`!dbm` --- Interfaces to Unix "databases"
+            - =============================================
+            + ==============================================
+            - :mod:`dbm` is a generic interface to variants of the DBM database:
+            + :mod:`!dbm` is a generic interface to variants of the DBM database:
             """,
     ),
     # Fix ~ references if needed.
     LintTestCase(
         id="tilde",
         rst="""\
-                :mod:`email.encoders`: Encoders
-                ----------------------------------
+            :mod:`email.encoders`: Encoders
+            ----------------------------------
 
-                .. module:: email.encoders
+            .. module:: email.encoders
 
-                This module is deprecated in Python 3.  The functions provided here
-                should not be called explicitly since the :class:`~email.mime.text.MIMEText`
-                class sets the content type and CTE header using the *_subtype* and *_charset*
-                values passed during the instantiation of that class.
+            This module is deprecated in Python 3.  The functions provided here
+            should not be called explicitly since the :class:`~email.mime.text.MIMEText`
+            class sets the content type and CTE header using the *_subtype* and *_charset*
+            values passed during the instantiation of that class.
 
-                The :mod:`email` package provides some convenient encoders in its
-                :mod:`~email.encoders` module.  These encoders are actually used by the
-                :class:`~email.mime.audio.MIMEAudio` and :class:`~email.mime.image.MIMEImage`
-                class constructors to provide default encodings.
-                """,
+            The :mod:`email` package provides some convenient encoders in its
+            :mod:`~email.encoders` module.  These encoders are actually used by the
+            :class:`~email.mime.audio.MIMEAudio` and :class:`~email.mime.image.MIMEImage`
+            class constructors to provide default encodings.
+            """,
         issues=[
             LintIssue(
                 line=1,
@@ -239,70 +239,70 @@ TEST_CASES = [
             ),
         ],
         diff="""\
-                - :mod:`email.encoders`: Encoders
-                + :mod:`!email.encoders`: Encoders
-                - ----------------------------------
-                + --------------------------------
-                - :mod:`~email.encoders` module.  These encoders are actually used by the
-                + :mod:`!email.encoders` module.  These encoders are actually used by the
+            - :mod:`email.encoders`: Encoders
+            + :mod:`!email.encoders`: Encoders
+            - ----------------------------------
+            + --------------------------------
+            - :mod:`~email.encoders` module.  These encoders are actually used by the
+            + :mod:`!email.encoders` module.  These encoders are actually used by the
             """,
     ),
     # Fix dotted references
     LintTestCase(
         id="dotted",
         rst="""\
-                :mod:`!html.parser` --- Simple HTML and XHTML parser
-                ====================================================
+            :mod:`!html.parser` --- Simple HTML and XHTML parser
+            ====================================================
 
-                .. module:: html.parser
-                   :synopsis: A simple parser that can handle HTML and XHTML.
+            .. module:: html.parser
+               :synopsis: A simple parser that can handle HTML and XHTML.
 
-                --------------
+            --------------
 
-                This module defines a class :class:`HTMLParser` which serves as the basis for
-                parsing text files formatted in HTML (HyperText Mark-up Language) and XHTML.
+            This module defines a class :class:`HTMLParser` which serves as the basis for
+            parsing text files formatted in HTML (HyperText Mark-up Language) and XHTML.
 
-                .. class:: HTMLParser(*, convert_charrefs=True, scripting=False)
+            .. class:: HTMLParser(*, convert_charrefs=True, scripting=False)
 
-                   Create a parser instance able to parse invalid markup.
+               Create a parser instance able to parse invalid markup.
 
-                   An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
-                   when start tags, end tags, text, comments, and other markup elements are
-                   encountered.  The user should subclass :class:`.HTMLParser` and override its
-                   methods to implement the desired behavior.
+               An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
+               when start tags, end tags, text, comments, and other markup elements are
+               encountered.  The user should subclass :class:`.HTMLParser` and override its
+               methods to implement the desired behavior.
             """,
         issues=[
             LintIssue(line=16, message="self-link to class 'HTMLParser'", fixed=True),
             LintIssue(line=18, message="self-link to class 'HTMLParser'", fixed=True),
         ],
         diff="""\
-                -    An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
-                +    An :class:`!HTMLParser` instance is fed HTML data and calls handler methods
-                -    encountered.  The user should subclass :class:`.HTMLParser` and override its
-                +    encountered.  The user should subclass :class:`!HTMLParser` and override its
+            -    An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
+            +    An :class:`!HTMLParser` instance is fed HTML data and calls handler methods
+            -    encountered.  The user should subclass :class:`.HTMLParser` and override its
+            +    encountered.  The user should subclass :class:`!HTMLParser` and override its
             """,
     ),
     # Class self-linking.
     LintTestCase(
         id="selflink-class",
         rst="""\
-                Queue
-                =====
+            Queue
+            =====
 
-                .. class:: Queue(maxsize=0)
+            .. class:: Queue(maxsize=0)
 
-                   A first in, first out (FIFO) queue.
+               A first in, first out (FIFO) queue.
 
-                   .. method:: shutdown(immediate=False)
+               .. method:: shutdown(immediate=False)
 
-                      Put a :class:`Queue` instance into a shutdown mode.
-                """,
+                  Put a :class:`Queue` instance into a shutdown mode.
+            """,
         issues=[
             LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
         ],
         diff="""\
-                -       Put a :class:`Queue` instance into a shutdown mode.
-                +       Put a :class:`!Queue` instance into a shutdown mode.
+            -       Put a :class:`Queue` instance into a shutdown mode.
+            +       Put a :class:`!Queue` instance into a shutdown mode.
             """,
     ),
     # Some implicit references have no line number?
@@ -311,25 +311,25 @@ TEST_CASES = [
     LintTestCase(
         id="implicit-ref",
         rst="""\
-                :mod:`!importlib.resources` -- Package resource reading, opening and access
-                ---------------------------------------------------------------------------
+            :mod:`!importlib.resources` -- Package resource reading, opening and access
+            ---------------------------------------------------------------------------
 
-                .. module:: importlib.resources
+            .. module:: importlib.resources
 
-                .. class:: Anchor
+            .. class:: Anchor
 
-                    Represents an anchor for resources, either a :class:`module object
-                    <types.ModuleType>` or a module name as a string. Defined as
-                    ``Union[str, ModuleType]``.
+                Represents an anchor for resources, either a :class:`module object
+                <types.ModuleType>` or a module name as a string. Defined as
+                ``Union[str, ModuleType]``.
 
-                .. function:: files(anchor: Optional[Anchor] = None)
+            .. function:: files(anchor: Optional[Anchor] = None)
 
-                    *anchor* is an optional :class:`Anchor`. If the anchor is a
-                    package, resources are resolved from that package. If a module,
-                    resources are resolved adjacent to that module (in the same package
-                    or the package root). If the anchor is omitted, the caller's module
-                    is used.
-                """,
+                *anchor* is an optional :class:`Anchor`. If the anchor is a
+                package, resources are resolved from that package. If a module,
+                resources are resolved adjacent to that module (in the same package
+                or the package root). If the anchor is omitted, the caller's module
+                is used.
+            """,
         issues=[],
         diff="",
     ),
@@ -337,52 +337,52 @@ TEST_CASES = [
     LintTestCase(
         id="note",
         rst="""\
-                ZipFile objects
-                ---------------
+            ZipFile objects
+            ---------------
 
-                .. class:: ZipFile(file, mode='r', compression=ZIP_STORED, allowZip64=True)
+            .. class:: ZipFile(file, mode='r', compression=ZIP_STORED, allowZip64=True)
 
-                   Open a ZIP file, where *file* can be a path to a file (a string), a
-                   file-like object or a :term:`path-like object`.
+               Open a ZIP file, where *file* can be a path to a file (a string), a
+               file-like object or a :term:`path-like object`.
 
-                   .. versionchanged:: 3.2
-                      Added the ability to use :class:`ZipFile` as a context manager.
-                      Also did many other good things.
+               .. versionchanged:: 3.2
+                  Added the ability to use :class:`ZipFile` as a context manager.
+                  Also did many other good things.
 
-                   .. note::
-                      Added the ability to use :class:`ZipFile` as a context manager.
-                      Also did many other good things.
-                """,
+               .. note::
+                  Added the ability to use :class:`ZipFile` as a context manager.
+                  Also did many other good things.
+            """,
         issues=[
             LintIssue(line=10, message="self-link to class 'ZipFile'", fixed=True),
             LintIssue(line=14, message="self-link to class 'ZipFile'", fixed=True),
         ],
         diff="""\
-                -       Added the ability to use :class:`ZipFile` as a context manager.
-                +       Added the ability to use :class:`!ZipFile` as a context manager.
-                -       Added the ability to use :class:`ZipFile` as a context manager.
-                +       Added the ability to use :class:`!ZipFile` as a context manager.
+            -       Added the ability to use :class:`ZipFile` as a context manager.
+            +       Added the ability to use :class:`!ZipFile` as a context manager.
+            -       Added the ability to use :class:`ZipFile` as a context manager.
+            +       Added the ability to use :class:`!ZipFile` as a context manager.
             """,
     ),
     # Sometimes there are two to fix in one line.
     LintTestCase(
         id="two-in-one-line",
         rst="""\
-                ZipFile objects
-                ---------------
+            ZipFile objects
+            ---------------
 
-                .. class:: ZipFile(file, mode='r', compression=ZIP_STORED, allowZip64=True)
+            .. class:: ZipFile(file, mode='r', compression=ZIP_STORED, allowZip64=True)
 
-                   This is :class:`ZipFile` and also :class:`ZipFile` again.
-                   It's great.
-                """,
+               This is :class:`ZipFile` and also :class:`ZipFile` again.
+               It's great.
+            """,
         issues=[
             LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
             LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
         ],
         diff="""\
-                -    This is :class:`ZipFile` and also :class:`ZipFile` again.
-                +    This is :class:`!ZipFile` and also :class:`!ZipFile` again.
+            -    This is :class:`ZipFile` and also :class:`ZipFile` again.
+            +    This is :class:`!ZipFile` and also :class:`!ZipFile` again.
             """,
     ),
     # References can be in a section, but still be forward references, so
@@ -390,21 +390,21 @@ TEST_CASES = [
     LintTestCase(
         id="case-sensitive",
         rst="""\
-                :mod:`!uuid` --- UUID objects according to :rfc:`9562`
-                ======================================================
+            :mod:`!uuid` --- UUID objects according to :rfc:`9562`
+            ======================================================
 
-                .. module:: uuid
+            .. module:: uuid
 
-                This module provides immutable :class:`UUID` objects (the :class:`UUID` class)
-                and :ref:`functions <uuid-factory-functions>` for generating UUIDs corresponding
-                to a specific UUID version as specified in :rfc:`9562` (which supersedes :rfc:`4122`),
-                for example, :func:`uuid1` for UUID version 1, :func:`uuid3` for UUID version 3, and so on.
-                Note that UUID version 2 is deliberately omitted as it is outside the scope of the RFC.
+            This module provides immutable :class:`UUID` objects (the :class:`UUID` class)
+            and :ref:`functions <uuid-factory-functions>` for generating UUIDs corresponding
+            to a specific UUID version as specified in :rfc:`9562` (which supersedes :rfc:`4122`),
+            for example, :func:`uuid1` for UUID version 1, :func:`uuid3` for UUID version 3, and so on.
+            Note that UUID version 2 is deliberately omitted as it is outside the scope of the RFC.
 
-                .. class:: UUID(hex=None, bytes=None, bytes_le=None, fields=None, int=None, version=None, *, is_safe=SafeUUID.unknown)
+            .. class:: UUID(hex=None, bytes=None, bytes_le=None, fields=None, int=None, version=None, *, is_safe=SafeUUID.unknown)
 
-                   Create a UUID from either a string of 32 hexadecimal digits, a string of 16
-                """,
+               Create a UUID from either a string of 32 hexadecimal digits, a string of 16
+            """,
         issues=[],
         diff="",
     ),
