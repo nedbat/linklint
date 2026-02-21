@@ -105,7 +105,7 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
             if work.fix:
                 pat = rf":{reftype}:`[~.]?{re.escape(target)}`"
                 repl = rf":{reftype}:`!{target}`"
-                work.fixed = fixed = resub_in_rst_line(
+                fixed = resub_in_rst_line(
                     lines=work.content_lines,
                     line_num=ref.line - 1,
                     pat=pat,
@@ -115,6 +115,7 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
                 if not fixed:
                     print(f"Line {ref.line}: tried {pat!r} to {repl!r}")
                     print(f"Line was: {work.content_lines[ref.line - 1]!r}")
+                work.fixed |= fixed
             yield LintIssue(
                 ref.line,
                 f"self-link to {region.kind} '{target}'",
