@@ -190,9 +190,9 @@ TEST_CASES = [
                 the Oracle Berkeley DB.
 
                 .. note::
-                None of the underlying modules will automatically shrink the disk space used by
-                the database file. However, :mod:`dbm.sqlite3`, :mod:`dbm.gnu` and :mod:`dbm.dumb`
-                provide a :meth:`!reorganize` method that can be used for this purpose.
+                   None of the underlying modules will automatically shrink the disk space used by
+                   the database file. However, :mod:`dbm.sqlite3`, :mod:`dbm.gnu` and :mod:`dbm.dumb`
+                   provide a :meth:`!reorganize` method that can be used for this purpose.
                 """,
         issues=[
             LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
