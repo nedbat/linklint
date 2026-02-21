@@ -185,6 +185,7 @@ def lint_file(filepath: str, fix: bool, checks: set[str]) -> list[LintIssue]:
 
     Returns a list of LintIssue objects.
     """
+    #print(filepath)
     path = Path(filepath)
     content = path.read_text()
     result = lint_content(content, fix, checks)
