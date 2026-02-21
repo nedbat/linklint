@@ -408,6 +408,39 @@ TEST_CASES = [
         issues=[],
         diff="",
     ),
+    # versionchanged directives needed fixing to get the right line numbers,
+    # and the inline case needed extra fixing.
+    LintTestCase(
+        id="inline-versionchanged",
+        rst="""\
+            :mod:`!collections` --- Container datatypes
+            ===========================================
+
+            .. module:: collections
+
+            :class:`Counter` objects
+            ------------------------
+
+            A counter tool is provided to support convenient and rapid tallies.
+
+            .. class:: Counter([iterable-or-mapping])
+
+                A :class:`!Counter` is a :class:`dict` subclass for counting :term:`hashable` objects.
+
+                .. versionchanged:: 3.7 As a :class:`dict` subclass, :class:`Counter`
+                   inherited the capability to remember insertion order.
+
+                Counter objects support additional methods beyond those available for all dictionaries.
+
+            """,
+        issues=[
+            LintIssue(line=15, message="self-link to class 'Counter'", fixed=True),
+        ],
+        diff="""\
+            -     .. versionchanged:: 3.7 As a :class:`dict` subclass, :class:`Counter`
+            +     .. versionchanged:: 3.7 As a :class:`dict` subclass, :class:`!Counter`
+            """,
+    ),
 ]
 
 
