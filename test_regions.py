@@ -7,16 +7,18 @@ from regions import Region, find_regions
 from rsthelp import parse_rst_file
 
 
-def RegionTestCase(*, rst, regions, id=""):
+def RegionTestCase(*, rst: str, regions: list[Region], id:str = ""):
     """Helper to create pytest parameters for tests."""
-    if "\n" not in rst:
+    if "\n" in rst:
+        rst = dedent(rst)
+    else:
         # It's a file name
         assert not id
         id = rst
         rst = (Path(__file__).parent / rst).read_text()
     if not id:
         id = "region"
-    return pytest.param(dedent(rst), regions, id=id)
+    return pytest.param(rst, regions, id=id)
 
 
 TEST_CASES = [
