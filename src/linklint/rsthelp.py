@@ -94,7 +94,8 @@ def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
         if adj_line_num in range(len(lines)):
             adj_line = lines[adj_line_num]
             if is_header_line(adj_line, old_line):
-                lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + adj_line[-1]
+                line_end = adj_line[len(adj_line.rstrip()):]
+                lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + line_end
 
 
 def resub_in_rst_line(lines: list[str], line_num: int, pat: str, repl: str, count=0) -> bool:
