@@ -76,7 +76,12 @@ def fix_node_lines(doctree: nodes.document) -> None:
                 continue
             node.line = block.line + newline_count
             if isinstance(node, nodes.Text):
-                newline_count += str(node).count("\n")
+                # References are trimmed, so we can miss a trailing newline.
+                # If the parent is an inline, it's more authoritative.
+                if isinstance(node.parent, nodes.inline):
+                    newline_count += node.parent.rawsource.count("\n")
+                else:
+                    newline_count += str(node).count("\n")
 
 
 def is_header_line(line: str, text_line: str) -> bool:

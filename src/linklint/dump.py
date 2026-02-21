@@ -5,7 +5,7 @@ from docutils import nodes
 
 from linklint import linklint
 
-INTERESTING_ATTRS = [
+INTERESTING_KEYS = [
     "ids",
     "names",
     "reftype",
@@ -19,6 +19,10 @@ INTERESTING_ATTRS = [
     "module",
 ]
 
+INTERESTING_ATTRS = [
+    # "rawsource",
+]
+
 
 def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
     """Print a nicely formatted tree of a docutils doctree."""
@@ -29,14 +33,17 @@ def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
     else:
         tag = node.__class__.__name__
         attrs = []
-        for key in INTERESTING_ATTRS:
+        for key in INTERESTING_KEYS:
             if val := node.get(key):  # type: ignore
                 attrs.append(f"{key}={val!r}")
+        for attr in INTERESTING_ATTRS:
+            if val := getattr(node, attr, None):
+                attrs.append(f".{attr}={val!r}")
         attr_str = f" {{{', '.join(attrs)}}}" if attrs else ""
         line = node.line
         line_str = f" @{line}" if line else ""
         print(f"{prefix}{tag}{attr_str}{line_str}", file=fp)
-        #print(f"{prefix}{node.attributes}", file=fp)
+        # print(f"{prefix}{node.attributes}", file=fp)
         for child in node.children:
             dump_doctree(child, fp, indent + 1)
 

@@ -441,6 +441,25 @@ TEST_CASES = [
             +     .. versionchanged:: 3.7 As a :class:`dict` subclass, :class:`!Counter`
             """,
     ),
+    # A newline at the end of a link is trimmed, so our line count was off.
+    LintTestCase(
+        id="newline-in-link",
+        rst="""\
+            .. function:: fwalk(top='.', topdown=True, onerror=None, *, follow_symlinks=False, dir_fd=None)
+
+               This function always supports :ref:`paths relative to directory descriptors
+               <dir_fd>` and :ref:`not following symlinks <follow_symlinks>`.  Note however
+               that, unlike other functions, the :func:`fwalk` default value for
+               *follow_symlinks* is ``False``.
+            """,
+        issues=[
+            LintIssue(line=5, message="self-link to function 'fwalk'", fixed=True),
+        ],
+        diff="""\
+            -    that, unlike other functions, the :func:`fwalk` default value for
+            +    that, unlike other functions, the :func:`!fwalk` default value for
+            """,
+    ),
 ]
 
 
