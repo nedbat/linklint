@@ -19,6 +19,8 @@ from linklint.rsthelp import parse_rst_file, resub_in_rst_line
 class Resolver:
     # Build a map from reference roles to object types.
 
+    # Dummy lambda's so that the object_types dict can be identical to the
+    # code in sphinx/sphinx/domains/python/__init__.py.
     ObjType = lambda _, *refs: refs  # noqa: E731
     _ = lambda s: 0  # noqa: E731
 

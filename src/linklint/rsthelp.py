@@ -63,10 +63,9 @@ BLOCK_NODES = (nodes.paragraph,)
 def fix_node_lines(doctree: nodes.document) -> None:
     """Fix line numbers for inline nodes within block elements.
 
-    Doctree block nodes (paragraphs, titles) have correct line numbers, but
-    their inline children all inherit the block's start line.  Walk each block's
-    descendants counting newlines in text nodes to compute each inline node's
-    actual line.
+    Doctree block nodes have correct line numbers, but their inline children
+    inherit the block's start line.  Walk each block's descendants counting
+    newlines in text nodes to compute each inline node's actual line.
     """
     for block in doctree.findall(lambda n: isinstance(n, BLOCK_NODES)):
         if not block.line:
