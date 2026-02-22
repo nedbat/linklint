@@ -153,6 +153,9 @@ def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
 @check("paradup")
 def check_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
     """Find references that appear more than once in the same paragraph."""
+    if work.fix:
+        raise Exception("Fixing is not available for --check=paradup")
+
     for para in work.doctree.findall(nodes.paragraph):
         refs_by_target = defaultdict(list)
         for ref in para.findall(addnodes.pending_xref):
