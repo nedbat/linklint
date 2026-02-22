@@ -7,14 +7,14 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, cast
+from typing import Iterable
 
 from docutils import nodes
 from sphinx import addnodes
 
 from linklint.regions import Region, find_regions
 from linklint.rsthelp import parse_rst_file, resub_in_rst_line
-from linklint.utils import plural
+from linklint.utils import plural, node_line_number, node_traceback
 
 
 class Resolver:
@@ -103,7 +103,7 @@ REF_FIXES = [
 @check("self")
 def check_self_links(work: LintWork) -> Iterable[LintIssue]:
     for ref in find_self_refs(work.doctree):
-        assert ref.line is not None
+        assert ref.line is not None, f"Reference node {ref} has no line number:\n{node_traceback(ref)}"
         reftype = ref.get("reftype")  # type: ignore
         target = ref.get("reftarget")  # type: ignore
         fixed = False
@@ -125,19 +125,13 @@ def check_self_links(work: LintWork) -> Iterable[LintIssue]:
         yield LintIssue(ref.line, f"self-link to :{reftype}:`{target}`", fixed=fixed)
 
 
-def find_line_number(node: nodes.Node) -> int:
-    while node.line is None:
-        node = cast(nodes.Node, node.parent)
-    return node.line
-
-
 def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
     """Find references that point to the same region they are in."""
 
     resolver = Resolver(doctree)
 
     for ref in doctree.findall(addnodes.pending_xref):
-        line = find_line_number(ref)
+        line = node_line_number(ref)
         reftype = ref.get("reftype")
         target = ref.get("reftarget")
         region = resolver.find_region(reftype, target)

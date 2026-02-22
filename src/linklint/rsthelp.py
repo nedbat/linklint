@@ -9,7 +9,7 @@ from docutils import nodes
 from sphinx.application import Sphinx
 
 from linklint.dump import dump_doctree
-from linklint.utils import in_tempdir, test_slug
+from linklint.utils import in_tempdir, slug_for_test
 
 
 def run_sphinx(content: str, buildername: str, extensions: list[str]) -> nodes.document:
@@ -42,7 +42,7 @@ def parse_rst_file(content: str) -> nodes.document:
 
     if os.getenv("PYTEST_CURRENT_TEST"):
         os.makedirs("tmp/dump", exist_ok=True)
-        with open(f"tmp/dump/{test_slug()}.txt", "w", encoding="utf-8") as f:
+        with open(f"tmp/dump/{slug_for_test()}.txt", "w", encoding="utf-8") as f:
             dump_doctree(doctree, f)
 
     return doctree
