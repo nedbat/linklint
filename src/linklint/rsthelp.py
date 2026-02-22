@@ -40,7 +40,7 @@ def parse_rst_file(content: str) -> nodes.document:
         doctree = run_sphinx(content, buildername="dummy", extensions=[])
     fix_node_lines(doctree)
 
-    if os.getenv("PYTEST_CURRENT_TEST") and os.getenv("DUMP_DOCTREE"):
+    if os.getenv("PYTEST_CURRENT_TEST"):
         os.makedirs("tmp/dump", exist_ok=True)
         with open(f"tmp/dump/{test_slug()}.txt", "w", encoding="utf-8") as f:
             dump_doctree(doctree, f)
