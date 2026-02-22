@@ -67,7 +67,6 @@ class LintIssue:
 class LintWork:
     doctree: nodes.document
     content_lines: list[str]
-    resolver: Resolver
     fix: bool
     fixed: bool
 
@@ -102,41 +101,54 @@ REF_FIXES = [
 
 @check("self")
 def find_self_links(work: LintWork) -> Iterable[LintIssue]:
-    for ref in work.doctree.findall(addnodes.pending_xref):
+    for ref in find_self_refs(work.doctree):
+        assert ref.line is not None
+        reftype = ref.get("reftype")  # type: ignore
+        target = ref.get("reftarget")  # type: ignore
+        fixed = False
+        if work.fix:
+            for pat, repl in REF_FIXES:
+                fixed = resub_in_rst_line(
+                    lines=work.content_lines,
+                    line_num=ref.line - 1,
+                    pat=pat.format(reftype=reftype, target=re.escape(target)),
+                    repl=repl.format(reftype=reftype, target=target),
+                    count=1,
+                )
+                if fixed:
+                    break
+            work.fixed |= fixed
+            if not fixed:
+                print(f"Line {ref.line}: Couldn't fix self-link to :{reftype}:`{target}`")
+                print(f"Line was: {work.content_lines[ref.line - 1]!r}")
+        yield LintIssue(
+            ref.line,
+            f"self-link to :{reftype}:`{target}`",
+            fixed=fixed,
+        )
+
+
+def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
+    """Find references that point to the same region they are in."""
+
+    def is_ref(node):
+        return isinstance(node, (addnodes.pending_xref, nodes.reference))
+
+    resolver = Resolver(doctree)
+
+    for ref in doctree.findall(is_ref):
         if ref.line is None:
             continue
         reftype = ref.get("reftype")
         target = ref.get("reftarget")
-        region = work.resolver.find_region(reftype, target)
+        region = resolver.find_region(reftype, target)
         if region is None:
             continue
 
-        start = region.start
         # It might be that we sometimes want end_main, or we want it to be
         # configurable, or something?
-        end = region.end_total
-        if start <= ref.line <= end:
-            fixed = False
-            if work.fix:
-                for pat, repl in REF_FIXES:
-                    fixed = resub_in_rst_line(
-                        lines=work.content_lines,
-                        line_num=ref.line - 1,
-                        pat=pat.format(reftype=reftype, target=re.escape(target)),
-                        repl=repl.format(reftype=reftype, target=target),
-                        count=1,
-                    )
-                    if fixed:
-                        break
-                work.fixed |= fixed
-                if not fixed:
-                    print(f"Line {ref.line}: Couldn't fix self-link to {region.kind} '{target}'")
-                    print(f"Line was: {work.content_lines[ref.line - 1]!r}")
-            yield LintIssue(
-                ref.line,
-                f"self-link to {region.kind} '{target}'",
-                fixed=fixed,
-            )
+        if region.start <= ref.line <= region.end_total:
+            yield ref
 
 
 @check("paradup")
@@ -171,7 +183,6 @@ def lint_content(content: str, fix: bool, checks: set[str]) -> LintResult:
     work = LintWork(
         content_lines=content.splitlines(keepends=True),
         doctree=doctree,
-        resolver=Resolver(doctree),
         fix=fix,
         fixed=False,
     )

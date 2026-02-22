@@ -45,7 +45,7 @@ TEST_CASES = [
             This section references :mod:`mymodule` which is fine.
             """,
         issues=[
-            LintIssue(6, "self-link to module 'mymodule'", fixed=True),
+            LintIssue(6, "self-link to :mod:`mymodule`", fixed=True),
         ],
         diff="""
             - This is the :mod:`mymodule` documentation.
@@ -76,7 +76,7 @@ TEST_CASES = [
             This section references :mod:`mymodule` which is fine.
             """,
         issues=[
-            LintIssue(11, "self-link to module 'mymodule'", fixed=True),
+            LintIssue(11, "self-link to :mod:`mymodule`", fixed=True),
         ],
         diff="""
             - This is the :mod:`mymodule` documentation.
@@ -110,7 +110,7 @@ TEST_CASES = [
             This is a great module!
             """,
         issues=[
-            LintIssue(1, "self-link to module 'mymodule'", fixed=True),
+            LintIssue(1, "self-link to :mod:`mymodule`", fixed=True),
         ],
         diff="""
             - :mod:`mymodule` Module
@@ -136,7 +136,7 @@ TEST_CASES = [
                 Maybe it's not so great after all.
             """,
         issues=[
-            LintIssue(2, "self-link to module 'mymodule'", fixed=True),
+            LintIssue(2, "self-link to :mod:`mymodule`", fixed=True),
         ],
         diff="""
             - ***********************
@@ -161,7 +161,7 @@ TEST_CASES = [
             - Second item.
             """,
         issues=[
-            LintIssue(7, "self-link to module 'mymodule'", fixed=True),
+            LintIssue(7, "self-link to :mod:`mymodule`", fixed=True),
         ],
         diff="""
             -   And continues with :mod:`mymodule` here.
@@ -199,8 +199,8 @@ TEST_CASES = [
                provide a :meth:`!reorganize` method that can be used for this purpose.
             """,
         issues=[
-            LintIssue(line=1, message="self-link to module 'dbm'", fixed=True),
-            LintIssue(line=11, message="self-link to module 'dbm'", fixed=True),
+            LintIssue(line=1, message="self-link to :mod:`dbm`", fixed=True),
+            LintIssue(line=11, message="self-link to :mod:`dbm`", fixed=True),
         ],
         diff="""
             - :mod:`dbm` --- Interfaces to Unix "databases"
@@ -233,12 +233,12 @@ TEST_CASES = [
         issues=[
             LintIssue(
                 line=1,
-                message="self-link to module 'email.encoders'",
+                message="self-link to :mod:`email.encoders`",
                 fixed=True,
             ),
             LintIssue(
                 line=12,
-                message="self-link to module 'email.encoders'",
+                message="self-link to :mod:`email.encoders`",
                 fixed=True,
             ),
         ],
@@ -276,8 +276,8 @@ TEST_CASES = [
                methods to implement the desired behavior.
             """,
         issues=[
-            LintIssue(line=16, message="self-link to class 'HTMLParser'", fixed=True),
-            LintIssue(line=18, message="self-link to class 'HTMLParser'", fixed=True),
+            LintIssue(line=16, message="self-link to :class:`HTMLParser`", fixed=True),
+            LintIssue(line=18, message="self-link to :class:`HTMLParser`", fixed=True),
         ],
         diff="""
             -    An :class:`.HTMLParser` instance is fed HTML data and calls handler methods
@@ -302,7 +302,7 @@ TEST_CASES = [
                   Put a :class:`Queue` instance into a shutdown mode.
             """,
         issues=[
-            LintIssue(line=10, message="self-link to class 'Queue'", fixed=True),
+            LintIssue(line=10, message="self-link to :class:`Queue`", fixed=True),
         ],
         diff="""
             -       Put a :class:`Queue` instance into a shutdown mode.
@@ -358,8 +358,8 @@ TEST_CASES = [
                   Also did many other good things.
             """,
         issues=[
-            LintIssue(line=10, message="self-link to class 'ZipFile'", fixed=True),
-            LintIssue(line=14, message="self-link to class 'ZipFile'", fixed=True),
+            LintIssue(line=10, message="self-link to :class:`ZipFile`", fixed=True),
+            LintIssue(line=14, message="self-link to :class:`ZipFile`", fixed=True),
         ],
         diff="""
             -       Added the ability to use :class:`ZipFile` as a context manager.
@@ -381,8 +381,8 @@ TEST_CASES = [
                It's great.
             """,
         issues=[
-            LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
-            LintIssue(line=6, message="self-link to class 'ZipFile'", fixed=True),
+            LintIssue(line=6, message="self-link to :class:`ZipFile`", fixed=True),
+            LintIssue(line=6, message="self-link to :class:`ZipFile`", fixed=True),
         ],
         diff="""
             -    This is :class:`ZipFile` and also :class:`ZipFile` again.
@@ -438,7 +438,7 @@ TEST_CASES = [
 
             """,
         issues=[
-            LintIssue(line=15, message="self-link to class 'Counter'", fixed=True),
+            LintIssue(line=15, message="self-link to :class:`Counter`", fixed=True),
         ],
         diff="""
             -     .. versionchanged:: 3.7 As a :class:`dict` subclass, :class:`Counter`
@@ -470,9 +470,9 @@ TEST_CASES = [
 
             """,
         issues=[
-            LintIssue(line=5, message="self-link to function 'fwalk'", fixed=True),
-            LintIssue(line=9, message="self-link to function 'fwalk'", fixed=True),
-            LintIssue(line=17, message="self-link to function 'expm1'", fixed=True),
+            LintIssue(line=5, message="self-link to :func:`fwalk`", fixed=True),
+            LintIssue(line=9, message="self-link to :func:`fwalk`", fixed=True),
+            LintIssue(line=17, message="self-link to :func:`expm1`", fixed=True),
         ],
         diff="""
             -    that, unlike other functions, the :func:`fwalk` default value for
@@ -523,12 +523,12 @@ TEST_CASES = [
                :envvar:`PATH` environment variable to locate the program *file*.
             """,
         issues=[
-            LintIssue(line=22, message="self-link to function 'execl'", fixed=True),
-            LintIssue(line=24, message="self-link to function 'execl'", fixed=True),
-            LintIssue(line=33, message="self-link to function 'execlp'", fixed=True),
-            LintIssue(line=34, message="self-link to function 'execlpe'", fixed=True),
-            LintIssue(line=34, message="self-link to function 'execvp'", fixed=True),
-            LintIssue(line=34, message="self-link to function 'execvpe'", fixed=True),
+            LintIssue(line=22, message="self-link to :func:`execl`", fixed=True),
+            LintIssue(line=24, message="self-link to :func:`execl`", fixed=True),
+            LintIssue(line=33, message="self-link to :func:`execlp`", fixed=True),
+            LintIssue(line=34, message="self-link to :func:`execlpe`", fixed=True),
+            LintIssue(line=34, message="self-link to :func:`execvp`", fixed=True),
+            LintIssue(line=34, message="self-link to :func:`execvpe`", fixed=True),
         ],
         diff=r"""
             -    :func:`exec\* <execl>` function.
