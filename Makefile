@@ -8,7 +8,7 @@ install: .venv
 	uv pip install -e .[dev]
 
 test:
-	DUMP_DOCTREE=1 coverage run --branch --source=. -m pytest
+	DUMP_DOCTREE=1 coverage run --branch -m pytest
 	coverage report -m
 	coverage html
 

@@ -22,9 +22,9 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-  "build",
-  "coverage",
-  "pytest",
+    "build",
+    "coverage",
+    "pytest",
 ]
 
 [project.scripts]
