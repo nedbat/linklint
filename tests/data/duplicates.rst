@@ -4,8 +4,9 @@ Duplicate references
 .. class:: ClassOne
 
     This is the first class, :class:`ClassOne`. There's another class,
-    :class:`ClassTwo`, described below.  :class:`ClassTwo` is great
+    :class:`!ClassTwo`, described below.  :class:`ClassTwo` is great
     and you should use it instead of :class:`ClassOne` if you can.
+    :class:`ClassTwo` is the best. Yay, :class:`ClassTwo`!
 
 
 .. class:: ClassTwo
