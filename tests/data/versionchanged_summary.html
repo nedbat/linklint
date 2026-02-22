@@ -1,0 +1,106 @@
+<section id="zipfile-objects-test-versionchanged">
+  <h1>
+    ZipFile objects: test versionchanged
+  </h1>
+  <dl>
+    <dt id="ZipFile">
+      class
+      ZipFile
+      (
+      <em>
+        file
+      </em>
+      ,
+      <em>
+        mode
+        =
+        'r'
+      </em>
+      ,
+      <em>
+        compression
+        =
+        ZIP_STORED
+      </em>
+      ,
+      <em>
+        allowZip64
+        =
+        True
+      </em>
+      ,
+      <em>
+        compresslevel
+        =
+        None
+      </em>
+      ,
+      <em>
+        <abbr>
+          *
+        </abbr>
+      </em>
+      ,
+      <em>
+        strict_timestamps
+        =
+        True
+      </em>
+      ,
+      <em>
+        metadata_encoding
+        =
+        None
+      </em>
+      )
+    </dt>
+    <dd>
+      <p>
+        Open a ZIP file, where
+        <em>
+          file
+        </em>
+        can be a path to a file (a string), a file-like object or a
+        path-like object
+        .
+      </p>
+      <div>
+        <p>
+          Changed in version 3.2:
+          Added the ability to use
+          <code>
+            ZipFile
+          </code>
+          as a context manager.
+        </p>
+      </div>
+      <div>
+        <p>
+          Changed in version 3.3:
+          Added the ability to use
+          <code>
+            ZipFile
+          </code>
+          as a flying saucer.
+        </p>
+      </div>
+      <div>
+        <p>
+          Changed in version 3.4:
+          The whole flying saucer thing was a mistake. Removed the ability to use
+          <code>
+            ZipFile
+          </code>
+          as a flying saucer.
+        </p>
+        <p>
+          Now
+          <code>
+            ZipFile
+          </code>
+          is just for opening ZIP files.
+        </p>
+      </div>
+    </dd>
+  </dl>
+</section>
