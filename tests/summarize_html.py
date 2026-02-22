@@ -5,14 +5,14 @@ from pathlib import Path
 
 
 class HtmlSummarizer(HTMLParser):
-    """Summarize an HTML file by printing only the parts we are interested in.
+    """Summarize an HTML file by keeping only the parts we are interested in.
 
     We only want the content of <div role="main">. We want to omit certain
     tags like <span> that are used for styling but don't affect the structure.
     We want to ignore some tags and their contents.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         # The tag indentation level of the original HTML.
         self.indent = 0
@@ -28,7 +28,7 @@ class HtmlSummarizer(HTMLParser):
 
         self.output = []
 
-    def print(self, s):
+    def print(self, s: str) -> None:
         if s[:2] == "</":
             self.print_indent -= 2
         self.output.append(" " * self.print_indent)
@@ -37,20 +37,20 @@ class HtmlSummarizer(HTMLParser):
         if s[0] == "<" and s[1] != "/":
             self.print_indent += 2
 
-    def summary(self):
+    def summary(self) -> str:
         return "".join(self.output)
 
-    def should_ignore(self, tag, dattrs):
-        if tag == "a" and "headerlink" in dattrs.get("class", "").split():
+    def should_ignore(self, tag: str, dattrs: dict[str, str | None]) -> bool:
+        if tag == "a" and "headerlink" in (dattrs.get("class") or "").split():
             return True
         return False
 
-    def should_omit(self, tag, dattrs):
+    def should_omit(self, tag: str, dattrs: dict[str, str | None]) -> bool:
         if tag == "span":
             return True
         return False
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         dattrs = dict(attrs)
         if self.main and not self.ignoring:
             if self.should_ignore(tag, dattrs):
@@ -65,7 +65,7 @@ class HtmlSummarizer(HTMLParser):
         if dattrs.get("role") == "main":
             self.main = True
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag: str) -> None:
         if self.main:
             self.indent -= 1
             if self.indent in self.omit_levels:
@@ -78,7 +78,7 @@ class HtmlSummarizer(HTMLParser):
             if self.indent == 0:
                 self.main = False
 
-    def handle_data(self, data):
+    def handle_data(self, data: str) -> None:
         if self.main and not self.ignoring:
             data = re.sub(r"\s+", " ", data.strip())
             if data:
@@ -86,7 +86,7 @@ class HtmlSummarizer(HTMLParser):
                 self.print(data)
 
 
-def summarize_html_file(filename):
+def summarize_html_file(filename: str) -> str:
     parser = HtmlSummarizer()
     parser.feed(Path(filename).read_text())
     return parser.summary()

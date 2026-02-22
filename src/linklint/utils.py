@@ -18,3 +18,15 @@ def in_tempdir():
     with tempfile.TemporaryDirectory() as tmpdir:
         with contextlib.chdir(tmpdir):
             yield
+
+
+def plural(n: int, thing: str = "", things: str = "") -> str:
+    """Pluralize a word.
+
+    If n is 1, return thing.  Otherwise return things, or thing+s.
+    """
+    if n == 1:
+        noun = thing
+    else:
+        noun = things or (thing + "s")
+    return f"{n} {noun}"

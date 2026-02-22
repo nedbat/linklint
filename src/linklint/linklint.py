@@ -14,6 +14,7 @@ from sphinx import addnodes
 
 from linklint.regions import Region, find_regions
 from linklint.rsthelp import parse_rst_file, resub_in_rst_line
+from linklint.utils import plural
 
 
 class Resolver:
@@ -210,18 +211,6 @@ def lint_file(filepath: str, fix: bool, checks: set[str]) -> list[LintIssue]:
     if fix and result.fixed:
         path.write_text(result.content)
     return result.issues
-
-
-def plural(n: int, thing: str = "", things: str = "") -> str:
-    """Pluralize a word.
-
-    If n is 1, return thing.  Otherwise return things, or thing+s.
-    """
-    if n == 1:
-        noun = thing
-    else:
-        noun = things or (thing + "s")
-    return f"{n} {noun}"
 
 
 def linklint(argv: list[str]) -> int:

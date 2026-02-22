@@ -6,7 +6,7 @@ import pytest
 from linklint.linklint import LintIssue, lint_content
 
 
-def diff_lines(text1, text2):
+def diff_lines(text1: str, text2: str) -> str:
     """Return a diff of just the lines that differ between text1 and text2."""
     differ = Differ().compare(
         text1.splitlines(keepends=True),
@@ -16,7 +16,7 @@ def diff_lines(text1, text2):
     return min_diff
 
 
-def LintTestCase(*, rst, issues, diff, id="linklint"):
+def LintTestCase(*, rst: str, issues: list[LintIssue], diff: str, id: str = "linklint"):
     """Helper to create pytest parameters for linting tests."""
     assert rst.startswith("\n")
     rst = rst[1:]
@@ -545,7 +545,7 @@ TEST_CASES = [
 
 
 @pytest.mark.parametrize("rst, issues, diff", TEST_CASES)
-def test_self_link(rst, issues, diff):
+def test_self_link(rst: str, issues: list[LintIssue], diff: str) -> None:
     result = lint_content(rst, fix=True, checks={"self"})
     assert result.issues == issues
     assert diff_lines(rst, result.content) == diff

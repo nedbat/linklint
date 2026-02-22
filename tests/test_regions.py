@@ -121,6 +121,6 @@ TEST_CASES = [
 
 
 @pytest.mark.parametrize("rst, regions", TEST_CASES)
-def test_regions(rst, regions):
+def test_regions(rst: str, regions: list[Region]) -> None:
     doctree = parse_rst_file(rst)
     assert sorted(find_regions(doctree)) == sorted(regions)
