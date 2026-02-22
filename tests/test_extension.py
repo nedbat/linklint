@@ -35,4 +35,11 @@ def test_summarize_html(root: str) -> None:
 
     (PROJECT / "tmp/html" / f"{root}_summary.html").write_text(summary)
     expected = (PROJECT / "tests/data" / f"{root}_summary.html").read_text()
+
+    if summary != expected:
+        print(f"Full HTML is at tmp/html/{root}.html")
+        print(f"Summary is at tmp/html/{root}_summary.html")
+        print("if the full HTML is correct:")
+        print(f"  $ cp tmp/html/{root}_summary.html tests/data/{root}_summary.html")
+
     assert summary == expected
