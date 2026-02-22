@@ -22,7 +22,7 @@ This is a page to test the linklint extension.
 --------------------------------
 
 .. module:: my_thing
-    
+
     This is about :mod:`my_thing`, which is a sample module to test the
     linklint extension. It will have the same name as :func:`my_thing`, to see
     if linklint can distinguish between them.
