@@ -152,11 +152,23 @@ def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
 
 @check("paradup")
 def check_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
-    """Find references that appear more than once in the same paragraph."""
+    """Check references that appear more than once in the same paragraph."""
     if work.fix:
         raise Exception("Fixing is not available for --check=paradup")
 
-    for para in work.doctree.findall(nodes.paragraph):
+    for ref in find_duplicate_refs(work.doctree):
+        assert ref.line is not None
+        reftype = ref.get("reftype")  # type: ignore
+        target = ref.get("reftarget")  # type: ignore
+        yield LintIssue(
+            ref.line,
+            f"duplicate :{reftype}:`{target}` in paragraph",
+        )
+
+
+def find_duplicate_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
+    """Find references that appear more than once in the same paragraph."""
+    for para in doctree.findall(nodes.paragraph):
         refs_by_target = defaultdict(list)
         for ref in para.findall(addnodes.pending_xref):
             reftype = ref.get("reftype")
@@ -164,13 +176,9 @@ def check_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
             if reftype and target:
                 refs_by_target[(reftype, target)].append(ref)
 
-        for (reftype, target), refs in refs_by_target.items():
+        for refs in refs_by_target.values():
             if len(refs) > 1:
-                for ref in refs[1:]:
-                    yield LintIssue(
-                        ref.line,
-                        f"duplicate :{reftype}:`{target}` in paragraph",
-                    )
+                yield from refs[1:]
 
 
 @dataclass

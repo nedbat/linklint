@@ -1,0 +1,119 @@
+<section id="duplicate-references">
+  <h1>
+    Duplicate references
+  </h1>
+  <dl>
+    <dt id="ClassOne">
+      class
+      ClassOne
+    </dt>
+    <dd>
+      <p>
+        This is the first class,
+        <code>
+          ClassOne
+        </code>
+        . There’s another class,
+        <a href="#ClassTwo">
+          <code>
+            ClassTwo
+          </code>
+        </a>
+        , described below.
+        <code>
+          ClassTwo
+        </code>
+        is great and you should use it instead of
+        <code>
+          ClassOne
+        </code>
+        if you can.
+      </p>
+    </dd>
+  </dl>
+  <dl>
+    <dt id="ClassTwo">
+      class
+      ClassTwo
+    </dt>
+    <dd>
+      <p>
+        This is the second class,
+        <code>
+          ClassTwo
+        </code>
+        . There’s another class,
+        <a href="#ClassOne">
+          <code>
+            ClassOne
+          </code>
+        </a>
+        , described above.
+        <code>
+          ClassOne
+        </code>
+        is great and you should use it instead of
+        <code>
+          ClassTwo
+        </code>
+        if you can.
+      </p>
+      <p>
+        But
+        <a href="#ClassOne">
+          <code>
+            ClassOne
+          </code>
+        </a>
+        has serious problems.
+        <code>
+          ClassOne
+        </code>
+        is slow.
+      </p>
+      <p>
+        Also,
+        <a href="#function_one">
+          <code>
+            function_one()
+          </code>
+        </a>
+        is really bad. You should use
+        <a href="#function_two">
+          <code>
+            function_two()
+          </code>
+        </a>
+        instead of
+        <code>
+          function_one()
+        </code>
+        if you can.
+      </p>
+    </dd>
+  </dl>
+  <dl>
+    <dt id="function_one">
+      function_one
+      (
+      )
+    </dt>
+    <dd>
+      <p>
+        A function.
+      </p>
+    </dd>
+  </dl>
+  <dl>
+    <dt id="function_two">
+      function_two
+      (
+      )
+    </dt>
+    <dd>
+      <p>
+        Another function.
+      </p>
+    </dd>
+  </dl>
+</section>
