@@ -28,13 +28,13 @@ class HtmlSummarizer(HTMLParser):
 
         self.output = []
 
-    def print(self, s: str) -> None:
-        if s[:2] == "</":
+    def print(self, s: str, open: bool = False, close: bool = False) -> None:
+        if close:
             self.print_indent -= 2
         self.output.append(" " * self.print_indent)
         self.output.append(s)
         self.output.append("\n")
-        if s[0] == "<" and s[1] != "/":
+        if open:
             self.print_indent += 2
 
     def summary(self) -> str:
@@ -60,7 +60,7 @@ class HtmlSummarizer(HTMLParser):
                 self.omit_levels.add(self.indent)
             else:
                 tattrs = "".join(f' {k}="{v}"' for k, v in attrs if k in {"id", "href"})
-                self.print(f"<{tag}{tattrs}>")
+                self.print(f"<{tag}{tattrs}>", open=True)
             self.indent += 1
         if dattrs.get("role") == "main":
             self.main = True
@@ -71,7 +71,7 @@ class HtmlSummarizer(HTMLParser):
             if self.indent in self.omit_levels:
                 self.omit_levels.remove(self.indent)
             elif not self.ignoring:
-                self.print(f"</{tag}>")
+                self.print(f"</{tag}>", close=True)
             else:
                 if self.indent == self.ignoring_start_level:
                     self.ignoring = False
@@ -82,7 +82,6 @@ class HtmlSummarizer(HTMLParser):
         if self.main and not self.ignoring:
             data = re.sub(r"\s+", " ", data.strip())
             if data:
-                assert data[0] != "<"
                 self.print(data)
 
 
