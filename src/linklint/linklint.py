@@ -14,7 +14,7 @@ from sphinx import addnodes
 
 from linklint.regions import Region, find_regions
 from linklint.rsthelp import parse_rst_file, resub_in_rst_line
-from linklint.utils import plural, node_line_number, node_traceback
+from linklint.utils import plural, node_line_number
 
 
 class Resolver:
@@ -103,7 +103,7 @@ REF_FIXES = [
 @check("self")
 def check_self_links(work: LintWork) -> Iterable[LintIssue]:
     for ref in find_self_refs(work.doctree):
-        assert ref.line is not None, f"Reference node {ref} has no line number:\n{node_traceback(ref)}"
+        line = node_line_number(ref)
         reftype = ref.get("reftype")  # type: ignore
         target = ref.get("reftarget")  # type: ignore
         fixed = False
@@ -111,7 +111,7 @@ def check_self_links(work: LintWork) -> Iterable[LintIssue]:
             for pat, repl in REF_FIXES:
                 fixed = resub_in_rst_line(
                     lines=work.content_lines,
-                    line_num=ref.line - 1,
+                    line_num=line - 1,
                     pat=pat.format(reftype=reftype, target=re.escape(target)),
                     repl=repl.format(reftype=reftype, target=target),
                     count=1,
@@ -120,9 +120,9 @@ def check_self_links(work: LintWork) -> Iterable[LintIssue]:
                     break
             work.fixed |= fixed
             if not fixed:
-                print(f"Line {ref.line}: Couldn't fix self-link to :{reftype}:`{target}`")
-                print(f"Line was: {work.content_lines[ref.line - 1]!r}")
-        yield LintIssue(ref.line, f"self-link to :{reftype}:`{target}`", fixed=fixed)
+                print(f"Line {line}: Couldn't fix self-link to :{reftype}:`{target}`")
+                print(f"Line was: {work.content_lines[line - 1]!r}")
+        yield LintIssue(line, f"self-link to :{reftype}:`{target}`", fixed=fixed)
 
 
 def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:

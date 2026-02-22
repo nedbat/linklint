@@ -541,6 +541,31 @@ TEST_CASES = [
             +    :func:`!execlpe`, :func:`!execvp`, and :func:`!execvpe`) will use the
             """,
     ),
+    # A class mention in a method signature creates a reference with no line number, which
+    # used to cause an assertion. But also, there's no markup for us to fix,
+    # so it creates a LintIssue with fixed=False.
+    LintTestCase(
+        id="class-in-signature",
+        rst="""
+            Snapshot
+            ^^^^^^^^
+
+            .. class:: Snapshot
+
+               Snapshot of traces of memory blocks allocated by Python.
+
+               The :func:`take_snapshot` function creates a snapshot instance.
+
+               .. method:: compare_to(old_snapshot: Snapshot, key_type: str, cumulative: bool=False)
+
+                  Compute the differences with an old snapshot. Get statistics as a sorted
+                  list of :class:`StatisticDiff` instances grouped by *key_type*.
+            """,
+        issues=[
+            LintIssue(line=10, message="self-link to :class:`Snapshot`", fixed=False),
+        ],
+        diff="",
+    ),
 ]
 
 
