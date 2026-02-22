@@ -7,7 +7,7 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, cast
 
 from docutils import nodes
 from sphinx import addnodes
@@ -100,7 +100,7 @@ REF_FIXES = [
 
 
 @check("self")
-def find_self_links(work: LintWork) -> Iterable[LintIssue]:
+def check_self_links(work: LintWork) -> Iterable[LintIssue]:
     for ref in find_self_refs(work.doctree):
         assert ref.line is not None
         reftype = ref.get("reftype")  # type: ignore
@@ -121,24 +121,22 @@ def find_self_links(work: LintWork) -> Iterable[LintIssue]:
             if not fixed:
                 print(f"Line {ref.line}: Couldn't fix self-link to :{reftype}:`{target}`")
                 print(f"Line was: {work.content_lines[ref.line - 1]!r}")
-        yield LintIssue(
-            ref.line,
-            f"self-link to :{reftype}:`{target}`",
-            fixed=fixed,
-        )
+        yield LintIssue(ref.line, f"self-link to :{reftype}:`{target}`", fixed=fixed)
+
+
+def find_line_number(node: nodes.Node) -> int:
+    while node.line is None:
+        node = cast(nodes.Node, node.parent)
+    return node.line
 
 
 def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
     """Find references that point to the same region they are in."""
 
-    def is_ref(node):
-        return isinstance(node, (addnodes.pending_xref, nodes.reference))
-
     resolver = Resolver(doctree)
 
-    for ref in doctree.findall(is_ref):
-        if ref.line is None:
-            continue
+    for ref in doctree.findall(addnodes.pending_xref):
+        line = find_line_number(ref)
         reftype = ref.get("reftype")
         target = ref.get("reftarget")
         region = resolver.find_region(reftype, target)
@@ -147,12 +145,12 @@ def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
 
         # It might be that we sometimes want end_main, or we want it to be
         # configurable, or something?
-        if region.start <= ref.line <= region.end_total:
+        if region.start <= line <= region.end_total:
             yield ref
 
 
 @check("paradup")
-def find_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
+def check_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
     """Find references that appear more than once in the same paragraph."""
     for para in work.doctree.findall(nodes.paragraph):
         refs_by_target = defaultdict(list)

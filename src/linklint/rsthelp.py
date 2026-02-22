@@ -3,58 +3,49 @@
 import os
 import re
 import string
-import tempfile
 from pathlib import Path
 
 from docutils import nodes
 from sphinx.application import Sphinx
 
-from linklint import dump
+from linklint.dump import dump_doctree
+from linklint.utils import in_tempdir, test_slug
 
 
-def test_slug() -> str:
-    test_name = os.getenv("PYTEST_CURRENT_TEST", "unknown")
-    m = re.search(r"::(?P<test>[\w_]+)(?P<param>\[[-._+/\w]+\])?(?: \(\w+\))$", test_name)
-    assert m is not None
-    if param := m["param"]:
-        return param.strip("[]")
-    return m["test"]
+def run_sphinx(content: str, buildername: str, extensions: list[str]) -> nodes.document:
+    # Create minimal conf.py
+    Path("conf.py").write_text(f"extensions = {extensions!r}\n")
+
+    # Copy the RST file as index.rst
+    Path("index.rst").write_text(content)
+
+    app = Sphinx(
+        srcdir=".",
+        confdir=".",
+        outdir="_build",
+        doctreedir="_build/.doctrees",
+        buildername=buildername,
+        freshenv=True,
+        status=None,
+        warning=None,
+    )
+
+    app.build()
+    return app.env.get_doctree("index")
 
 
 def parse_rst_file(content: str) -> nodes.document:
     """Parse an RST file using Sphinx and return the doctree."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmppath = Path(tmpdir)
-        outdir = tmppath / "_build"
-        doctreedir = outdir / ".doctrees"
+    with in_tempdir():
+        doctree = run_sphinx(content, buildername="dummy", extensions=[])
+    fix_node_lines(doctree)
 
-        # Create minimal conf.py
-        (tmppath / "conf.py").write_text("extensions = []\n")
+    if os.getenv("PYTEST_CURRENT_TEST") and os.getenv("DUMP_DOCTREE"):
+        os.makedirs("tmp/dump", exist_ok=True)
+        with open(f"tmp/dump/{test_slug()}.txt", "w", encoding="utf-8") as f:
+            dump_doctree(doctree, f)
 
-        # Copy the RST file as index.rst
-        (tmppath / "index.rst").write_text(content)
-
-        app = Sphinx(
-            srcdir=str(tmppath),
-            confdir=str(tmppath),
-            outdir=str(outdir),
-            doctreedir=str(doctreedir),
-            buildername="dummy",
-            freshenv=True,
-            status=None,
-            warning=None,
-        )
-
-        app.build()
-        doctree = app.env.get_doctree("index")
-        fix_node_lines(doctree)
-
-        if os.getenv("PYTEST_CURRENT_TEST") and os.getenv("DUMP_DOCTREE"):
-            os.makedirs("tmp/dump", exist_ok=True)
-            with open(f"tmp/dump/{test_slug()}.txt", "w", encoding="utf-8") as f:
-                dump.dump_doctree(doctree, f)
-
-        return doctree
+    return doctree
 
 
 BLOCK_NODES = (nodes.paragraph,)
@@ -99,7 +90,7 @@ def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:
         if adj_line_num in range(len(lines)):
             adj_line = lines[adj_line_num]
             if is_header_line(adj_line, old_line):
-                line_end = adj_line[len(adj_line.rstrip()):]
+                line_end = adj_line[len(adj_line.rstrip()) :]
                 lines[adj_line_num] = adj_line[0] * len(new_line.rstrip()) + line_end
 
 

@@ -1,0 +1,87 @@
+<section id="linklint-sample-page">
+  <h1>
+    Linklint sample page
+  </h1>
+  <p>
+    This is a page to test the linklint extension.
+  </p>
+  <dl>
+    <dt id="MyClass">
+      class
+      MyClass
+    </dt>
+    <dd>
+      <p>
+        The
+        <code>
+          MyClass
+        </code>
+        class is a sample class to test the linklint extension.
+      </p>
+    </dd>
+  </dl>
+  <dl>
+    <dt id="AnotherClass">
+      class
+      AnotherClass
+    </dt>
+    <dd>
+      <p>
+        Sometimes
+        <code>
+          AnotherClass
+        </code>
+        uses methods from
+        <a href="#MyClass">
+          <code>
+            MyClass
+          </code>
+        </a>
+        .
+      </p>
+    </dd>
+  </dl>
+  <dl>
+    <dt id="my_thing">
+      my_thing
+      (
+      )
+    </dt>
+    <dd>
+      <p>
+        This is about
+        <code>
+          my_thing()
+        </code>
+        , which is a sample function to test the linklint extension. It will have the same name as
+        <a href="#module-my_thing">
+          <code>
+            my_thing
+          </code>
+        </a>
+        , to see if linklint can distinguish between them.
+      </p>
+    </dd>
+  </dl>
+  <section id="module-my_thing">
+    <h2>
+      <code>
+        my_thing
+      </code>
+      : My thing module
+    </h2>
+    <p>
+      This is about
+      <code>
+        my_thing
+      </code>
+      , which is a sample module to test the linklint extension. It will have the same name as
+      <a href="#module-my_thing">
+        <code>
+          my_thing()
+        </code>
+      </a>
+      , to see if linklint can distinguish between them.
+    </p>
+  </section>
+</section>

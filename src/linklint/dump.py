@@ -3,7 +3,6 @@ from typing import TextIO
 
 from docutils import nodes
 
-from linklint import linklint
 
 INTERESTING_KEYS = [
     "ids",
@@ -40,6 +39,8 @@ def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
             if val := getattr(node, attr, None):
                 attrs.append(f".{attr}={val!r}")
         attr_str = f" {{{', '.join(attrs)}}}" if attrs else ""
+        if tag == "reference":
+            print(vars(node), file=fp)
         line = node.line
         line_str = f" @{line}" if line else ""
         print(f"{prefix}{tag}{attr_str}{line_str}", file=fp)
@@ -49,5 +50,7 @@ def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
 
 
 if __name__ == "__main__":
+    from linklint.linklint import parse_rst_file
+
     with open(sys.argv[1]) as f:
-        dump_doctree(linklint.parse_rst_file(f.read()), sys.stdout)
+        dump_doctree(parse_rst_file(f.read()), sys.stdout)
