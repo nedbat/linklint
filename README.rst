@@ -11,6 +11,11 @@ that should not be links.
 Changes
 =======
 
+Unreleased
+----------
+
+The Sphinx extension now displays the number of references that were unlinked.
+
 0.2.0 – 2026-02-22
 ------------------
 
