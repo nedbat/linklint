@@ -11,8 +11,8 @@ that should not be links.
 Changes
 =======
 
-Unreleased
-----------
+0.2.0 – 2026-02-22
+------------------
 
 Now available as a Sphinx extension. Instead of changing .rst source files,
 the excessive links are automatically unlinked in the generated documentation.
