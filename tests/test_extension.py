@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from linklint.rsthelp import run_sphinx
+from linklint.rsthelp import run_sphinx, save_test_doctree
 from linklint.utils import in_tempdir
 
 from summarize_html import summarize_html_file
@@ -28,14 +28,15 @@ def test_summarize_html(rst_file: str) -> None:
     rst = (PROJECT / "tests/data" / rst_file).read_text()
     root = rst_file.removesuffix(".rst")
     with in_tempdir():
-        run_sphinx(rst, buildername="html", extensions=["linklint.ext"])
+        doctree = run_sphinx(rst, buildername="html", extensions=["linklint.ext"])
         summary = summarize_html_file("_build/index.html")
         # In case of needing to see what happened, copy the HTML etc to tmp.
-        shutil.copytree("_build/_static", PROJECT / "tmp/html" / "_static", dirs_exist_ok=True)
-        shutil.copyfile("_build/index.html", PROJECT / "tmp/html" / f"{root}.html")
+        shutil.copytree("_build/_static", PROJECT / "tmp/html/_static", dirs_exist_ok=True)
+        shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}.html")
 
-    (PROJECT / "tmp/html" / f"{root}_summary.html").write_text(summary)
-    summary_file = PROJECT / "tests/data" / f"{root}_summary.html"
+    save_test_doctree(doctree)
+    (PROJECT / f"tmp/html/{root}_summary.html").write_text(summary)
+    summary_file = PROJECT / f"tests/data/{root}_summary.html"
     if summary_file.exists():
         expected = summary_file.read_text()
     else:

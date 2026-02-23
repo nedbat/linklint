@@ -39,13 +39,16 @@ def parse_rst_file(content: str) -> nodes.document:
     with in_tempdir():
         doctree = run_sphinx(content, buildername="dummy", extensions=[])
     fix_node_lines(doctree)
-
-    if os.getenv("PYTEST_CURRENT_TEST"):
-        os.makedirs("tmp/dump", exist_ok=True)
-        with open(f"tmp/dump/{slug_for_test()}.txt", "w", encoding="utf-8") as f:
-            dump_doctree(doctree, f)
-
+    save_test_doctree(doctree)
     return doctree
+
+
+def save_test_doctree(doctree: nodes.document) -> None:
+    if os.getenv("PYTEST_CURRENT_TEST"):
+        dump_file = Path(f"tmp/doctree/{slug_for_test()}.txt")
+        dump_file.parent.mkdir(parents=True, exist_ok=True)
+        with dump_file.open("w", encoding="utf-8") as f:
+            dump_doctree(doctree, f)
 
 
 BLOCK_NODES = (nodes.paragraph,)
