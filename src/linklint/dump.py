@@ -18,9 +18,9 @@ INTERESTING_KEYS = [
     "module",
 ]
 
-INTERESTING_ATTRS = [
-    # "rawsource",
-]
+# INTERESTING_ATTRS = [
+#     "rawsource",
+# ]
 
 
 def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
@@ -35,9 +35,9 @@ def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
         for key in INTERESTING_KEYS:
             if val := node.get(key):  # type: ignore
                 attrs.append(f"{key}={val!r}")
-        for attr in INTERESTING_ATTRS:
-            if val := getattr(node, attr, None):
-                attrs.append(f".{attr}={val!r}")
+        # for attr in INTERESTING_ATTRS:
+        #     if val := getattr(node, attr, None):
+        #         attrs.append(f".{attr}={val!r}")
         attr_str = f" {{{', '.join(attrs)}}}" if attrs else ""
         if tag == "reference":
             print(vars(node), file=fp)

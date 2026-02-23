@@ -39,9 +39,9 @@ def test_summarize_html(rst_file: str) -> None:
     if summary_file.exists():
         expected = summary_file.read_text()
     else:
-        expected = f"Summary {summary_file} doesn't exist"
+        expected = f"Summary {summary_file} doesn't exist"  # pragma: only failure
 
-    if summary != expected:
+    if summary != expected:  # pragma: only failure
         print(f"Full HTML is at tmp/html/{root}.html")
         print(f"Summary is at tmp/html/{root}_summary.html")
         print("if the full HTML is correct:")

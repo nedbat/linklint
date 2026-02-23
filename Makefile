@@ -9,7 +9,7 @@ install: .venv
 
 test:
 	coverage run --branch -m pytest
-	coverage report -m
+	coverage report --show-missing --skip-covered
 	coverage html
 
 quality:
