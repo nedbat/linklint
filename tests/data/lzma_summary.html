@@ -1,0 +1,1537 @@
+<section id="module-lzma">
+  <h1>
+    <code>
+      lzma
+    </code>
+    — Compression using the LZMA algorithm
+  </h1>
+  <div>
+    <p>
+      Added in version 3.3.
+    </p>
+  </div>
+  <p>
+    <strong>
+      Source code:
+    </strong>
+    <a href="#id1">
+      :source:`Lib/lzma.py`
+    </a>
+  </p>
+  <hr>
+  </hr>
+  <p>
+    This module provides classes and convenience functions for compressing and decompressing data using the LZMA compression algorithm. Also included is a file interface supporting the
+    <code>
+      .xz
+    </code>
+    and legacy
+    <code>
+      .lzma
+    </code>
+    file formats used by the
+    <strong>
+      xz
+    </strong>
+    utility, as well as raw compressed streams.
+  </p>
+  <p>
+    The interface provided by this module is very similar to that of the
+    <code>
+      bz2
+    </code>
+    module. Note that
+    <a href="#lzma.LZMAFile">
+      <code>
+        LZMAFile
+      </code>
+    </a>
+    and
+    <code>
+      bz2.BZ2File
+    </code>
+    are
+    <em>
+      not
+    </em>
+    thread-safe, so if you need to use a single
+    <code>
+      LZMAFile
+    </code>
+    instance from multiple threads, it is necessary to protect it with a lock.
+  </p>
+  <dl>
+    <dt id="lzma.LZMAError">
+      exception
+      lzma.
+      LZMAError
+    </dt>
+    <dd>
+      <p>
+        This exception is raised when an error occurs during compression or decompression, or while initializing the compressor/decompressor state.
+      </p>
+    </dd>
+  </dl>
+  <section id="reading-and-writing-compressed-files">
+    <h2>
+      Reading and writing compressed files
+    </h2>
+    <dl>
+      <dt id="lzma.open">
+        lzma.
+        open
+        (
+        <em>
+          filename
+        </em>
+        ,
+        <em>
+          mode
+          =
+          'rb'
+        </em>
+        ,
+        <em>
+          <abbr>
+            *
+          </abbr>
+        </em>
+        ,
+        <em>
+          format
+          =
+          None
+        </em>
+        ,
+        <em>
+          check
+          =
+          -1
+        </em>
+        ,
+        <em>
+          preset
+          =
+          None
+        </em>
+        ,
+        <em>
+          filters
+          =
+          None
+        </em>
+        ,
+        <em>
+          encoding
+          =
+          None
+        </em>
+        ,
+        <em>
+          errors
+          =
+          None
+        </em>
+        ,
+        <em>
+          newline
+          =
+          None
+        </em>
+        )
+      </dt>
+      <dd>
+        <p>
+          Open an LZMA-compressed file in binary or text mode, returning a
+          file object
+          .
+        </p>
+        <p>
+          The
+          <em>
+            filename
+          </em>
+          argument can be either an actual file name (given as a
+          <code>
+            str
+          </code>
+          ,
+          <code>
+            bytes
+          </code>
+          or
+          path-like
+          object), in which case the named file is opened, or it can be an existing file object to read from or write to.
+        </p>
+        <p>
+          The
+          <em>
+            mode
+          </em>
+          argument can be any of
+          <code>
+            "r"
+          </code>
+          ,
+          <code>
+            "rb"
+          </code>
+          ,
+          <code>
+            "w"
+          </code>
+          ,
+          <code>
+            "wb"
+          </code>
+          ,
+          <code>
+            "x"
+          </code>
+          ,
+          <code>
+            "xb"
+          </code>
+          ,
+          <code>
+            "a"
+          </code>
+          or
+          <code>
+            "ab"
+          </code>
+          for binary mode, or
+          <code>
+            "rt"
+          </code>
+          ,
+          <code>
+            "wt"
+          </code>
+          ,
+          <code>
+            "xt"
+          </code>
+          , or
+          <code>
+            "at"
+          </code>
+          for text mode. The default is
+          <code>
+            "rb"
+          </code>
+          .
+        </p>
+        <p>
+          When opening a file for reading, the
+          <em>
+            format
+          </em>
+          and
+          <em>
+            filters
+          </em>
+          arguments have the same meanings as for
+          <a href="#lzma.LZMADecompressor">
+            <code>
+              LZMADecompressor
+            </code>
+          </a>
+          . In this case, the
+          <em>
+            check
+          </em>
+          and
+          <em>
+            preset
+          </em>
+          arguments should not be used.
+        </p>
+        <p>
+          When opening a file for writing, the
+          <em>
+            format
+          </em>
+          ,
+          <em>
+            check
+          </em>
+          ,
+          <em>
+            preset
+          </em>
+          and
+          <em>
+            filters
+          </em>
+          arguments have the same meanings as for
+          <a href="#lzma.LZMACompressor">
+            <code>
+              LZMACompressor
+            </code>
+          </a>
+          .
+        </p>
+        <p>
+          For binary mode, this function is equivalent to the
+          <a href="#lzma.LZMAFile">
+            <code>
+              LZMAFile
+            </code>
+          </a>
+          constructor:
+          <code>
+            LZMAFile(filename,
+            mode,
+            ...)
+          </code>
+          . In this case, the
+          <em>
+            encoding
+          </em>
+          ,
+          <em>
+            errors
+          </em>
+          and
+          <em>
+            newline
+          </em>
+          arguments must not be provided.
+        </p>
+        <p>
+          For text mode, a
+          <a href="#lzma.LZMAFile">
+            <code>
+              LZMAFile
+            </code>
+          </a>
+          object is created, and wrapped in an
+          <code>
+            io.TextIOWrapper
+          </code>
+          instance with the specified encoding, error handling behavior, and line ending(s).
+        </p>
+        <div>
+          <p>
+            Changed in version 3.4:
+            Added support for the
+            <code>
+              "x"
+            </code>
+            ,
+            <code>
+              "xb"
+            </code>
+            and
+            <code>
+              "xt"
+            </code>
+            modes.
+          </p>
+        </div>
+        <div>
+          <p>
+            Changed in version 3.6:
+            Accepts a
+            path-like object
+            .
+          </p>
+        </div>
+      </dd>
+    </dl>
+    <dl>
+      <dt id="lzma.LZMAFile">
+        class
+        lzma.
+        LZMAFile
+        (
+        <em>
+          filename
+          =
+          None
+        </em>
+        ,
+        <em>
+          mode
+          =
+          'r'
+        </em>
+        ,
+        <em>
+          <abbr>
+            *
+          </abbr>
+        </em>
+        ,
+        <em>
+          format
+          =
+          None
+        </em>
+        ,
+        <em>
+          check
+          =
+          -1
+        </em>
+        ,
+        <em>
+          preset
+          =
+          None
+        </em>
+        ,
+        <em>
+          filters
+          =
+          None
+        </em>
+        )
+      </dt>
+      <dd>
+        <p>
+          Open an LZMA-compressed file in binary mode.
+        </p>
+        <p>
+          An
+          <code>
+            LZMAFile
+          </code>
+          can wrap an already-open
+          file object
+          , or operate directly on a named file. The
+          <em>
+            filename
+          </em>
+          argument specifies either the file object to wrap, or the name of the file to open (as a
+          <code>
+            str
+          </code>
+          ,
+          <code>
+            bytes
+          </code>
+          or
+          path-like
+          object). When wrapping an existing file object, the wrapped file will not be closed when the
+          <code>
+            LZMAFile
+          </code>
+          is closed.
+        </p>
+        <p>
+          The
+          <em>
+            mode
+          </em>
+          argument can be either
+          <code>
+            "r"
+          </code>
+          for reading (default),
+          <code>
+            "w"
+          </code>
+          for overwriting,
+          <code>
+            "x"
+          </code>
+          for exclusive creation, or
+          <code>
+            "a"
+          </code>
+          for appending. These can equivalently be given as
+          <code>
+            "rb"
+          </code>
+          ,
+          <code>
+            "wb"
+          </code>
+          ,
+          <code>
+            "xb"
+          </code>
+          and
+          <code>
+            "ab"
+          </code>
+          respectively.
+        </p>
+        <p>
+          If
+          <em>
+            filename
+          </em>
+          is a file object (rather than an actual file name), a mode of
+          <code>
+            "w"
+          </code>
+          does not truncate the file, and is instead equivalent to
+          <code>
+            "a"
+          </code>
+          .
+        </p>
+        <p>
+          When opening a file for reading, the input file may be the concatenation of multiple separate compressed streams. These are transparently decoded as a single logical stream.
+        </p>
+        <p>
+          When opening a file for reading, the
+          <em>
+            format
+          </em>
+          and
+          <em>
+            filters
+          </em>
+          arguments have the same meanings as for
+          <a href="#lzma.LZMADecompressor">
+            <code>
+              LZMADecompressor
+            </code>
+          </a>
+          . In this case, the
+          <em>
+            check
+          </em>
+          and
+          <em>
+            preset
+          </em>
+          arguments should not be used.
+        </p>
+        <p>
+          When opening a file for writing, the
+          <em>
+            format
+          </em>
+          ,
+          <em>
+            check
+          </em>
+          ,
+          <em>
+            preset
+          </em>
+          and
+          <em>
+            filters
+          </em>
+          arguments have the same meanings as for
+          <a href="#lzma.LZMACompressor">
+            <code>
+              LZMACompressor
+            </code>
+          </a>
+          .
+        </p>
+        <p>
+          <code>
+            LZMAFile
+          </code>
+          supports all the members specified by
+          <code>
+            io.BufferedIOBase
+          </code>
+          , except for
+          <code>
+            detach()
+          </code>
+          and
+          <code>
+            truncate()
+          </code>
+          . Iteration and the
+          <code>
+            with
+          </code>
+          statement are supported.
+        </p>
+        <p>
+          The following method and attributes are also provided:
+        </p>
+        <dl>
+          <dt id="lzma.LZMAFile.peek">
+            peek
+            (
+            <em>
+              size
+              =
+              -1
+            </em>
+            )
+          </dt>
+          <dd>
+            <p>
+              Return buffered data without advancing the file position. At least one byte of data will be returned, unless EOF has been reached. The exact number of bytes returned is unspecified (the
+              <em>
+                size
+              </em>
+              argument is ignored).
+            </p>
+            <div>
+              <p>
+                Note
+              </p>
+              <p>
+                While calling
+                <a href="#lzma.LZMAFile.peek">
+                  <code>
+                    peek()
+                  </code>
+                </a>
+                does not change the file position of the
+                <code>
+                  LZMAFile
+                </code>
+                , it may change the position of the underlying file object (e.g. if the
+                <code>
+                  LZMAFile
+                </code>
+                was constructed by passing a file object for
+                <em>
+                  filename
+                </em>
+                ).
+              </p>
+            </div>
+          </dd>
+        </dl>
+        <dl>
+          <dt id="lzma.LZMAFile.mode">
+            mode
+          </dt>
+          <dd>
+            <p>
+              <code>
+                'rb'
+              </code>
+              for reading and
+              <code>
+                'wb'
+              </code>
+              for writing.
+            </p>
+            <div>
+              <p>
+                Added in version 3.13.
+              </p>
+            </div>
+          </dd>
+        </dl>
+        <dl>
+          <dt id="lzma.LZMAFile.name">
+            name
+          </dt>
+          <dd>
+            <p>
+              The lzma file name. Equivalent to the
+              <code>
+                name
+              </code>
+              attribute of the underlying
+              file object
+              .
+            </p>
+            <div>
+              <p>
+                Added in version 3.13.
+              </p>
+            </div>
+          </dd>
+        </dl>
+        <div>
+          <p>
+            Changed in version 3.4:
+            Added support for the
+            <code>
+              "x"
+            </code>
+            and
+            <code>
+              "xb"
+            </code>
+            modes.
+          </p>
+        </div>
+        <div>
+          <p>
+            Changed in version 3.5:
+            The
+            <code>
+              read()
+            </code>
+            method now accepts an argument of
+            <code>
+              None
+            </code>
+            .
+          </p>
+        </div>
+        <div>
+          <p>
+            Changed in version 3.6:
+            Accepts a
+            path-like object
+            .
+          </p>
+        </div>
+      </dd>
+    </dl>
+  </section>
+  <section id="compressing-and-decompressing-data-in-memory">
+    <h2>
+      Compressing and decompressing data in memory
+    </h2>
+    <dl>
+      <dt id="lzma.LZMACompressor">
+        class
+        lzma.
+        LZMACompressor
+        (
+        <em>
+          format
+          =
+          FORMAT_XZ
+        </em>
+        ,
+        <em>
+          check
+          =
+          -1
+        </em>
+        ,
+        <em>
+          preset
+          =
+          None
+        </em>
+        ,
+        <em>
+          filters
+          =
+          None
+        </em>
+        )
+      </dt>
+      <dd>
+        <p>
+          Create a compressor object, which can be used to compress data incrementally.
+        </p>
+        <p>
+          For a more convenient way of compressing a single chunk of data, see
+          <a href="#lzma.compress">
+            <code>
+              compress()
+            </code>
+          </a>
+          .
+        </p>
+        <p>
+          The
+          <em>
+            format
+          </em>
+          argument specifies what container format should be used. Possible values are:
+        </p>
+        <ul>
+          <li>
+            <dl>
+              <dt>
+                <code>
+                  FORMAT_XZ
+                </code>
+                : The
+                <code>
+                  .xz
+                </code>
+                container format.
+              </dt>
+              <dd>
+                <p>
+                  This is the default format.
+                </p>
+              </dd>
+            </dl>
+          </li>
+          <li>
+            <dl>
+              <dt>
+                <code>
+                  FORMAT_ALONE
+                </code>
+                : The legacy
+                <code>
+                  .lzma
+                </code>
+                container format.
+              </dt>
+              <dd>
+                <p>
+                  This format is more limited than
+                  <code>
+                    .xz
+                  </code>
+                  – it does not support integrity checks or multiple filters.
+                </p>
+              </dd>
+            </dl>
+          </li>
+          <li>
+            <dl>
+              <dt>
+                <code>
+                  FORMAT_RAW
+                </code>
+                : A raw data stream, not using any container format.
+              </dt>
+              <dd>
+                <p>
+                  This format specifier does not support integrity checks, and requires that you always specify a custom filter chain (for both compression and decompression). Additionally, data compressed in this manner cannot be decompressed using
+                  <code>
+                    FORMAT_AUTO
+                  </code>
+                  (see
+                  <a href="#lzma.LZMADecompressor">
+                    <code>
+                      LZMADecompressor
+                    </code>
+                  </a>
+                  ).
+                </p>
+              </dd>
+            </dl>
+          </li>
+        </ul>
+        <p>
+          The
+          <em>
+            check
+          </em>
+          argument specifies the type of integrity check to include in the compressed data. This check is used when decompressing, to ensure that the data has not been corrupted. Possible values are:
+        </p>
+        <ul>
+          <li>
+            <p>
+              <code>
+                CHECK_NONE
+              </code>
+              : No integrity check. This is the default (and the only acceptable value) for
+              <code>
+                FORMAT_ALONE
+              </code>
+              and
+              <code>
+                FORMAT_RAW
+              </code>
+              .
+            </p>
+          </li>
+          <li>
+            <p>
+              <code>
+                CHECK_CRC32
+              </code>
+              : 32-bit Cyclic Redundancy Check.
+            </p>
+          </li>
+          <li>
+            <p>
+              <code>
+                CHECK_CRC64
+              </code>
+              : 64-bit Cyclic Redundancy Check. This is the default for
+              <code>
+                FORMAT_XZ
+              </code>
+              .
+            </p>
+          </li>
+          <li>
+            <p>
+              <code>
+                CHECK_SHA256
+              </code>
+              : 256-bit Secure Hash Algorithm.
+            </p>
+          </li>
+        </ul>
+        <p>
+          If the specified check is not supported, an
+          <a href="#lzma.LZMAError">
+            <code>
+              LZMAError
+            </code>
+          </a>
+          is raised.
+        </p>
+        <p>
+          The compression settings can be specified either as a preset compression level (with the
+          <em>
+            preset
+          </em>
+          argument), or in detail as a custom filter chain (with the
+          <em>
+            filters
+          </em>
+          argument).
+        </p>
+        <p>
+          The
+          <em>
+            preset
+          </em>
+          argument (if provided) should be an integer between
+          <code>
+            0
+          </code>
+          and
+          <code>
+            9
+          </code>
+          (inclusive), optionally OR-ed with the constant
+          <code>
+            PRESET_EXTREME
+          </code>
+          . If neither
+          <em>
+            preset
+          </em>
+          nor
+          <em>
+            filters
+          </em>
+          are given, the default behavior is to use
+          <code>
+            PRESET_DEFAULT
+          </code>
+          (preset level
+          <code>
+            6
+          </code>
+          ). Higher presets produce smaller output, but make the compression process slower.
+        </p>
+        <div>
+          <p>
+            Note
+          </p>
+          <p>
+            In addition to being more CPU-intensive, compression with higher presets also requires much more memory (and produces output that needs more memory to decompress). With preset
+            <code>
+              9
+            </code>
+            for example, the overhead for an
+            <code>
+              LZMACompressor
+            </code>
+            object can be as high as 800 MiB. For this reason, it is generally best to stick with the default preset.
+          </p>
+        </div>
+        <p>
+          The
+          <em>
+            filters
+          </em>
+          argument (if provided) should be a filter chain specifier. See
+          <a href="#filter-chain-specs">
+            Specifying custom filter chains
+          </a>
+          for details.
+        </p>
+        <dl>
+          <dt id="lzma.LZMACompressor.compress">
+            compress
+            (
+            <em>
+              data
+            </em>
+            )
+          </dt>
+          <dd>
+            <p>
+              Compress
+              <em>
+                data
+              </em>
+              (a
+              <code>
+                bytes
+              </code>
+              object), returning a
+              <code>
+                bytes
+              </code>
+              object containing compressed data for at least part of the input. Some of
+              <em>
+                data
+              </em>
+              may be buffered internally, for use in later calls to
+              <a href="#lzma.compress">
+                <code>
+                  compress()
+                </code>
+              </a>
+              and
+              <a href="#lzma.LZMACompressor.flush">
+                <code>
+                  flush()
+                </code>
+              </a>
+              . The returned data should be concatenated with the output of any previous calls to
+              <code>
+                compress()
+              </code>
+              .
+            </p>
+          </dd>
+        </dl>
+        <dl>
+          <dt id="lzma.LZMACompressor.flush">
+            flush
+            (
+            )
+          </dt>
+          <dd>
+            <p>
+              Finish the compression process, returning a
+              <code>
+                bytes
+              </code>
+              object containing any data stored in the compressor’s internal buffers.
+            </p>
+            <p>
+              The compressor cannot be used after this method has been called.
+            </p>
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+    <dl>
+      <dt id="lzma.LZMADecompressor">
+        class
+        lzma.
+        LZMADecompressor
+        (
+        <em>
+          format
+          =
+          FORMAT_AUTO
+        </em>
+        ,
+        <em>
+          memlimit
+          =
+          None
+        </em>
+        ,
+        <em>
+          filters
+          =
+          None
+        </em>
+        )
+      </dt>
+      <dd>
+        <p>
+          Create a decompressor object, which can be used to decompress data incrementally.
+        </p>
+        <p>
+          For a more convenient way of decompressing an entire compressed stream at once, see
+          <a href="#lzma.decompress">
+            <code>
+              decompress()
+            </code>
+          </a>
+          .
+        </p>
+        <p>
+          The
+          <em>
+            format
+          </em>
+          argument specifies the container format that should be used. The default is
+          <code>
+            FORMAT_AUTO
+          </code>
+          , which can decompress both
+          <code>
+            .xz
+          </code>
+          and
+          <code>
+            .lzma
+          </code>
+          files. Other possible values are
+          <code>
+            FORMAT_XZ
+          </code>
+          ,
+          <code>
+            FORMAT_ALONE
+          </code>
+          , and
+          <code>
+            FORMAT_RAW
+          </code>
+          .
+        </p>
+        <p>
+          The
+          <em>
+            memlimit
+          </em>
+          argument specifies a limit (in bytes) on the amount of memory that the decompressor can use. When this argument is used, decompression will fail with an
+          <a href="#lzma.LZMAError">
+            <code>
+              LZMAError
+            </code>
+          </a>
+          if it is not possible to decompress the input within the given memory limit.
+        </p>
+        <p>
+          The
+          <em>
+            filters
+          </em>
+          argument specifies the filter chain that was used to create the stream being decompressed. This argument is required if
+          <em>
+            format
+          </em>
+          is
+          <code>
+            FORMAT_RAW
+          </code>
+          , but should not be used for other formats. See
+          <a href="#filter-chain-specs">
+            Specifying custom filter chains
+          </a>
+          for more information about filter chains.
+        </p>
+        <div>
+          <p>
+            Note
+          </p>
+          <p>
+            This class does not transparently handle inputs containing multiple compressed streams, unlike
+            <a href="#lzma.decompress">
+              <code>
+                decompress()
+              </code>
+            </a>
+            and
+            <a href="#lzma.LZMAFile">
+              <code>
+                LZMAFile
+              </code>
+            </a>
+            . To decompress a multi-stream input with
+            <code>
+              LZMADecompressor
+            </code>
+            , you must create a new decompressor for each stream.
+          </p>
+        </div>
+        <dl>
+          <dt id="lzma.LZMADecompressor.decompress">
+            decompress
+            (
+            <em>
+              data
+            </em>
+            ,
+            <em>
+              max_length
+              =
+              -1
+            </em>
+            )
+          </dt>
+          <dd>
+            <p>
+              Decompress
+              <em>
+                data
+              </em>
+              (a
+              bytes-like object
+              ), returning uncompressed data as bytes. Some of
+              <em>
+                data
+              </em>
+              may be buffered internally, for use in later calls to
+              <a href="#lzma.decompress">
+                <code>
+                  decompress()
+                </code>
+              </a>
+              . The returned data should be concatenated with the output of any previous calls to
+              <code>
+                decompress()
+              </code>
+              .
+            </p>
+            <p>
+              If
+              <em>
+                max_length
+              </em>
+              is nonnegative, returns at most
+              <em>
+                max_length
+              </em>
+              bytes of decompressed data. If this limit is reached and further output can be produced, the
+              <a href="#lzma.LZMADecompressor.needs_input">
+                <code>
+                  needs_input
+                </code>
+              </a>
+              attribute will be set to
+              <code>
+                False
+              </code>
+              . In this case, the next call to
+              <a href="#lzma.LZMADecompressor.decompress">
+                <code>
+                  decompress()
+                </code>
+              </a>
+              may provide
+              <em>
+                data
+              </em>
+              as
+              <code>
+                b''
+              </code>
+              to obtain more of the output.
+            </p>
+            <p>
+              If all of the input data was decompressed and returned (either because this was less than
+              <em>
+                max_length
+              </em>
+              bytes, or because
+              <em>
+                max_length
+              </em>
+              was negative), the
+              <a href="#lzma.LZMADecompressor.needs_input">
+                <code>
+                  needs_input
+                </code>
+              </a>
+              attribute will be set to
+              <code>
+                True
+              </code>
+              .
+            </p>
+            <p>
+              Attempting to decompress data after the end of stream is reached raises an
+              <code>
+                EOFError
+              </code>
+              . Any data found after the end of the stream is ignored and saved in the
+              <a href="#lzma.LZMADecompressor.unused_data">
+                <code>
+                  unused_data
+                </code>
+              </a>
+              attribute.
+            </p>
+            <div>
+              <p>
+                Changed in version 3.5:
+                Added the
+                <em>
+                  max_length
+                </em>
+                parameter.
+              </p>
+            </div>
+          </dd>
+        </dl>
+        <dl>
+          <dt id="lzma.LZMADecompressor.check">
+            check
+          </dt>
+          <dd>
+            <p>
+              The ID of the integrity check used by the input stream. This may be
+              <code>
+                CHECK_UNKNOWN
+              </code>
+              until enough of the input has been decoded to determine what integrity check it uses.
+            </p>
+          </dd>
+        </dl>
+        <dl>
+          <dt id="lzma.LZMADecompressor.eof">
+            eof
+          </dt>
+          <dd>
+            <p>
+              <code>
+                True
+              </code>
+              if the end-of-stream marker has been reached.
+            </p>
+          </dd>
+        </dl>
+        <dl>
+          <dt id="lzma.LZMADecompressor.unused_data">
+            unused_data
+          </dt>
+          <dd>
+            <p>
+              Data found after the end of the compressed stream.
+            </p>
+            <p>
+              Before the end of the stream is reached, this will be
+              <code>
+                b""
+              </code>
+              .
+            </p>
+          </dd>
+        </dl>
+        <dl>
+          <dt id="lzma.LZMADecompressor.needs_input">
+            needs_input
+          </dt>
+          <dd>
+            <p>
+              <code>
+                False
+              </code>
+              if the
+              <a href="#lzma.LZMADecompressor.decompress">
+                <code>
+                  decompress()
+                </code>
+              </a>
+              method can provide more decompressed data before requiring new uncompressed input.
+            </p>
+            <div>
+              <p>
+                Added in version 3.5.
+              </p>
+            </div>
+          </dd>
+        </dl>
+      </dd>
+    </dl>
+    <dl>
+      <dt id="lzma.compress">
+        lzma.
+        compress
+        (
+        <em>
+          data
+        </em>
+        ,
+        <em>
+          format
+          =
+          FORMAT_XZ
+        </em>
+        ,
+        <em>
+          check
+          =
+          -1
+        </em>
+        ,
+        <em>
+          preset
+          =
+          None
+        </em>
+        ,
+        <em>
+          filters
+          =
+          None
+        </em>
+        )
+      </dt>
+      <dd>
+        <p>
+          Compress
+          <em>
+            data
+          </em>
+          (a
+          <code>
+            bytes
+          </code>
+          object), returning the compressed data as a
+          <code>
+            bytes
+          </code>
+          object.
+        </p>
+        <p>
+          See
+          <a href="#lzma.LZMACompressor">
+            <code>
+              LZMACompressor
+            </code>
+          </a>
+          above for a description of the
+          <em>
+            format
+          </em>
+          ,
+          <em>
+            check
+          </em>
+          ,
+          <em>
+            preset
+          </em>
+          and
+          <em>
+            filters
+          </em>
+          arguments.
+        </p>
+      </dd>
+    </dl>
+    <dl>
+      <dt id="lzma.decompress">
+        lzma.
+        decompress
+        (
+        <em>
+          data
+        </em>
+        ,
+        <em>
+          format
+          =
+          FORMAT_AUTO
+        </em>
+        ,
+        <em>
+          memlimit
+          =
+          None
+        </em>
+        ,
+        <em>
+          filters
+          =
+          None
+        </em>
+        )
+      </dt>
+      <dd>
+        <p>
+          Decompress
+          <em>
+            data
+          </em>
+          (a
+          <code>
+            bytes
+          </code>
+          object), returning the uncompressed data as a
+          <code>
+            bytes
+          </code>
+          object.
+        </p>
+        <p>
+          If
+          <em>
+            data
+          </em>
+          is the concatenation of multiple distinct compressed streams, decompress all of these streams, and return the concatenation of the results.
+        </p>
+        <p>
+          See
+          <a href="#lzma.LZMADecompressor">
+            <code>
+              LZMADecompressor
+            </code>
+          </a>
+          above for a description of the
+          <em>
+            format
+          </em>
+          ,
+          <em>
+            memlimit
+          </em>
+          and
+          <em>
+            filters
+          </em>
+          arguments.
+        </p>
+      </dd>
+    </dl>
+  </section>
+  <section id="miscellaneous">
+    <h2>
+      Miscellaneous
+    </h2>
+    <dl>
+      <dt id="lzma.is_check_supported">
+        lzma.
+        is_check_supported
+        (
+        <em>
+          check
+        </em>
+        )
+      </dt>
+      <dd>
+        <p>
+          Return
+          <code>
+            True
+          </code>
+          if the given integrity check is supported on this system.
+        </p>
+        <p>
+          <code>
+            CHECK_NONE
+          </code>
+          and
+          <code>
+            CHECK_CRC32
+          </code>
+          are always supported.
+          <code>
+            CHECK_CRC64
+          </code>
+          and
+          <code>
+            CHECK_SHA256
+          </code>
+          may be unavailable if you are using a version of
+          <strong>
+            liblzma
+          </strong>
+          that was compiled with a limited feature set.
+        </p>
+      </dd>
+    </dl>
+  </section>
+  <section id="specifying-custom-filter-chains">
+    <h2>
+      Specifying custom filter chains
+    </h2>
+    <p>
+      A filter chain specifier is a sequence of dictionaries, where each dictionary contains the ID and options for a single filter. Each dictionary must contain the key
+      <code>
+        "id"
+      </code>
+      , and may contain additional keys to specify filter-dependent options. Valid filter IDs are as follows:
+    </p>
+  </section>
+</section>
