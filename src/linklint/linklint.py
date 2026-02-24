@@ -11,7 +11,7 @@ from sphinx import addnodes
 
 from linklint.regions import Region, find_regions
 from linklint.rsthelp import parse_rst_file, resub_in_rst_line
-from linklint.utils import node_line_number
+from linklint.utils import node_line_number, node_traceback
 
 
 class Resolver:
@@ -148,13 +148,10 @@ def check_duplicate_refs_in_paragraph(work: LintWork) -> Iterable[LintIssue]:
         raise Exception("Fixing is not available for --check=paradup")
 
     for ref in find_duplicate_refs(work.doctree):
-        assert ref.line is not None
+        line = node_line_number(ref)
         reftype = ref.get("reftype")  # type: ignore
         target = ref.get("reftarget")  # type: ignore
-        yield LintIssue(
-            ref.line,
-            f"duplicate :{reftype}:`{target}` in paragraph",
-        )
+        yield LintIssue(line, f"duplicate :{reftype}:`{target}` in paragraph")
 
 
 def find_duplicate_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
@@ -164,8 +161,8 @@ def find_duplicate_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
         for ref in para.findall(addnodes.pending_xref):
             reftype = ref.get("reftype")
             target = ref.get("reftarget")
-            if reftype and target:
-                refs_by_target[(reftype, target)].append(ref)
+            assert reftype and target, f"Reference missing reftype or target: {ref}\n{node_traceback(ref)}"
+            refs_by_target[(reftype, target)].append(ref)
 
         for refs in refs_by_target.values():
             if len(refs) > 1:

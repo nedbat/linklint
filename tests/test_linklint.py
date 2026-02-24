@@ -584,3 +584,46 @@ def test_nofix_self_link(rst: str, issues: list[LintIssue], diff: str) -> None:
     issues = [LintIssue(issue.line, issue.message, fixed=False) for issue in issues]
     assert result.issues == issues
     assert rst == result.content
+
+
+PARADUP_TEST_CASES = [
+    LintTestCase(
+        id="class-in-signature",
+        rst="""
+            LogRecord Objects
+            -----------------
+
+            :class:`LogRecord` instances are created automatically by the :class:`Logger`
+            every time something is logged, and can be created manually via
+            :func:`makeLogRecord` (for example, from a pickled event received over the
+            wire).
+
+            .. class:: LogRecord(name, level, pathname, lineno, msg, args, exc_info, func=None, sinfo=None)
+
+               Contains all the information pertinent to the event being logged.
+
+               :param args: Variable data to merge into the *msg* argument
+                  to obtain the event description.
+               :type args: tuple | dict[str, typing.Any]
+
+               :param exc_info: An exception tuple with the current exception information,
+                  as returned by :func:`sys.exc_info`,
+                  or ``None`` if no exception information is available.
+               :type exc_info: tuple[type[BaseException], BaseException, types.TracebackType] | None
+
+               :param func: The name of the function or method
+                  from which the logging call was invoked.
+               :type func: str | None
+            """,
+        issues=[
+            # Strange: line 2 is the underline of the header, the :param: is miles away.
+            LintIssue(line=2, message='duplicate :class:`BaseException` in paragraph', fixed=False)
+        ],
+    ),
+]
+
+@pytest.mark.parametrize("rst, issues, diff", PARADUP_TEST_CASES)
+def test_paradup(rst: str, issues: list[LintIssue], diff: str) -> None:
+    assert diff == ""
+    result = lint_content(rst, fix=False, checks={"paradup"})
+    assert result.issues == issues
