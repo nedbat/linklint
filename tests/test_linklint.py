@@ -16,7 +16,13 @@ def diff_lines(text1: str, text2: str) -> str:
     return min_diff
 
 
-def LintTestCase(*, rst: str, issues: list[LintIssue], diff: str, id: str = "linklint"):
+def LintTestCase(
+    *,
+    rst: str,
+    issues: list[LintIssue],
+    diff: str = "",
+    id: str = "linklint",
+):
     """Helper to create pytest parameters for linting tests."""
     assert rst.startswith("\n")
     rst = rst[1:]
@@ -25,7 +31,7 @@ def LintTestCase(*, rst: str, issues: list[LintIssue], diff: str, id: str = "lin
     return pytest.param(dedent(rst), issues, dedent(diff), id=id)
 
 
-TEST_CASES = [
+SELF_TEST_CASES = [
     # Check a self-link in the module description.
     LintTestCase(
         id="selflink",
@@ -96,7 +102,6 @@ TEST_CASES = [
             See :mod:`xyzzy` for more info.
             """,
         issues=[],
-        diff="",
     ),
     # Check that headers get fixed too.
     LintTestCase(
@@ -335,7 +340,6 @@ TEST_CASES = [
                 is used.
             """,
         issues=[],
-        diff="",
     ),
     # Some directives had the wrong line number.
     LintTestCase(
@@ -410,7 +414,6 @@ TEST_CASES = [
                Create a UUID from either a string of 32 hexadecimal digits, a string of 16
             """,
         issues=[],
-        diff="",
     ),
     # versionchanged directives needed fixing to get the right line numbers,
     # and the inline case needed extra fixing.
@@ -564,13 +567,20 @@ TEST_CASES = [
         issues=[
             LintIssue(line=10, message="self-link to :class:`Snapshot`", fixed=False),
         ],
-        diff="",
     ),
 ]
 
 
-@pytest.mark.parametrize("rst, issues, diff", TEST_CASES)
-def test_self_link(rst: str, issues: list[LintIssue], diff: str) -> None:
+@pytest.mark.parametrize("rst, issues, diff", SELF_TEST_CASES)
+def test_fix_self_link(rst: str, issues: list[LintIssue], diff: str) -> None:
     result = lint_content(rst, fix=True, checks={"self"})
     assert result.issues == issues
     assert diff_lines(rst, result.content) == diff
+
+
+@pytest.mark.parametrize("rst, issues, diff", SELF_TEST_CASES)
+def test_nofix_self_link(rst: str, issues: list[LintIssue], diff: str) -> None:
+    result = lint_content(rst, fix=False, checks={"self"})
+    issues = [LintIssue(issue.line, issue.message, fixed=False) for issue in issues]
+    assert result.issues == issues
+    assert rst == result.content
