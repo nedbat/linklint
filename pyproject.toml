@@ -28,7 +28,7 @@ dev = [
 ]
 
 [project.scripts]
-linklint = "linklint.linklint:main"
+linklint = "linklint.cli:main"
 
 [tool.setuptools.dynamic]
 version.attr = "linklint.__version__"
