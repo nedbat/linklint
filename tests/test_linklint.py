@@ -7,6 +7,7 @@ from linklint.linklint import LintIssue, lint_content
 
 from helpers import text_and_id
 
+
 def diff_lines(text1: str, text2: str) -> str:
     """Return a diff of just the lines that differ between text1 and text2."""
     differ = Differ().compare(
@@ -22,7 +23,7 @@ def lint_test_case(
     rst: str,
     issues: list[LintIssue],
     diff: str = "",
-    id: str = "linklint",
+    id: str = "",
 ):
     """Helper to create pytest parameters for linting tests."""
     rst, id = text_and_id(text=rst, id=id)
@@ -568,6 +569,10 @@ SELF_TEST_CASES = [
             LintIssue(line=10, message="self-link to :class:`Snapshot`", fixed=False),
         ],
     ),
+    lint_test_case(
+        rst="classhier.rst",
+        issues=[],
+    ),
 ]
 
 
@@ -617,10 +622,11 @@ PARADUP_TEST_CASES = [
             """,
         issues=[
             # Strange: line 2 is the underline of the header, the :param: is miles away.
-            LintIssue(line=2, message='duplicate :class:`BaseException` in paragraph', fixed=False)
+            LintIssue(line=2, message="duplicate :class:`BaseException` in paragraph", fixed=False)
         ],
     ),
 ]
+
 
 @pytest.mark.parametrize("rst, issues, diff", PARADUP_TEST_CASES)
 def test_paradup(rst: str, issues: list[LintIssue], diff: str) -> None:

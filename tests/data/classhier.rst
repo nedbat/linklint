@@ -15,13 +15,13 @@ Class hierarchy
 
         .. method:: methodb1()
 
-            A method of :class:`ClassB`, called :meth:`methodb1`. We're still
-            inside :class:`ClassA`.
+            A method of :class:`ClassB`, called :meth:`methodb1`.
+            We're still inside :class:`ClassA`.
 
     .. method:: ClassB.methodb2()
 
-        A method of :class:`ClassB`, called :meth:`methodb2`. We're still
-        inside :class:`ClassA`.
+        A method of :class:`ClassB`, called :meth:`methodb2`.
+        We're still inside :class:`ClassA`.
 
 .. method:: ClassA.methoda2()
 
