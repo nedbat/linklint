@@ -1,24 +1,14 @@
-from textwrap import dedent
-from pathlib import Path
-
 import pytest
 
 from linklint.regions import Region, find_regions
 from linklint.rsthelp import parse_rst_file
 
+from helpers import text_and_id
+
 
 def region_test_case(*, rst: str, regions: list[Region], id: str = ""):
     """Helper to create pytest parameters for tests."""
-    assert rst, "Test cases must have rst content or a file name"
-    if "\n" in rst:
-        assert rst.startswith("\n"), "Don't start rst with a backslash"
-        rst = dedent(rst[1:])
-    else:
-        # It's a file name
-        assert not id, "Don't provide filename and id"
-        id = rst
-        rst = (Path(__file__).parent / "data" / rst).read_text()
-    assert id, "Test cases must have an id"
+    rst, id = text_and_id(text=rst, id=id)
     return pytest.param(rst, regions, id=id)
 
 

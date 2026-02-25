@@ -5,6 +5,7 @@ import pytest
 
 from linklint.linklint import LintIssue, lint_content
 
+from helpers import text_and_id
 
 def diff_lines(text1: str, text2: str) -> str:
     """Return a diff of just the lines that differ between text1 and text2."""
@@ -24,11 +25,10 @@ def lint_test_case(
     id: str = "linklint",
 ):
     """Helper to create pytest parameters for linting tests."""
-    assert rst.startswith("\n")
-    rst = rst[1:]
+    rst, id = text_and_id(text=rst, id=id)
     if diff.startswith("\n"):
         diff = diff[1:]
-    return pytest.param(dedent(rst), issues, dedent(diff), id=id)
+    return pytest.param(rst, issues, dedent(diff), id=id)
 
 
 SELF_TEST_CASES = [
