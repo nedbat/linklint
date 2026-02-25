@@ -10,10 +10,10 @@ from docutils import nodes
 def slug_for_test() -> str:
     """Get the short name of the current test, possibly the param id."""
     test_name = os.getenv("PYTEST_CURRENT_TEST", "unknown")
-    m = re.search(r"::(?P<test>[\w_]+)(?P<param>\[[-._+/\w]+\])?(?: \(\w+\))$", test_name)
+    m = re.search(r"::(?P<test>[\w_]+)(?P<param>\[.+?\])?(?: \(\w+\))$", test_name)
     assert m is not None
     if param := m["param"]:
-        return param.strip("[]")
+        return re.sub(r"[^\w]", "-", param.strip("[]"))
     return m["test"]
 
 
