@@ -40,8 +40,11 @@ class HtmlSummarizer(HTMLParser):
     def summary(self) -> str:
         return "".join(self.output)
 
+    def has_class(self, dattrs: dict[str, str | None], class_name: str) -> bool:
+        return class_name in (dattrs.get("class") or "").split()
+
     def should_ignore(self, tag: str, dattrs: dict[str, str | None]) -> bool:
-        if tag == "a" and "headerlink" in (dattrs.get("class") or "").split():
+        if tag == "a" and self.has_class(dattrs, "headerlink"):
             return True
         return False
 
