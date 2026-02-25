@@ -9,16 +9,16 @@ from linklint.rsthelp import parse_rst_file
 
 def RegionTestCase(*, rst: str, regions: list[Region], id: str = ""):
     """Helper to create pytest parameters for tests."""
+    assert rst, "Test cases must have rst content or a file name"
     if "\n" in rst:
-        assert rst.startswith("\n")
+        assert rst.startswith("\n"), "Don't start rst with a backslash"
         rst = dedent(rst[1:])
     else:
         # It's a file name
-        assert not id
+        assert not id, "Don't provide filename and id"
         id = rst
         rst = (Path(__file__).parent / "data" / rst).read_text()
-    if not id:
-        id = "region"
+    assert id, "Test cases must have an id"
     return pytest.param(rst, regions, id=id)
 
 
