@@ -16,7 +16,7 @@ def diff_lines(text1: str, text2: str) -> str:
     return min_diff
 
 
-def LintTestCase(
+def lint_test_case(
     *,
     rst: str,
     issues: list[LintIssue],
@@ -33,7 +33,7 @@ def LintTestCase(
 
 SELF_TEST_CASES = [
     # Check a self-link in the module description.
-    LintTestCase(
+    lint_test_case(
         id="selflink",
         rst="""
             My Module
@@ -59,7 +59,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Is the line-munging correct?
-    LintTestCase(
+    lint_test_case(
         id="second-section",
         rst="""
             Another
@@ -90,7 +90,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Check that `.. _module-foo` isn't confused for a module section.
-    LintTestCase(
+    lint_test_case(
         id="module-target",
         rst="""
             .. _module-xyzzy:
@@ -104,7 +104,7 @@ SELF_TEST_CASES = [
         issues=[],
     ),
     # Check that headers get fixed too.
-    LintTestCase(
+    lint_test_case(
         id="header-selflink",
         rst="""
             :mod:`mymodule` Module
@@ -125,7 +125,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Check that overline headers get fixed too.
-    LintTestCase(
+    lint_test_case(
         id="overline",
         rst="""
             ***********************
@@ -153,7 +153,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Self-link on a continuation line inside a list item.
-    LintTestCase(
+    lint_test_case(
         id="continuation-line",
         rst="""
             My Module
@@ -174,7 +174,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Don't get confused about sub-modules.
-    LintTestCase(
+    lint_test_case(
         id="submodule",
         rst="""
             :mod:`dbm` --- Interfaces to Unix "databases"
@@ -217,7 +217,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Fix ~ references if needed.
-    LintTestCase(
+    lint_test_case(
         id="tilde",
         rst="""
             :mod:`email.encoders`: Encoders
@@ -257,7 +257,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Fix dotted references
-    LintTestCase(
+    lint_test_case(
         id="dotted",
         rst="""
             :mod:`!html.parser` --- Simple HTML and XHTML parser
@@ -292,7 +292,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Class self-linking.
-    LintTestCase(
+    lint_test_case(
         id="selflink-class",
         rst="""
             Queue
@@ -317,7 +317,7 @@ SELF_TEST_CASES = [
     # Some implicit references have no line number?
     # Optional[Anchor] makes a reference to Anchor with no line number and
     # we can't fix it anyway.
-    LintTestCase(
+    lint_test_case(
         id="implicit-ref",
         rst="""
             :mod:`!importlib.resources` -- Package resource reading, opening and access
@@ -342,7 +342,7 @@ SELF_TEST_CASES = [
         issues=[],
     ),
     # Some directives had the wrong line number.
-    LintTestCase(
+    lint_test_case(
         id="note",
         rst="""
             ZipFile objects
@@ -373,7 +373,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # Sometimes there are two to fix in one line.
-    LintTestCase(
+    lint_test_case(
         id="two-in-one-line",
         rst="""
             ZipFile objects
@@ -395,7 +395,7 @@ SELF_TEST_CASES = [
     ),
     # References can be in a section, but still be forward references, so
     # they aren't linking to the section you are already reading.
-    LintTestCase(
+    lint_test_case(
         id="case-sensitive",
         rst="""
             :mod:`!uuid` --- UUID objects according to :rfc:`9562`
@@ -417,7 +417,7 @@ SELF_TEST_CASES = [
     ),
     # versionchanged directives needed fixing to get the right line numbers,
     # and the inline case needed extra fixing.
-    LintTestCase(
+    lint_test_case(
         id="inline-versionchanged",
         rst="""
             :mod:`!collections` --- Container datatypes
@@ -449,7 +449,7 @@ SELF_TEST_CASES = [
             """,
     ),
     # A newline at the end of a link is trimmed, so our line count was off.
-    LintTestCase(
+    lint_test_case(
         id="newline-in-link",
         rst="""
             .. function:: fwalk(top='.', topdown=True, onerror=None, *, follow_symlinks=False, dir_fd=None)
@@ -486,7 +486,7 @@ SELF_TEST_CASES = [
             +    <https://en.wikipedia.org/wiki/Loss_of_significance>`_; the :func:`!expm1`
             """,
     ),
-    LintTestCase(
+    lint_test_case(
         id="stars",
         rst=r"""
             Process Management
@@ -547,7 +547,7 @@ SELF_TEST_CASES = [
     # A class mention in a method signature creates a reference with no line number, which
     # used to cause an assertion. But also, there's no markup for us to fix,
     # so it creates a LintIssue with fixed=False.
-    LintTestCase(
+    lint_test_case(
         id="class-in-signature",
         rst="""
             Snapshot
@@ -587,7 +587,7 @@ def test_nofix_self_link(rst: str, issues: list[LintIssue], diff: str) -> None:
 
 
 PARADUP_TEST_CASES = [
-    LintTestCase(
+    lint_test_case(
         id="class-in-signature",
         rst="""
             LogRecord Objects

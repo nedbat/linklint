@@ -7,7 +7,7 @@ from linklint.regions import Region, find_regions
 from linklint.rsthelp import parse_rst_file
 
 
-def RegionTestCase(*, rst: str, regions: list[Region], id: str = ""):
+def region_test_case(*, rst: str, regions: list[Region], id: str = ""):
     """Helper to create pytest parameters for tests."""
     assert rst, "Test cases must have rst content or a file name"
     if "\n" in rst:
@@ -24,7 +24,7 @@ def RegionTestCase(*, rst: str, regions: list[Region], id: str = ""):
 
 TEST_CASES = [
     # The `contents::` directive makes unnumbered paragraphs.
-    RegionTestCase(
+    region_test_case(
         id="unnumbered",
         rst="""
             ======================
@@ -44,7 +44,7 @@ TEST_CASES = [
             """,
         regions=[],
     ),
-    RegionTestCase(
+    region_test_case(
         id="mymodule",
         rst="""
             1My Module
@@ -73,7 +73,7 @@ TEST_CASES = [
             """,
         regions=[Region(kind="module", name="mymodule", start=1, end_main=18, end_total=18)],
     ),
-    RegionTestCase(
+    region_test_case(
         id="multiple-functions",
         rst=r"""
             The various :func:`exec\* <execl>` functions take a list of arguments for the new
@@ -93,7 +93,7 @@ TEST_CASES = [
             Region(kind="function", name="execlpe", start=4, end_main=9, end_total=9),
         ],
     ),
-    RegionTestCase(
+    region_test_case(
         rst="lzma.rst",
         regions=[
             Region("exception", "LZMAError", start=26, end_main=29, end_total=29),
