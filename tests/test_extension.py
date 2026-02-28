@@ -6,6 +6,7 @@ expected summary in a corresponding .html file.
 
 """
 
+import os
 import shutil
 from pathlib import Path
 
@@ -33,6 +34,13 @@ def test_summarize_html(rst_file: str) -> None:
         # In case of needing to see what happened, copy the HTML etc to tmp.
         shutil.copytree("_build/_static", PROJECT / "tmp/html/_static", dirs_exist_ok=True)
         shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}.html")
+
+        # $set_env.py: LINKLINT_SAVE_NOFIX - Save the HTML without linklint's fixes
+        if bool(int(os.getenv("LINKLINT_SAVE_NOFIX", "0"))):
+            run_sphinx(rst, buildername="html", extensions=[])
+            shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}_nofix.html")
+            nofix_summary = summarize_html_file("_build/index.html")
+            (PROJECT / f"tmp/html/{root}_summary_nofix.html").write_text(nofix_summary)
 
     save_test_doctree(doctree)
     (PROJECT / f"tmp/html/{root}_summary.html").write_text(summary)
