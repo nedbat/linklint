@@ -571,7 +571,32 @@ SELF_TEST_CASES = [
     ),
     lint_test_case(
         rst="classhier.rst",
-        issues=[],
+        issues=[
+            LintIssue(line=6, message="self-link to :class:`ClassA`", fixed=True),
+            LintIssue(line=10, message="self-link to :class:`ClassA`", fixed=True),
+            LintIssue(line=10, message="self-link to :meth:`methoda1`", fixed=True),
+            LintIssue(line=14, message="self-link to :class:`ClassA`", fixed=True),
+            LintIssue(line=18, message="self-link to :meth:`methodb1`", fixed=True),
+            LintIssue(line=19, message="self-link to :class:`ClassA`", fixed=True),
+            LintIssue(line=24, message="self-link to :class:`ClassA`", fixed=True),
+            LintIssue(line=28, message="self-link to :meth:`methoda2`", fixed=True),
+        ],
+        diff=r"""
+            -     An outer class, called :class:`ClassA`.
+            +     An outer class, called :class:`!ClassA`.
+            -         A method of :class:`ClassA`, called :meth:`methoda1`.
+            +         A method of :class:`!ClassA`, called :meth:`!methoda1`.
+            -         A nested class. This is inside :class:`ClassA`.
+            +         A nested class. This is inside :class:`!ClassA`.
+            -             A method of :class:`ClassB`, called :meth:`methodb1`.
+            +             A method of :class:`ClassB`, called :meth:`!methodb1`.
+            -             We're still inside :class:`ClassA`.
+            +             We're still inside :class:`!ClassA`.
+            -         We're still inside :class:`ClassA`.
+            +         We're still inside :class:`!ClassA`.
+            -     A method of :class:`ClassA`, called :meth:`methoda2`.
+            +     A method of :class:`ClassA`, called :meth:`!methoda2`.
+        """,
     ),
 ]
 

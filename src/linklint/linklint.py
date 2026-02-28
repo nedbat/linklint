@@ -122,23 +122,56 @@ def check_self_links(work: LintWork) -> Iterable[LintIssue]:
         yield LintIssue(line, f"self-link to :{reftype}:`{target}`", fixed=fixed)
 
 
+class RefFinder(nodes.GenericNodeVisitor):
+    """Visitor for nodes to track class context and find self-references."""
+    def __init__(self, doctree: nodes.document) -> None:
+        super().__init__(doctree)
+        self.resolver = Resolver(doctree)
+        self.self_refs: list[nodes.Node] = []
+        self.class_stack: list[str] = []
+        self.pushed_class: list[bool] = []
+
+    def visit_pending_xref(self, node: addnodes.pending_xref) -> None:
+        line = node_line_number(node)
+        reftype = node.get("reftype")
+        target = node.get("reftarget")
+        if reftype == "meth" and "." not in target:
+            assert self.class_stack, f"Method reference outside of class: {node}\n{node_traceback(node)}"
+            target = f"{self.class_stack[-1]}.{target}"
+        region = self.resolver.find_region(reftype, target)
+        if region is not None and region.start <= line <= region.end_total:
+            self.self_refs.append(node)
+
+    def visit_desc(self, node: addnodes.desc) -> None:
+        objtype = node.get("objtype")
+        pushed = False
+        if objtype == "class":
+            self.class_stack.append(node.children[0].get("fullname"))
+            pushed = True
+        elif objtype == "method" and not self.class_stack:
+            self.class_stack.append(node.children[0].get("class"))
+            pushed = True
+        self.pushed_class.append(pushed)
+
+    def depart_desc(self, node: addnodes.desc) -> None:
+        if self.pushed_class.pop():
+            self.class_stack.pop()
+
+    def default_visit(self, node):
+        # Annoying that I have to write this, GenericNodeVisitor should do it.
+        pass
+
+    def default_departure(self, node):
+        # Annoying that I have to write this, GenericNodeVisitor should do it.
+        pass
+
+
 def find_self_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
     """Find references that point to the same region they are in."""
 
-    resolver = Resolver(doctree)
-
-    for ref in doctree.findall(addnodes.pending_xref):
-        line = node_line_number(ref)
-        reftype = ref.get("reftype")
-        target = ref.get("reftarget")
-        region = resolver.find_region(reftype, target)
-        if region is None:
-            continue
-
-        # It might be that we sometimes want end_main, or we want it to be
-        # configurable, or something?
-        if region.start <= line <= region.end_total:
-            yield ref
+    finder = RefFinder(doctree)
+    doctree.walkabout(finder)
+    return finder.self_refs
 
 
 @check("paradup")
