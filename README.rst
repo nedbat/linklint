@@ -11,10 +11,13 @@ that should not be links.
 Changes
 =======
 
-Unreleased
-----------
+0.3.0 – 2026-02-28
+------------------
+
+Methods are associated with classes properly in a number of ways.
 
 The Sphinx extension now displays the number of references that were unlinked.
+The CPython docs report 3612 references unlinked.
 
 0.2.0 – 2026-02-22
 ------------------
