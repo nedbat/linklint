@@ -34,8 +34,8 @@ def run_sphinx(content: str, buildername: str, extensions: list[str]) -> nodes.d
     return app.env.get_doctree("index")
 
 
-def parse_rst_file(content: str) -> nodes.document:
-    """Parse an RST file using Sphinx and return the doctree."""
+def parse_rst(content: str) -> nodes.document:
+    """Parse RST content using Sphinx and return the doctree."""
     with in_tempdir():
         doctree = run_sphinx(content, buildername="dummy", extensions=[])
     fix_node_lines(doctree)

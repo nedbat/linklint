@@ -1,7 +1,7 @@
 import pytest
 
 from linklint.regions import Region, find_regions
-from linklint.rsthelp import parse_rst_file
+from linklint.rsthelp import parse_rst
 
 from helpers import text_and_id
 
@@ -112,5 +112,4 @@ TEST_CASES = [
 
 @pytest.mark.parametrize("rst, regions", TEST_CASES)
 def test_regions(rst: str, regions: list[Region]) -> None:
-    doctree = parse_rst_file(rst)
-    assert sorted(find_regions(doctree)) == sorted(regions)
+    assert sorted(find_regions(parse_rst(rst))) == sorted(regions)

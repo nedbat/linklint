@@ -10,7 +10,7 @@ from docutils import nodes
 from sphinx import addnodes
 
 from linklint.regions import Region, find_regions
-from linklint.rsthelp import parse_rst_file, resub_in_rst_line
+from linklint.rsthelp import parse_rst, resub_in_rst_line
 from linklint.utils import node_line_number, node_traceback
 
 
@@ -177,7 +177,7 @@ class LintResult:
 
 
 def lint_content(content: str, fix: bool, checks: set[str]) -> LintResult:
-    doctree = parse_rst_file(content)
+    doctree = parse_rst(content)
     work = LintWork(
         content_lines=content.splitlines(keepends=True),
         doctree=doctree,
