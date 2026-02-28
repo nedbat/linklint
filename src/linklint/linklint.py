@@ -122,8 +122,9 @@ def check_self_links(work: LintWork) -> Iterable[LintIssue]:
         yield LintIssue(line, f"self-link to :{reftype}:`{target}`", fixed=fixed)
 
 
-class RefFinder(nodes.GenericNodeVisitor):
+class RefFinder(nodes.SparseNodeVisitor):
     """Visitor for nodes to track class context and find self-references."""
+
     def __init__(self, doctree: nodes.document) -> None:
         super().__init__(doctree)
         self.resolver = Resolver(doctree)
@@ -135,12 +136,18 @@ class RefFinder(nodes.GenericNodeVisitor):
         line = node_line_number(node)
         reftype = node.get("reftype")
         target = node.get("reftarget")
+
         if reftype == "meth" and "." not in target:
-            assert self.class_stack, f"Method reference outside of class: {node}\n{node_traceback(node)}"
-            target = f"{self.class_stack[-1]}.{target}"
-        region = self.resolver.find_region(reftype, target)
-        if region is not None and region.start <= line <= region.end_total:
-            self.self_refs.append(node)
+            if self.class_stack:
+                target = f"{self.class_stack[-1]}.{target}"
+            else:
+                # Method reference without class context: can't resolve, so skip.
+                target = None
+
+        if target:
+            region = self.resolver.find_region(reftype, target)
+            if region is not None and region.start <= line <= region.end_total:
+                self.self_refs.append(node)
 
     def visit_desc(self, node: addnodes.desc) -> None:
         objtype = node.get("objtype")
@@ -157,12 +164,11 @@ class RefFinder(nodes.GenericNodeVisitor):
         if self.pushed_class.pop():
             self.class_stack.pop()
 
-    def default_visit(self, node):
-        # Annoying that I have to write this, GenericNodeVisitor should do it.
+    # Have to explicitly pass on unknown nodes, and Python docs have a bunch.
+    def unknown_visit(self, node):  # pragma: no cover
         pass
 
-    def default_departure(self, node):
-        # Annoying that I have to write this, GenericNodeVisitor should do it.
+    def unknown_departure(self, node):  # pragma: no cover
         pass
 
 

@@ -598,6 +598,22 @@ SELF_TEST_CASES = [
             +     A method of :class:`ClassA`, called :meth:`!methoda2`.
         """,
     ),
+    lint_test_case(
+        id="method-no-class",
+        rst="""
+            Memory-mapped file objects behave like both :class:`bytearray` and like
+            :term:`file objects <file object>`.  You can use mmap objects in most places
+            where :class:`bytearray` are expected; for example, you can use the :mod:`re`
+            module to search through a memory-mapped file.  You can also change a single
+            byte by doing ``obj[index] = 97``, or change a subsequence by assigning to a
+            slice: ``obj[i1:i2] = b'...'``.  You can also read and write data starting at
+            the current file position, and :meth:`seek` through the file to different positions.
+
+            The easiest way to create a text stream is with :meth:`open`, optionally
+            specifying an encoding.
+            """,
+        issues=[],
+    ),
 ]
 
 
