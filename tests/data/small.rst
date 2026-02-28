@@ -24,5 +24,6 @@ This is a page to test the linklint extension.
 .. module:: my_thing
 
     This is about :mod:`my_thing`, which is a sample module to test the
-    linklint extension. It will have the same name as :func:`my_thing`, to see
-    if linklint can distinguish between them.
+    linklint extension. This page used to have ``:func:`my_thing```, but it
+    turns out Sphinx doesn't distinguish between the function and module, so I
+    took it out.
