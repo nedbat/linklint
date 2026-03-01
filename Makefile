@@ -13,8 +13,8 @@ test:
 	coverage html
 
 quality:
-	uvx ty check
-	uvx ruff check
+	ty check
+	ruff check
 
 clean:
 	rm -rf .coverage htmlcov tmp
