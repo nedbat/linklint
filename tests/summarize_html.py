@@ -133,7 +133,7 @@ class HtmlSummarizer(HTMLParser):
 
 def summarize_html_file(filename: str) -> str:
     parser = HtmlSummarizer()
-    parser.feed(Path(filename).read_text())
+    parser.feed(Path(filename).read_text(encoding="utf-8"))
     return parser.summary()
 
 

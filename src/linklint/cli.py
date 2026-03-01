@@ -13,10 +13,10 @@ def lint_file(filepath: str, fix: bool, checks: set[str]) -> list[LintIssue]:
     """
     # print(filepath)
     path = Path(filepath)
-    content = path.read_text()
+    content = path.read_text(encoding="utf-8")
     result = lint_content(content, fix, checks)
     if fix and result.fixed:
-        path.write_text(result.content)
+        path.write_text(result.content, encoding="utf-8")
     return result.issues
 
 

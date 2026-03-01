@@ -25,7 +25,7 @@ PROJECT = Path(__file__).parent.parent
     [r.name for r in Path("tests/data").glob("*.rst")],
 )
 def test_summarize_html(rst_file: str) -> None:
-    rst = (PROJECT / "tests/data" / rst_file).read_text()
+    rst = (PROJECT / "tests/data" / rst_file).read_text(encoding="utf-8")
     root = rst_file.removesuffix(".rst")
     with in_tempdir():
         doctree = run_sphinx(rst, buildername="html", extensions=["linklint.ext"])
@@ -34,19 +34,21 @@ def test_summarize_html(rst_file: str) -> None:
             # In case of needing to see what happened, copy the HTML etc to tmp.
             shutil.copytree("_build/_static", PROJECT / "tmp/html/_static", dirs_exist_ok=True)
             shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}.html")
-            (PROJECT / f"tmp/html/{root}_summary.html").write_text(summary)
+            (PROJECT / f"tmp/html/{root}_summary.html").write_text(summary, encoding="utf-8")
 
             # Also run without the extension to understand Sphinx native behavior.
             run_sphinx(rst, buildername="html", extensions=[])
             shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}_nofix.html")
             nofix_summary = summarize_html_file("_build/index.html")
-            (PROJECT / f"tmp/html/{root}_summary_nofix.html").write_text(nofix_summary)
+            (PROJECT / f"tmp/html/{root}_summary_nofix.html").write_text(
+                nofix_summary, encoding="utf-8"
+            )
 
     save_test_doctree(doctree)
     assert 'class="self-link"' not in summary, f"Self-links found in {root}.html"
     summary_file = PROJECT / f"tests/data/{root}_summary.html"
     if summary_file.exists():
-        expected = summary_file.read_text()
+        expected = summary_file.read_text(encoding="utf-8")
     else:
         expected = f"Summary {summary_file} doesn't exist"  # pragma: only failure
 

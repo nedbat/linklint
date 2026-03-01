@@ -13,10 +13,10 @@ from linklint.utils import SAVE_INTERMEDIATE, in_tempdir, slug_for_test
 
 def run_sphinx(content: str, buildername: str, extensions: list[str]) -> nodes.document:
     # Create minimal conf.py
-    Path("conf.py").write_text(f"extensions = {extensions!r}\n")
+    Path("conf.py").write_text(f"extensions = {extensions!r}\n", encoding="utf-8")
 
     # Copy the RST file as index.rst
-    Path("index.rst").write_text(content)
+    Path("index.rst").write_text(content, encoding="utf-8")
 
     app = Sphinx(
         srcdir=".",

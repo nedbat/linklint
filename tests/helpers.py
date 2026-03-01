@@ -17,6 +17,6 @@ def text_and_id(*, text: str, id: str = ""):
         # It's a file name
         assert not id, "Don't provide filename and id"
         id = text
-        text = (PROJECT / "tests/data" / text).read_text()
+        text = (PROJECT / "tests/data" / text).read_text(encoding="utf-8")
     assert id, "Test cases must have an id"
     return text, id
