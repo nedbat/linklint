@@ -237,16 +237,8 @@ SELF_TEST_CASES = [
             class constructors to provide default encodings.
             """,
         issues=[
-            LintIssue(
-                line=1,
-                message="self-link to :mod:`email.encoders`",
-                fixed=True,
-            ),
-            LintIssue(
-                line=12,
-                message="self-link to :mod:`email.encoders`",
-                fixed=True,
-            ),
+            LintIssue(line=1, message="self-link to :mod:`email.encoders`", fixed=True),
+            LintIssue(line=12, message="self-link to :mod:`email.encoders`", fixed=True),
         ],
         diff="""
             - :mod:`email.encoders`: Encoders

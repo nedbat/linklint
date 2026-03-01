@@ -5,6 +5,7 @@ from pathlib import Path
 from linklint.linklint import CHECKS, LintIssue, lint_content
 from linklint.utils import plural
 
+
 def lint_file(filepath: str, fix: bool, checks: set[str]) -> list[LintIssue]:
     """Lint a single RST file.
 

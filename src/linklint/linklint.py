@@ -200,7 +200,9 @@ def find_duplicate_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
         for ref in para.findall(addnodes.pending_xref):
             reftype = ref.get("reftype")
             target = ref.get("reftarget")
-            assert reftype and target, f"Reference missing reftype or target: {ref}\n{node_traceback(ref)}"
+            assert reftype and target, (
+                f"Reference missing reftype or target: {ref}\n{node_traceback(ref)}"
+            )
             refs_by_target[(reftype, target)].append(ref)
 
         for refs in refs_by_target.values():

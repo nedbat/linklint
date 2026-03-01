@@ -15,6 +15,7 @@ test:
 quality:
 	ty check
 	ruff check
+	ruff format
 
 clean:
 	rm -rf .coverage htmlcov tmp

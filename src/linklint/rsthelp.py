@@ -80,7 +80,11 @@ def fix_node_lines(doctree: nodes.document) -> None:
 def is_header_line(line: str, text_line: str) -> bool:
     """Check if a line is a header underline/overline for `text_line`."""
     stripped = line.rstrip()
-    return len(stripped) >= len(text_line.rstrip()) and len(set(stripped)) == 1 and stripped[0] in string.punctuation
+    return (
+        len(stripped) >= len(text_line.rstrip())
+        and len(set(stripped)) == 1
+        and stripped[0] in string.punctuation
+    )
 
 
 def replace_rst_line(lines: list[str], line_num: int, new_line: str) -> None:

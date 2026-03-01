@@ -43,7 +43,9 @@ class RegionFinder:
             case addnodes.desc():
                 kind = node.get("objtype")
                 name_starts = [
-                    (kid.get("fullname"), kid.line) for kid in node.children if isinstance(kid, addnodes.desc_signature)
+                    (kid.get("fullname"), kid.line)
+                    for kid in node.children
+                    if isinstance(kid, addnodes.desc_signature)
                 ]
 
         last_line = getattr(node, "line", None)
