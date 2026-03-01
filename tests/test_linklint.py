@@ -666,6 +666,46 @@ PARADUP_TEST_CASES = [
             LintIssue(line=2, message="duplicate :class:`BaseException` in paragraph", fixed=False)
         ],
     ),
+    lint_test_case(
+        id="paragraphs",
+        rst="""
+            1 Multiple links to :class:`Something` in the same paragraph about
+            :class:`Something` are not a problem, but they do create multiple
+            LintIssues on different lines about :class:`Something`.
+
+            5 If :class:`!Something` is referenced
+            but not linked, then :class:`Something` could
+            be the first link to :class:`Something` and the other links
+            to :class:`Something` are duplicates.
+            """,
+        issues=[
+            LintIssue(line=2, message="duplicate :class:`Something` in paragraph", fixed=False),
+            LintIssue(line=3, message="duplicate :class:`Something` in paragraph", fixed=False),
+            LintIssue(line=7, message="duplicate :class:`Something` in paragraph", fixed=False),
+            LintIssue(line=8, message="duplicate :class:`Something` in paragraph", fixed=False),
+        ],
+    ),
+    lint_test_case(
+        id="lists",
+        rst="""
+            Some lists:
+
+            - 3 Multiple links to :class:`Something` in the same paragraph about
+              :class:`Something` are not a problem, but they do create multiple
+              LintIssues on different lines about :class:`Something`.
+
+            - 7 If :class:`!Something` is referenced
+              but not linked, then :class:`Something` could
+              be the first link to :class:`Something` and the other links
+              to :class:`Something` are duplicates.
+            """,
+        issues=[
+            LintIssue(line=4, message="duplicate :class:`Something` in paragraph", fixed=False),
+            LintIssue(line=5, message="duplicate :class:`Something` in paragraph", fixed=False),
+            LintIssue(line=9, message="duplicate :class:`Something` in paragraph", fixed=False),
+            LintIssue(line=10, message="duplicate :class:`Something` in paragraph", fixed=False),
+        ],
+    ),
 ]
 
 
