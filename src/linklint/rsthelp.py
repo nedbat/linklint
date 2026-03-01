@@ -38,16 +38,16 @@ def parse_rst(content: str) -> nodes.document:
     with in_tempdir():
         doctree = run_sphinx(content, buildername="dummy", extensions=[])
     fix_node_lines(doctree)
-    save_test_doctree(doctree)
+    if SAVE_INTERMEDIATE:
+        save_test_doctree(doctree)
     return doctree
 
 
 def save_test_doctree(doctree: nodes.document) -> None:
-    if SAVE_INTERMEDIATE:
-        dump_file = Path(f"tmp/doctree/{slug_for_test()}.txt")
-        dump_file.parent.mkdir(parents=True, exist_ok=True)
-        with dump_file.open("w", encoding="utf-8") as f:
-            dump_doctree(doctree, f)
+    dump_file = Path(f"tmp/doctree/{slug_for_test()}.txt")
+    dump_file.parent.mkdir(parents=True, exist_ok=True)
+    with dump_file.open("w", encoding="utf-8") as f:
+        dump_doctree(doctree, f)
 
 
 BLOCK_NODES = (nodes.paragraph,)

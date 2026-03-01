@@ -43,8 +43,8 @@ def test_summarize_html(rst_file: str) -> None:
             (PROJECT / f"tmp/html/{root}_summary_nofix.html").write_text(
                 nofix_summary, encoding="utf-8"
             )
+            save_test_doctree(doctree)
 
-    save_test_doctree(doctree)
     assert 'class="self-link"' not in summary, f"Self-links found in {root}.html"
     summary_file = PROJECT / f"tests/data/{root}_summary.html"
     if summary_file.exists():
