@@ -1,5 +1,6 @@
 from difflib import Differ
 from textwrap import dedent
+from typing import Any
 
 import pytest
 
@@ -24,12 +25,13 @@ def lint_test_case(
     issues: list[LintIssue],
     diff: str = "",
     id: str = "",
+    marks: Any = None,
 ):
     """Helper to create pytest parameters for linting tests."""
     rst, id = text_and_id(text=rst, id=id)
     if diff.startswith("\n"):
         diff = diff[1:]
-    return pytest.param(rst, issues, dedent(diff), id=id)
+    return pytest.param(rst, issues, dedent(diff), id=id, marks=marks or [])
 
 
 SELF_TEST_CASES = [
@@ -337,6 +339,10 @@ SELF_TEST_CASES = [
     # Some directives had the wrong line number.
     lint_test_case(
         id="note",
+        # https://github.com/sphinx-doc/sphinx/pull/14309 fixes the line numbers
+        # for versionchanged directives, so our line numbers are off until that
+        # is merged.
+        marks=pytest.mark.xfail,
         rst="""
             ZipFile objects
             ---------------
@@ -412,6 +418,10 @@ SELF_TEST_CASES = [
     # and the inline case needed extra fixing.
     lint_test_case(
         id="inline-versionchanged",
+        # https://github.com/sphinx-doc/sphinx/pull/14309 fixes the line numbers
+        # for versionchanged directives, so our line numbers are off until that
+        # is merged.
+        marks=pytest.mark.xfail,
         rst="""
             :mod:`!collections` --- Container datatypes
             ===========================================
