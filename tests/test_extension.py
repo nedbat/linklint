@@ -6,14 +6,13 @@ expected summary in a corresponding .html file.
 
 """
 
-import os
 import shutil
 from pathlib import Path
 
 import pytest
 
 from linklint.rsthelp import run_sphinx, save_test_doctree
-from linklint.utils import in_tempdir
+from linklint.utils import SAVE_INTERMEDIATE, in_tempdir
 
 from summarize_html import summarize_html_file
 
@@ -31,12 +30,13 @@ def test_summarize_html(rst_file: str) -> None:
     with in_tempdir():
         doctree = run_sphinx(rst, buildername="html", extensions=["linklint.ext"])
         summary = summarize_html_file("_build/index.html")
-        # In case of needing to see what happened, copy the HTML etc to tmp.
-        shutil.copytree("_build/_static", PROJECT / "tmp/html/_static", dirs_exist_ok=True)
-        shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}.html")
+        if SAVE_INTERMEDIATE:
+            # In case of needing to see what happened, copy the HTML etc to tmp.
+            shutil.copytree("_build/_static", PROJECT / "tmp/html/_static", dirs_exist_ok=True)
+            shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}.html")
+            (PROJECT / f"tmp/html/{root}_summary.html").write_text(summary)
 
-        # $set_env.py: LINKLINT_SAVE_NOFIX - Save the HTML without linklint's fixes
-        if bool(int(os.getenv("LINKLINT_SAVE_NOFIX", "0"))):
+            # Also run without the extension to understand Sphinx native behavior.
             run_sphinx(rst, buildername="html", extensions=[])
             shutil.copyfile("_build/index.html", PROJECT / f"tmp/html/{root}_nofix.html")
             nofix_summary = summarize_html_file("_build/index.html")
@@ -44,7 +44,6 @@ def test_summarize_html(rst_file: str) -> None:
 
     save_test_doctree(doctree)
     assert 'class="self-link"' not in summary, f"Self-links found in {root}.html"
-    (PROJECT / f"tmp/html/{root}_summary.html").write_text(summary)
     summary_file = PROJECT / f"tests/data/{root}_summary.html"
     if summary_file.exists():
         expected = summary_file.read_text()
@@ -52,9 +51,12 @@ def test_summarize_html(rst_file: str) -> None:
         expected = f"Summary {summary_file} doesn't exist"  # pragma: only failure
 
     if summary != expected:  # pragma: only failure
-        print(f"Full HTML is at tmp/html/{root}.html")
-        print(f"Summary is at tmp/html/{root}_summary.html")
-        print("if the full HTML is correct:")
-        print(f"  $ cp tmp/html/{root}_summary.html tests/data/{root}_summary.html")
+        if SAVE_INTERMEDIATE:
+            print(f"Full HTML is at tmp/html/{root}.html")
+            print(f"Summary is at tmp/html/{root}_summary.html")
+            print("if the full HTML is correct:")
+            print(f"  $ cp tmp/html/{root}_summary.html tests/data/{root}_summary.html")
+        else:
+            print("To see full HTML, set LINKLINT_SAVE_INTERMEDIATE=1 and re-run the test.")
 
     assert summary == expected

@@ -7,7 +7,11 @@ from typing import cast
 from docutils import nodes
 
 
-def slug_for_test() -> str:
+# $set_env.py: LINKLINT_SAVE_INTERMEDIATE - Save intermediate data in files for debugging.
+SAVE_INTERMEDIATE = os.getenv("LINKLINT_SAVE_INTERMEDIATE") == "1"
+
+
+def slug_for_test() -> str:  # pragma: debugging
     """Get the short name of the current test, possibly the param id."""
     test_name = os.getenv("PYTEST_CURRENT_TEST", "unknown")
     m = re.search(r"::(?P<test>[\w_]+)(?P<param>\[.+?\])?(?: \(\w+\))$", test_name)
@@ -44,7 +48,7 @@ def node_line_number(node: nodes.Node) -> int:
     return node.line
 
 
-def node_traceback(node: nodes.Node) -> str:
+def node_traceback(node: nodes.Node) -> str:  # pragma: debugging
     """Get a multi-line traceback for a node to pinpoint problems."""
     lines = []
     while node is not None:

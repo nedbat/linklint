@@ -23,7 +23,7 @@ INTERESTING_KEYS = [
 # ]
 
 
-def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:
+def dump_doctree(node: nodes.Node, fp: TextIO, indent: int = 0) -> None:  # pragma: debugging
     """Print a nicely formatted tree of a docutils doctree."""
     prefix = "    " * indent
     if isinstance(node, nodes.Text):

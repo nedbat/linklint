@@ -48,4 +48,6 @@ source = ["src", "tests"]
 exclude_also = [
     "if __name__ == .__main__.:",
     "pragma: only failure",
+    "pragma: debugging",
+    "if SAVE_INTERMEDIATE:",
 ]

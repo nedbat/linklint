@@ -1,6 +1,5 @@
 """Utilities for RST files."""
 
-import os
 import re
 import string
 from pathlib import Path
@@ -9,7 +8,7 @@ from docutils import nodes
 from sphinx.application import Sphinx
 
 from linklint.dump import dump_doctree
-from linklint.utils import in_tempdir, slug_for_test
+from linklint.utils import SAVE_INTERMEDIATE, in_tempdir, slug_for_test
 
 
 def run_sphinx(content: str, buildername: str, extensions: list[str]) -> nodes.document:
@@ -44,7 +43,7 @@ def parse_rst(content: str) -> nodes.document:
 
 
 def save_test_doctree(doctree: nodes.document) -> None:
-    if os.getenv("PYTEST_CURRENT_TEST"):
+    if SAVE_INTERMEDIATE:
         dump_file = Path(f"tmp/doctree/{slug_for_test()}.txt")
         dump_file.parent.mkdir(parents=True, exist_ok=True)
         with dump_file.open("w", encoding="utf-8") as f:

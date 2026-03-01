@@ -89,7 +89,7 @@ class HtmlSummarizer(HTMLParser):
                 tattrs = "".join(f' {k}="{v}"' for k, v in attrs if k in {"id", "href"})
                 href = dattrs.get("href")
                 if href and href.startswith("#"):
-                    if href[1:] in self.current_ids:
+                    if href[1:] in self.current_ids: # pragma: only failure
                         tattrs += ' class="self-link"'
                 self.print(f"<{tag}{tattrs}>", open=True)
                 id = dattrs.get("id")
