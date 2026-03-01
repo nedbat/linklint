@@ -12,6 +12,26 @@ def region_test_case(*, rst: str, regions: list[Region], id: str = ""):
     return pytest.param(rst, regions, id=id)
 
 
+def region(
+    kind: str,
+    name: str,
+    *,
+    start: int,
+    end: int = 0,
+    end_main: int = 0,
+    end_total: int = 0,
+) -> Region:
+    """Helper to create a Region with end_main and end_total defaulting to end."""
+    assert end or (end_main and end_total), (
+        "Either end or both end_main and end_total must be provided"
+    )
+    if not end_main:
+        end_main = end
+    if not end_total:
+        end_total = end
+    return Region(kind=kind, name=name, start=start, end_main=end_main, end_total=end_total)
+
+
 TEST_CASES = [
     # The `contents::` directive makes unnumbered paragraphs.
     region_test_case(
@@ -61,7 +81,9 @@ TEST_CASES = [
 
             23This section references :mod:`mymodule` which is fine.
             """,
-        regions=[Region(kind="module", name="mymodule", start=1, end_main=18, end_total=18)],
+        regions=[
+            region("module", "mymodule", start=1, end=18),
+        ],
     ),
     region_test_case(
         id="multiple-functions",
@@ -77,34 +99,34 @@ TEST_CASES = [
                This is a family of similar functions.
             """,
         regions=[
-            Region(kind="function", name="execl", start=4, end_main=9, end_total=9),
-            Region(kind="function", name="execle", start=4, end_main=9, end_total=9),
-            Region(kind="function", name="execlp", start=4, end_main=9, end_total=9),
-            Region(kind="function", name="execlpe", start=4, end_main=9, end_total=9),
+            region("function", "execl", start=4, end=9),
+            region("function", "execle", start=4, end=9),
+            region("function", "execlp", start=4, end=9),
+            region("function", "execlpe", start=4, end=9),
         ],
     ),
     region_test_case(
         rst="lzma.rst",
         regions=[
-            Region("exception", "LZMAError", start=26, end_main=29, end_total=29),
-            Region("function", "open", start=35, end_main=68, end_total=68),
-            Region("method", "LZMAFile.peek", start=108, end_main=117, end_total=117),
-            Region("attribute", "LZMAFile.mode", start=119, end_main=123, end_total=123),
-            Region("attribute", "LZMAFile.name", start=125, end_main=130, end_total=130),
-            Region("class", "LZMAFile", start=71, end_main=107, end_total=141),
-            Region("method", "LZMACompressor.compress", start=209, end_main=215, end_total=215),
-            Region("method", "LZMACompressor.flush", start=217, end_main=222, end_total=222),
-            Region("class", "LZMACompressor", start=147, end_main=208, end_total=222),
-            Region("method", "LZMADecompressor.decompress", start=254, end_main=279, end_total=279),
-            Region("attribute", "LZMADecompressor.check", start=281, end_main=285, end_total=285),
-            Region("attribute", "LZMADecompressor.eof", start=287, end_main=289, end_total=289),
-            Region("attribute", "LZMADecompressor.unused_data", start=291, end_main=295, end_total=295),
-            Region("attribute", "LZMADecompressor.needs_input", start=297, end_main=302, end_total=302),
-            Region("class", "LZMADecompressor", start=225, end_main=253, end_total=302),
-            Region("function", "compress", start=304, end_main=310, end_total=310),
-            Region("function", "decompress", start=313, end_main=322, end_total=322),
-            Region("function", "is_check_supported", start=328, end_main=335, end_total=335),
-            Region("module", "lzma", start=1, end_main=25, end_total=346),
+            region("exception", "LZMAError", start=26, end=29),
+            region("function", "open", start=35, end=68),
+            region("method", "LZMAFile.peek", start=108, end=117),
+            region("attribute", "LZMAFile.mode", start=119, end=123),
+            region("attribute", "LZMAFile.name", start=125, end=130),
+            region("class", "LZMAFile", start=71, end_main=107, end_total=141),
+            region("method", "LZMACompressor.compress", start=209, end=215),
+            region("method", "LZMACompressor.flush", start=217, end=222),
+            region("class", "LZMACompressor", start=147, end_main=208, end_total=222),
+            region("method", "LZMADecompressor.decompress", start=254, end=279),
+            region("attribute", "LZMADecompressor.check", start=281, end=285),
+            region("attribute", "LZMADecompressor.eof", start=287, end=289),
+            region("attribute", "LZMADecompressor.unused_data", start=291, end=295),
+            region("attribute", "LZMADecompressor.needs_input", start=297, end=302),
+            region("class", "LZMADecompressor", start=225, end_main=253, end_total=302),
+            region("function", "compress", start=304, end=310),
+            region("function", "decompress", start=313, end=322),
+            region("function", "is_check_supported", start=328, end=335),
+            region("module", "lzma", start=1, end_main=25, end_total=346),
         ],
     ),
 ]
