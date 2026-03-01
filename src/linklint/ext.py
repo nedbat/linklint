@@ -44,7 +44,7 @@ def merge_data(
 def display_results(app: Sphinx, exception: Exception | None) -> None:
     if not exception:
         total = sum(app.env.linklint_counts.values())  # type: ignore
-        logger.info(f"Linklint unlinked {total} references.")
+        logger.info(f"Linklint: unlinked {total} references")
 
 
 def setup(app: Sphinx) -> ExtensionMetadata:
