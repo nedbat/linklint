@@ -15,7 +15,7 @@ classifiers = [
 requires-python = ">= 3.12"
 
 dependencies = [
-    "Sphinx",
+    "Sphinx>9.0.0",
 ]
 
 dynamic = ["version"]
@@ -26,6 +26,8 @@ dev = [
     "coverage",
     "pytest",
     "ruff",
+    "tox",
+    "tox-uv",
     "ty",
 ]
 
@@ -42,9 +44,21 @@ build-backend = "setuptools.build_meta"
 [tool.ruff]
 line-length = 100
 
+[tool.coverage.paths]
+source = [
+    "src/linklint",
+    "*/site-packages/linklint",
+]
+tests = [
+    "tests",
+    "*/linklint/tests",
+]
+
 [tool.coverage.run]
 branch = true
-source = ["src", "tests"]
+parallel = true
+source = ["tests"]
+source_pkgs = ["linklint"]
 
 [tool.coverage.report]
 exclude_also = [
@@ -53,3 +67,5 @@ exclude_also = [
     "pragma: debugging",
     "if SAVE_INTERMEDIATE:",
 ]
+show_missing = true
+skip_covered = true

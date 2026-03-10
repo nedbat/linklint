@@ -8,8 +8,9 @@ install: .venv
 	uv pip install -e .[dev]
 
 test:
-	coverage run --branch -m pytest
-	coverage report --show-missing --skip-covered
+	coverage run -m pytest
+	coverage combine -q
+	coverage report
 	coverage html
 
 quality:
@@ -20,6 +21,7 @@ quality:
 clean:
 	rm -rf .coverage htmlcov tmp
 	rm -rf build/ dist/ src/*.egg-info
+	rm -rf __pycache__ */__pycache__
 
 dist: 	## Build the distributions.
 	python -m build --sdist --wheel
