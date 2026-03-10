@@ -67,6 +67,14 @@ hard-code the decisions.
 Changes
 =======
 
+Unreleased
+----------
+
+A number of roles (``:ref:``, ``:doc:`` and others) were being unlinked when
+they seemed excessive, but shouldn't have been. They are explicit references to
+other parts of the documentation, so should never be removed. This is now
+fixed.
+
 v0.3.1 (2026-03-01)
 -------------------
 

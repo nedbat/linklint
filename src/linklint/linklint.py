@@ -96,6 +96,9 @@ REF_FIXES = [
     ),
 ]
 
+# Sphinx roles that are explicit references elsewhere and should always be links.
+ALWAYS_REF = {"doc", "download", "numref", "ref"}
+
 
 @check("self")
 def check_self_links(work: LintWork) -> Iterable[LintIssue]:
@@ -135,6 +138,11 @@ class RefFinder(nodes.SparseNodeVisitor):
     def visit_pending_xref(self, node: addnodes.pending_xref) -> None:
         line = node_line_number(node)
         reftype = node.get("reftype")
+        if reftype in ALWAYS_REF:
+            # :ref: references are explicitly meant to be links, so should
+            # never be unlinked. I don't know why someone would put a :ref:
+            # to its own section, but who are we to judge?
+            return
         target = node.get("reftarget")
 
         if reftype == "meth" and "." not in target:
@@ -199,6 +207,10 @@ def find_duplicate_refs(doctree: nodes.document) -> Iterable[nodes.Node]:
         refs_by_target = defaultdict(list)
         for ref in para.findall(addnodes.pending_xref):
             reftype = ref.get("reftype")
+            if reftype in ALWAYS_REF:
+                # :ref: references are explicitly meant to be links, so should
+                # never be unlinked.
+                continue
             target = ref.get("reftarget")
             assert reftype and target, (
                 f"Reference missing reftype or target: {ref}\n{node_traceback(ref)}"
