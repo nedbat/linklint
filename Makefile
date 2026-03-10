@@ -1,4 +1,4 @@
-.PHONY: venv install test quality clean dist
+.PHONY: venv install test quality clean dist release
 
 venv: .venv
 .venv:
@@ -23,5 +23,11 @@ clean:
 	rm -rf build/ dist/ src/*.egg-info
 	rm -rf __pycache__ */__pycache__
 
-dist: 	## Build the distributions.
+dist:
 	python -m build --sdist --wheel
+
+release:
+	@echo "Update src/linklint/__init__.py"
+	@echo "Update README.rst"
+	@echo "Tag in git"
+	@echo "Push to GitHub"

@@ -67,8 +67,8 @@ hard-code the decisions.
 Changes
 =======
 
-Unreleased
-----------
+v0.4.0 (2026-03-10)
+-------------------
 
 A number of roles (``:ref:``, ``:doc:`` and others) were being unlinked when
 they seemed excessive, but shouldn't have been. They are explicit references to
