@@ -129,4 +129,4 @@ jobs:
           ruff format --check
 
       - name: "Run prek checks"
-        uses: j178/prek-action@v1
+        uses: j178/prek-action@dd53c3d715e3a94dc7ecc947891b9887371e21fe # v0.3.6
