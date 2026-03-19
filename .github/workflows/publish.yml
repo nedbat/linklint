@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      #url: <URL TO YOUR PROJECT HERE>
+      deployment: false
     permissions:
       id-token: write # needed for publishing to PyPI
 
