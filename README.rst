@@ -2,10 +2,10 @@
 Linklint
 ========
 
-Linklint checks .rst files for excessive links to references.
+Linklint is a Sphinx extension that removes links from excessive references.
 
-It also can be used as a Sphinx extension to automatically unlink references
-that should not be links.
+It also can be used as command-line linter to find or correct those references
+in .rst files.
 
 
 Checks
@@ -35,8 +35,8 @@ your ``conf.py`` file:
         "linklint.ext",
     ]
 
-During the build process, linklint will run all its checks and unlink any
-reference it considers excessive.
+During the build process, linklint will run its checks and remove links from
+references it considers excessive. No changes are made to the source files.
 
 
 Command-line use
@@ -56,8 +56,8 @@ You can use linklint as a command-line linter::
       --fix          Fix the issues in place
 
 This can be useful to see what linklint considers excessive, or to modify .rst
-files to unlink excessive references.  Linklint unlinks references by changing
-``:func:`foo``` to ``:func:`!foo```.
+files to unlink excessive references. Where it can, Linklint unlinks references
+by changing ``:func:`foo``` to ``:func:`!foo```.
 
 If you agree with linklint's decisions, the Sphinx extension is a better
 option, since it doesn't require changing the source files, and doesn't
