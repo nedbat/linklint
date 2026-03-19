@@ -19,16 +19,16 @@ repos:
       - id: forbid-submodules
       - id: trailing-whitespace
 
-  - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.36.2
-    hooks:
-      - id: check-github-workflows
-
   # This doesn't understand environment/deployment yet:
-  #- repo: https://github.com/rhysd/actionlint
-  #  rev: v1.7.11
+  #- repo: https://github.com/python-jsonschema/check-jsonschema
+  #  rev: 0.36.2
   #  hooks:
-  #    - id: actionlint
+  #    - id: check-github-workflows
+
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.11
+    hooks:
+      - id: actionlint
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.25
