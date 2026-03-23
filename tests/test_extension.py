@@ -22,11 +22,11 @@ PROJECT = Path(__file__).parent.parent
 
 @pytest.mark.parametrize(
     "rst_file",
-    [r.name for r in Path("tests/data").glob("*.rst")],
+    Path("tests/data").glob("*.rst"),
 )
-def test_summarize_html(rst_file: str) -> None:
-    rst = (PROJECT / "tests/data" / rst_file).read_text(encoding="utf-8")
-    root = rst_file.removesuffix(".rst")
+def test_summarize_html(rst_file: Path) -> None:
+    rst = rst_file.read_text(encoding="utf-8")
+    root = rst_file.name.removesuffix(".rst")
     with in_tempdir():
         doctree = run_sphinx(rst, buildername="html", extensions=["linklint.ext"])
         summary = summarize_html_file("_build/index.html")
@@ -46,7 +46,7 @@ def test_summarize_html(rst_file: str) -> None:
             save_test_doctree(doctree)
 
     assert 'class="self-link"' not in summary, f"Self-links found in {root}.html"
-    summary_file = PROJECT / f"tests/data/{root}_summary.html"
+    summary_file = Path(f"tests/data/{root}_summary.html")
     if summary_file.exists():
         expected = summary_file.read_text(encoding="utf-8")
     else:
