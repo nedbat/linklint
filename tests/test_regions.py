@@ -106,7 +106,7 @@ TEST_CASES = [
         ],
     ),
     region_test_case(
-        rst="lzma.rst",
+        rst="lzma",
         regions=[
             region("exception", "LZMAError", start=26, end=29),
             region("function", "open", start=35, end=68),

@@ -572,7 +572,7 @@ SELF_TEST_CASES = [
         ],
     ),
     lint_test_case(
-        rst="classhier.rst",
+        rst="classhier",
         issues=[
             LintIssue(line=6, message="self-link to :class:`ClassA`", fixed=True),
             LintIssue(line=10, message="self-link to :class:`ClassA`", fixed=True),

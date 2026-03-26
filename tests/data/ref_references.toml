@@ -1,0 +1,54 @@
+rst = '''
+    Some docs
+    =========
+
+    You can specify a :ref:`static context <contexts>` for a coverage run with
+    ``--context``.  This can be any label you want, and will be recorded with the
+    data.  See :ref:`contexts` for more information.
+
+    .. _contexts:
+
+    Measurement contexts
+    --------------------
+
+    They are important! This section is :ref:`contexts`.
+'''
+
+html = '''
+    <section id="some-docs">
+      <h1>
+        Some docs
+      </h1>
+      <p>
+        You can specify a
+        <a href="#contexts">
+          static context
+        </a>
+        for a coverage run with
+        <code>
+          --context
+        </code>
+        . This can be any label you want, and will be recorded with the data. See
+        <a href="#contexts">
+          Measurement contexts
+        </a>
+        for more information.
+      </p>
+      <section id="measurement-contexts">
+        <h2>
+          Measurement contexts
+        </h2>
+        <p>
+          They are important! This section is
+          <a href="#contexts">
+            Measurement contexts
+          </a>
+          .
+        </p>
+      </section>
+    </section>
+'''
+
+output = '''
+    Linklint: unlinked 0 refs
+'''

@@ -1,0 +1,206 @@
+rst = '''
+    Process Management
+    ------------------
+
+    These functions may be used to create and manage processes.
+
+    The various :func:`exec\* <execl>` functions take a list of arguments for the new
+    program loaded into the process.
+
+    .. function:: execl(path, arg0, arg1, ...)
+                  execle(path, arg0, arg1, ..., env)
+                  execlp(file, arg0, arg1, ...)
+                  execlpe(file, arg0, arg1, ..., env)
+                  execv(path, args)
+                  execve(path, args, env)
+                  execvp(file, args)
+                  execvpe(file, args, env)
+
+       The current process is replaced immediately. Open file objects and
+       descriptors are not flushed, so if there may be data buffered
+       on these open files, you should flush them using
+       :func:`sys.stdout.flush` or :func:`os.fsync` before calling an
+       :func:`exec\* <execl>` function.
+
+       The "l" and "v" variants of the :func:`exec\* <execl>` functions differ in how
+       command-line arguments are passed.  The "l" variants are perhaps the easiest
+       to work with if the number of parameters is fixed when the code is written; the
+       individual parameters simply become additional parameters to the :func:`!execl\*`
+       functions.  The "v" variants are good when the number of parameters is
+       variable, with the arguments being passed in a list or tuple as the *args*
+       parameter.  In either case, the arguments to the child process should start with
+       the name of the command being run, but this is not enforced.
+
+       The variants which include a "p" near the end (:func:`execlp`,
+       :func:`execlpe`, :func:`execvp`, and :func:`execvpe`) will use the
+       :envvar:`PATH` environment variable to locate the program *file*.
+'''
+
+html = '''
+    <section id="process-management">
+      <h1>
+        Process Management
+      </h1>
+      <p>
+        These functions may be used to create and manage processes.
+      </p>
+      <p>
+        The various
+        <a href="#execl">
+          <code>
+            exec*
+          </code>
+        </a>
+        functions take a list of arguments for the new program loaded into the process.
+      </p>
+      <dl>
+        <dt id="execl">
+          execl
+          (
+          path
+          ,
+          arg0
+          ,
+          arg1
+          ,
+          ...
+          )
+        </dt>
+        <dt id="execle">
+          execle
+          (
+          path
+          ,
+          arg0
+          ,
+          arg1
+          ,
+          ...
+          ,
+          env
+          )
+        </dt>
+        <dt id="execlp">
+          execlp
+          (
+          file
+          ,
+          arg0
+          ,
+          arg1
+          ,
+          ...
+          )
+        </dt>
+        <dt id="execlpe">
+          execlpe
+          (
+          file
+          ,
+          arg0
+          ,
+          arg1
+          ,
+          ...
+          ,
+          env
+          )
+        </dt>
+        <dt id="execv">
+          execv
+          (
+          path
+          ,
+          args
+          )
+        </dt>
+        <dt id="execve">
+          execve
+          (
+          path
+          ,
+          args
+          ,
+          env
+          )
+        </dt>
+        <dt id="execvp">
+          execvp
+          (
+          file
+          ,
+          args
+          )
+        </dt>
+        <dt id="execvpe">
+          execvpe
+          (
+          file
+          ,
+          args
+          ,
+          env
+          )
+        </dt>
+        <dd>
+          <p>
+            The current process is replaced immediately. Open file objects and descriptors are not flushed, so if there may be data buffered on these open files, you should flush them using
+            <code>
+              sys.stdout.flush()
+            </code>
+            or
+            <code>
+              os.fsync()
+            </code>
+            before calling an
+            <code>
+              exec*
+            </code>
+            function.
+          </p>
+          <p>
+            The “l” and “v” variants of the
+            <code>
+              exec*
+            </code>
+            functions differ in how command-line arguments are passed. The “l” variants are perhaps the easiest to work with if the number of parameters is fixed when the code is written; the individual parameters simply become additional parameters to the
+            <code>
+              execl*()
+            </code>
+            functions. The “v” variants are good when the number of parameters is variable, with the arguments being passed in a list or tuple as the
+            args
+            parameter. In either case, the arguments to the child process should start with the name of the command being run, but this is not enforced.
+          </p>
+          <p>
+            The variants which include a “p” near the end (
+            <code>
+              execlp()
+            </code>
+            ,
+            <code>
+              execlpe()
+            </code>
+            ,
+            <code>
+              execvp()
+            </code>
+            , and
+            <code>
+              execvpe()
+            </code>
+            ) will use the
+            <code>
+              PATH
+            </code>
+            environment variable to locate the program
+            file
+            .
+          </p>
+        </dd>
+      </dl>
+    </section>
+'''
+
+output = '''
+    Linklint: unlinked 6 refs: 6 self
+'''

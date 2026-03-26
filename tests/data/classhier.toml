@@ -1,0 +1,174 @@
+rst = '''
+    Class hierarchy
+    ---------------
+
+    .. class:: ClassA(one, two)
+
+        An outer class, called :class:`ClassA`.
+
+        .. method:: methoda1()
+
+            A method of :class:`ClassA`, called :meth:`methoda1`.
+
+        .. class:: ClassB(three, four)
+
+            A nested class. This is inside :class:`ClassA`.
+
+            .. method:: methodb1()
+
+                A method of :class:`ClassB`, called :meth:`methodb1`.
+                We're still inside :class:`ClassA`.
+
+        .. method:: ClassB.methodb2()
+
+            A method of :class:`ClassB`, called :meth:`methodb2`.
+            We're still inside :class:`ClassA`.
+
+    .. method:: ClassA.methoda2()
+
+        A method of :class:`ClassA`, called :meth:`methoda2`.
+'''
+
+html = '''
+    <section id="class-hierarchy">
+      <h1>
+        Class hierarchy
+      </h1>
+      <dl>
+        <dt id="ClassA">
+          class
+          ClassA
+          (
+          one
+          ,
+          two
+          )
+        </dt>
+        <dd>
+          <p>
+            An outer class, called
+            <code>
+              ClassA
+            </code>
+            .
+          </p>
+          <dl>
+            <dt id="ClassA.methoda1">
+              methoda1
+              (
+              )
+            </dt>
+            <dd>
+              <p>
+                A method of
+                <code>
+                  ClassA
+                </code>
+                , called
+                <code>
+                  methoda1()
+                </code>
+                .
+              </p>
+            </dd>
+          </dl>
+          <dl>
+            <dt id="ClassA.ClassB">
+              class
+              ClassB
+              (
+              three
+              ,
+              four
+              )
+            </dt>
+            <dd>
+              <p>
+                A nested class. This is inside
+                <code>
+                  ClassA
+                </code>
+                .
+              </p>
+              <dl>
+                <dt id="ClassA.ClassB.methodb1">
+                  methodb1
+                  (
+                  )
+                </dt>
+                <dd>
+                  <p>
+                    A method of
+                    <code>
+                      ClassB
+                    </code>
+                    , called
+                    <code>
+                      methodb1()
+                    </code>
+                    . We’re still inside
+                    <code>
+                      ClassA
+                    </code>
+                    .
+                  </p>
+                </dd>
+              </dl>
+            </dd>
+          </dl>
+          <dl>
+            <dt id="ClassA.ClassB.methodb2">
+              ClassB.
+              methodb2
+              (
+              )
+            </dt>
+            <dd>
+              <p>
+                A method of
+                <code>
+                  ClassB
+                </code>
+                , called
+                <code>
+                  methodb2()
+                </code>
+                . We’re still inside
+                <code>
+                  ClassA
+                </code>
+                .
+              </p>
+            </dd>
+          </dl>
+        </dd>
+      </dl>
+      <dl>
+        <dt id="ClassA.methoda2">
+          ClassA.
+          methoda2
+          (
+          )
+        </dt>
+        <dd>
+          <p>
+            A method of
+            <a href="#ClassA">
+              <code>
+                ClassA
+              </code>
+            </a>
+            , called
+            <code>
+              methoda2()
+            </code>
+            .
+          </p>
+        </dd>
+      </dl>
+    </section>
+'''
+
+output = '''
+    Linklint: unlinked 8 refs: 8 self
+'''
