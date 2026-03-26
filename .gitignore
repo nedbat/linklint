@@ -9,3 +9,5 @@ dist/
 
 *.pyc
 __pycache__
+.tox/
+.*_cache/

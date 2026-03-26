@@ -1,4 +1,4 @@
-.PHONY: venv install test quality clean dist release
+.PHONY: venv install test quality clean sterile dist release
 
 venv: .venv
 .venv:
@@ -8,10 +8,7 @@ install: .venv
 	uv pip install -e .[dev]
 
 test:
-	coverage run -m pytest
-	coverage combine -q
-	coverage report
-	coverage html
+	tox -qf py312-sphinx8,coverage
 
 quality:
 	ty check
@@ -19,9 +16,12 @@ quality:
 	ruff format
 
 clean:
-	rm -rf .coverage htmlcov tmp
+	rm -rf .coverage .coverage.* htmlcov tmp
 	rm -rf build/ dist/ src/*.egg-info
 	rm -rf __pycache__ */__pycache__
+
+sterile: clean
+	rm -rf .tox .*_cache .venv
 
 dist:
 	python -m build --sdist --wheel
