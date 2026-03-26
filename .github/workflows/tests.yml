@@ -25,7 +25,7 @@ env:
 
 jobs:
   tests:
-    name: "Test ${{ matrix.python-version }} on ${{ matrix.os }}"
+    name: "Test 3.${{ matrix.py }} on ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-latest"
 
     strategy:
@@ -35,10 +35,10 @@ jobs:
           - ubuntu
           - macos
           - windows
-        python-version:
-          - 3.12
-          - 3.13
-          - 3.14
+        py:
+          - 12
+          - 13
+          - 14
 
     steps:
       - name: "Check out the repo"
@@ -50,7 +50,7 @@ jobs:
         id: "setup-python"
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "${{ matrix.python-version }}"
+          python-version: "3.${{ matrix.py }}"
 
       - name: "Install dependencies"
         run: |
@@ -58,12 +58,12 @@ jobs:
 
       - name: "Run tests"
         run: |
-          python -m tox -e py
+          python -m tox -f py3${{ matrix.py }}
 
       - name: "Upload coverage data"
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: covdata-${{ matrix.os }}-${{ matrix.python-version }}
+          name: covdata-${{ matrix.os }}-${{ matrix.py }}
           path: .coverage.*
           include-hidden-files: true
 
