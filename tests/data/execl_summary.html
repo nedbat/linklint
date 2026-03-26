@@ -18,145 +18,89 @@
     <dt id="execl">
       execl
       (
-      <em>
-        path
-      </em>
+      path
       ,
-      <em>
-        arg0
-      </em>
+      arg0
       ,
-      <em>
-        arg1
-      </em>
+      arg1
       ,
-      <em>
-        ...
-      </em>
+      ...
       )
     </dt>
     <dt id="execle">
       execle
       (
-      <em>
-        path
-      </em>
+      path
       ,
-      <em>
-        arg0
-      </em>
+      arg0
       ,
-      <em>
-        arg1
-      </em>
+      arg1
       ,
-      <em>
-        ...
-      </em>
+      ...
       ,
-      <em>
-        env
-      </em>
+      env
       )
     </dt>
     <dt id="execlp">
       execlp
       (
-      <em>
-        file
-      </em>
+      file
       ,
-      <em>
-        arg0
-      </em>
+      arg0
       ,
-      <em>
-        arg1
-      </em>
+      arg1
       ,
-      <em>
-        ...
-      </em>
+      ...
       )
     </dt>
     <dt id="execlpe">
       execlpe
       (
-      <em>
-        file
-      </em>
+      file
       ,
-      <em>
-        arg0
-      </em>
+      arg0
       ,
-      <em>
-        arg1
-      </em>
+      arg1
       ,
-      <em>
-        ...
-      </em>
+      ...
       ,
-      <em>
-        env
-      </em>
+      env
       )
     </dt>
     <dt id="execv">
       execv
       (
-      <em>
-        path
-      </em>
+      path
       ,
-      <em>
-        args
-      </em>
+      args
       )
     </dt>
     <dt id="execve">
       execve
       (
-      <em>
-        path
-      </em>
+      path
       ,
-      <em>
-        args
-      </em>
+      args
       ,
-      <em>
-        env
-      </em>
+      env
       )
     </dt>
     <dt id="execvp">
       execvp
       (
-      <em>
-        file
-      </em>
+      file
       ,
-      <em>
-        args
-      </em>
+      args
       )
     </dt>
     <dt id="execvpe">
       execvpe
       (
-      <em>
-        file
-      </em>
+      file
       ,
-      <em>
-        args
-      </em>
+      args
       ,
-      <em>
-        env
-      </em>
+      env
       )
     </dt>
     <dd>
@@ -185,9 +129,7 @@
           execl*()
         </code>
         functions. The “v” variants are good when the number of parameters is variable, with the arguments being passed in a list or tuple as the
-        <em>
-          args
-        </em>
+        args
         parameter. In either case, the arguments to the child process should start with the name of the command being run, but this is not enforced.
       </p>
       <p>
@@ -212,9 +154,7 @@
           PATH
         </code>
         environment variable to locate the program
-        <em>
-          file
-        </em>
+        file
         .
       </p>
     </dd>

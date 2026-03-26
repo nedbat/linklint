@@ -51,9 +51,7 @@
       bz2.BZ2File
     </code>
     are
-    <em>
-      not
-    </em>
+    not
     thread-safe, so if you need to use a single
     <code>
       LZMAFile
@@ -81,63 +79,43 @@
         lzma.
         open
         (
-        <em>
-          filename
-        </em>
+        filename
         ,
-        <em>
-          mode
-          =
-          'rb'
-        </em>
+        mode
+        =
+        'rb'
         ,
-        <em>
-          <abbr>
-            *
-          </abbr>
-        </em>
+        <abbr>
+          *
+        </abbr>
         ,
-        <em>
-          format
-          =
-          None
-        </em>
+        format
+        =
+        None
         ,
-        <em>
-          check
-          =
-          -1
-        </em>
+        check
+        =
+        -1
         ,
-        <em>
-          preset
-          =
-          None
-        </em>
+        preset
+        =
+        None
         ,
-        <em>
-          filters
-          =
-          None
-        </em>
+        filters
+        =
+        None
         ,
-        <em>
-          encoding
-          =
-          None
-        </em>
+        encoding
+        =
+        None
         ,
-        <em>
-          errors
-          =
-          None
-        </em>
+        errors
+        =
+        None
         ,
-        <em>
-          newline
-          =
-          None
-        </em>
+        newline
+        =
+        None
         )
       </dt>
       <dd>
@@ -148,9 +126,7 @@
         </p>
         <p>
           The
-          <em>
-            filename
-          </em>
+          filename
           argument can be either an actual file name (given as a
           <code>
             str
@@ -165,9 +141,7 @@
         </p>
         <p>
           The
-          <em>
-            mode
-          </em>
+          mode
           argument can be any of
           <code>
             "r"
@@ -224,13 +198,9 @@
         </p>
         <p>
           When opening a file for reading, the
-          <em>
-            format
-          </em>
+          format
           and
-          <em>
-            filters
-          </em>
+          filters
           arguments have the same meanings as for
           <a href="#lzma.LZMADecompressor">
             <code>
@@ -238,32 +208,20 @@
             </code>
           </a>
           . In this case, the
-          <em>
-            check
-          </em>
+          check
           and
-          <em>
-            preset
-          </em>
+          preset
           arguments should not be used.
         </p>
         <p>
           When opening a file for writing, the
-          <em>
-            format
-          </em>
+          format
           ,
-          <em>
-            check
-          </em>
+          check
           ,
-          <em>
-            preset
-          </em>
+          preset
           and
-          <em>
-            filters
-          </em>
+          filters
           arguments have the same meanings as for
           <a href="#lzma.LZMACompressor">
             <code>
@@ -286,17 +244,11 @@
             ...)
           </code>
           . In this case, the
-          <em>
-            encoding
-          </em>
+          encoding
           ,
-          <em>
-            errors
-          </em>
+          errors
           and
-          <em>
-            newline
-          </em>
+          newline
           arguments must not be provided.
         </p>
         <p>
@@ -346,47 +298,33 @@
         lzma.
         LZMAFile
         (
-        <em>
-          filename
-          =
-          None
-        </em>
+        filename
+        =
+        None
         ,
-        <em>
-          mode
-          =
-          'r'
-        </em>
+        mode
+        =
+        'r'
         ,
-        <em>
-          <abbr>
-            *
-          </abbr>
-        </em>
+        <abbr>
+          *
+        </abbr>
         ,
-        <em>
-          format
-          =
-          None
-        </em>
+        format
+        =
+        None
         ,
-        <em>
-          check
-          =
-          -1
-        </em>
+        check
+        =
+        -1
         ,
-        <em>
-          preset
-          =
-          None
-        </em>
+        preset
+        =
+        None
         ,
-        <em>
-          filters
-          =
-          None
-        </em>
+        filters
+        =
+        None
         )
       </dt>
       <dd>
@@ -401,9 +339,7 @@
           can wrap an already-open
           file object
           , or operate directly on a named file. The
-          <em>
-            filename
-          </em>
+          filename
           argument specifies either the file object to wrap, or the name of the file to open (as a
           <code>
             str
@@ -422,9 +358,7 @@
         </p>
         <p>
           The
-          <em>
-            mode
-          </em>
+          mode
           argument can be either
           <code>
             "r"
@@ -461,9 +395,7 @@
         </p>
         <p>
           If
-          <em>
-            filename
-          </em>
+          filename
           is a file object (rather than an actual file name), a mode of
           <code>
             "w"
@@ -479,13 +411,9 @@
         </p>
         <p>
           When opening a file for reading, the
-          <em>
-            format
-          </em>
+          format
           and
-          <em>
-            filters
-          </em>
+          filters
           arguments have the same meanings as for
           <a href="#lzma.LZMADecompressor">
             <code>
@@ -493,32 +421,20 @@
             </code>
           </a>
           . In this case, the
-          <em>
-            check
-          </em>
+          check
           and
-          <em>
-            preset
-          </em>
+          preset
           arguments should not be used.
         </p>
         <p>
           When opening a file for writing, the
-          <em>
-            format
-          </em>
+          format
           ,
-          <em>
-            check
-          </em>
+          check
           ,
-          <em>
-            preset
-          </em>
+          preset
           and
-          <em>
-            filters
-          </em>
+          filters
           arguments have the same meanings as for
           <a href="#lzma.LZMACompressor">
             <code>
@@ -556,19 +472,15 @@
           <dt id="lzma.LZMAFile.peek">
             peek
             (
-            <em>
-              size
-              =
-              -1
-            </em>
+            size
+            =
+            -1
             )
           </dt>
           <dd>
             <p>
               Return buffered data without advancing the file position. At least one byte of data will be returned, unless EOF has been reached. The exact number of bytes returned is unspecified (the
-              <em>
-                size
-              </em>
+              size
               argument is ignored).
             </p>
             <div>
@@ -589,9 +501,7 @@
                   LZMAFile
                 </code>
                 was constructed by passing a file object for
-                <em>
-                  filename
-                </em>
+                filename
                 ).
               </p>
             </div>
@@ -689,29 +599,21 @@
         lzma.
         LZMACompressor
         (
-        <em>
-          format
-          =
-          FORMAT_XZ
-        </em>
+        format
+        =
+        FORMAT_XZ
         ,
-        <em>
-          check
-          =
-          -1
-        </em>
+        check
+        =
+        -1
         ,
-        <em>
-          preset
-          =
-          None
-        </em>
+        preset
+        =
+        None
         ,
-        <em>
-          filters
-          =
-          None
-        </em>
+        filters
+        =
+        None
         )
       </dt>
       <dd>
@@ -729,9 +631,7 @@
         </p>
         <p>
           The
-          <em>
-            format
-          </em>
+          format
           argument specifies what container format should be used. Possible values are:
         </p>
         <ul>
@@ -805,9 +705,7 @@
         </ul>
         <p>
           The
-          <em>
-            check
-          </em>
+          check
           argument specifies the type of integrity check to include in the compressed data. This check is used when decompressing, to ensure that the data has not been corrupted. Possible values are:
         </p>
         <ul>
@@ -867,20 +765,14 @@
         </p>
         <p>
           The compression settings can be specified either as a preset compression level (with the
-          <em>
-            preset
-          </em>
+          preset
           argument), or in detail as a custom filter chain (with the
-          <em>
-            filters
-          </em>
+          filters
           argument).
         </p>
         <p>
           The
-          <em>
-            preset
-          </em>
+          preset
           argument (if provided) should be an integer between
           <code>
             0
@@ -894,13 +786,9 @@
             PRESET_EXTREME
           </code>
           . If neither
-          <em>
-            preset
-          </em>
+          preset
           nor
-          <em>
-            filters
-          </em>
+          filters
           are given, the default behavior is to use
           <code>
             PRESET_DEFAULT
@@ -929,9 +817,7 @@
         </div>
         <p>
           The
-          <em>
-            filters
-          </em>
+          filters
           argument (if provided) should be a filter chain specifier. See
           <a href="#filter-chain-specs">
             Specifying custom filter chains
@@ -942,17 +828,13 @@
           <dt id="lzma.LZMACompressor.compress">
             compress
             (
-            <em>
-              data
-            </em>
+            data
             )
           </dt>
           <dd>
             <p>
               Compress
-              <em>
-                data
-              </em>
+              data
               (a
               <code>
                 bytes
@@ -962,9 +844,7 @@
                 bytes
               </code>
               object containing compressed data for at least part of the input. Some of
-              <em>
-                data
-              </em>
+              data
               may be buffered internally, for use in later calls to
               <code>
                 compress()
@@ -1010,23 +890,17 @@
         lzma.
         LZMADecompressor
         (
-        <em>
-          format
-          =
-          FORMAT_AUTO
-        </em>
+        format
+        =
+        FORMAT_AUTO
         ,
-        <em>
-          memlimit
-          =
-          None
-        </em>
+        memlimit
+        =
+        None
         ,
-        <em>
-          filters
-          =
-          None
-        </em>
+        filters
+        =
+        None
         )
       </dt>
       <dd>
@@ -1044,9 +918,7 @@
         </p>
         <p>
           The
-          <em>
-            format
-          </em>
+          format
           argument specifies the container format that should be used. The default is
           <code>
             FORMAT_AUTO
@@ -1075,9 +947,7 @@
         </p>
         <p>
           The
-          <em>
-            memlimit
-          </em>
+          memlimit
           argument specifies a limit (in bytes) on the amount of memory that the decompressor can use. When this argument is used, decompression will fail with an
           <a href="#lzma.LZMAError">
             <code>
@@ -1088,13 +958,9 @@
         </p>
         <p>
           The
-          <em>
-            filters
-          </em>
+          filters
           argument specifies the filter chain that was used to create the stream being decompressed. This argument is required if
-          <em>
-            format
-          </em>
+          format
           is
           <code>
             FORMAT_RAW
@@ -1133,29 +999,21 @@
           <dt id="lzma.LZMADecompressor.decompress">
             decompress
             (
-            <em>
-              data
-            </em>
+            data
             ,
-            <em>
-              max_length
-              =
-              -1
-            </em>
+            max_length
+            =
+            -1
             )
           </dt>
           <dd>
             <p>
               Decompress
-              <em>
-                data
-              </em>
+              data
               (a
               bytes-like object
               ), returning uncompressed data as bytes. Some of
-              <em>
-                data
-              </em>
+              data
               may be buffered internally, for use in later calls to
               <code>
                 decompress()
@@ -1168,13 +1026,9 @@
             </p>
             <p>
               If
-              <em>
-                max_length
-              </em>
+              max_length
               is nonnegative, returns at most
-              <em>
-                max_length
-              </em>
+              max_length
               bytes of decompressed data. If this limit is reached and further output can be produced, the
               <a href="#lzma.LZMADecompressor.needs_input">
                 <code>
@@ -1190,9 +1044,7 @@
                 decompress()
               </code>
               may provide
-              <em>
-                data
-              </em>
+              data
               as
               <code>
                 b''
@@ -1201,13 +1053,9 @@
             </p>
             <p>
               If all of the input data was decompressed and returned (either because this was less than
-              <em>
-                max_length
-              </em>
+              max_length
               bytes, or because
-              <em>
-                max_length
-              </em>
+              max_length
               was negative), the
               <a href="#lzma.LZMADecompressor.needs_input">
                 <code>
@@ -1237,9 +1085,7 @@
               <p>
                 Changed in version 3.5:
                 Added the
-                <em>
-                  max_length
-                </em>
+                max_length
                 parameter.
               </p>
             </div>
@@ -1320,41 +1166,29 @@
         lzma.
         compress
         (
-        <em>
-          data
-        </em>
+        data
         ,
-        <em>
-          format
-          =
-          FORMAT_XZ
-        </em>
+        format
+        =
+        FORMAT_XZ
         ,
-        <em>
-          check
-          =
-          -1
-        </em>
+        check
+        =
+        -1
         ,
-        <em>
-          preset
-          =
-          None
-        </em>
+        preset
+        =
+        None
         ,
-        <em>
-          filters
-          =
-          None
-        </em>
+        filters
+        =
+        None
         )
       </dt>
       <dd>
         <p>
           Compress
-          <em>
-            data
-          </em>
+          data
           (a
           <code>
             bytes
@@ -1373,21 +1207,13 @@
             </code>
           </a>
           above for a description of the
-          <em>
-            format
-          </em>
+          format
           ,
-          <em>
-            check
-          </em>
+          check
           ,
-          <em>
-            preset
-          </em>
+          preset
           and
-          <em>
-            filters
-          </em>
+          filters
           arguments.
         </p>
       </dd>
@@ -1397,35 +1223,25 @@
         lzma.
         decompress
         (
-        <em>
-          data
-        </em>
+        data
         ,
-        <em>
-          format
-          =
-          FORMAT_AUTO
-        </em>
+        format
+        =
+        FORMAT_AUTO
         ,
-        <em>
-          memlimit
-          =
-          None
-        </em>
+        memlimit
+        =
+        None
         ,
-        <em>
-          filters
-          =
-          None
-        </em>
+        filters
+        =
+        None
         )
       </dt>
       <dd>
         <p>
           Decompress
-          <em>
-            data
-          </em>
+          data
           (a
           <code>
             bytes
@@ -1438,9 +1254,7 @@
         </p>
         <p>
           If
-          <em>
-            data
-          </em>
+          data
           is the concatenation of multiple distinct compressed streams, decompress all of these streams, and return the concatenation of the results.
         </p>
         <p>
@@ -1451,17 +1265,11 @@
             </code>
           </a>
           above for a description of the
-          <em>
-            format
-          </em>
+          format
           ,
-          <em>
-            memlimit
-          </em>
+          memlimit
           and
-          <em>
-            filters
-          </em>
+          filters
           arguments.
         </p>
       </dd>
@@ -1476,9 +1284,7 @@
         lzma.
         is_check_supported
         (
-        <em>
-          check
-        </em>
+        check
         )
       </dt>
       <dd>

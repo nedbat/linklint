@@ -68,7 +68,7 @@ class HtmlSummarizer(HTMLParser):
 
     def should_omit(self, tag: str, dattrs: dict[str, str | None]) -> bool:
         """Return true if we should omit this tag but still attend to its contents."""
-        if tag == "span":
+        if tag in {"em", "span"}:
             return True
         return False
 
