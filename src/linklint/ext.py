@@ -1,3 +1,4 @@
+from collections import Counter
 from typing import cast
 
 from docutils import nodes
@@ -13,19 +14,26 @@ logger = logging.getLogger(__name__)
 
 
 def init_data(app: Sphinx) -> None:
-    app.env.linklint_counts: dict[str, int] = {}
+    # Map from docname to {label: count}
+    app.env.linklint_counts: dict[str, dict[str, int]] = {}
+
+
+FINDERS = [
+    (find_self_refs, "self"),
+    (find_duplicate_refs, "duplicate"),
+]
 
 
 def process_reference_nodes(app, doctree):
     """Find references that shouldn't be links, and un-reference them."""
     # Change <reference><literal></reference> to just <literal>.
 
-    count = 0
-    for finder in (find_self_refs, find_duplicate_refs):
+    counts = Counter()
+    for finder, label in FINDERS:
         for ref in finder(doctree):
             cast(nodes.Element, ref.parent).replace(ref, ref.children[0])
-            count += 1
-    app.env.linklint_counts[app.env.docname] = count
+            counts[label] += 1
+    app.env.linklint_counts[app.env.docname] = counts
 
 
 def merge_data(
@@ -43,8 +51,15 @@ def merge_data(
 
 def display_results(app: Sphinx, exception: Exception | None) -> None:
     if not exception:
-        total = sum(app.env.linklint_counts.values())  # type: ignore
-        logger.info(f"Linklint: unlinked {total} references")
+        totals = Counter()
+        for counts in app.env.linklint_counts.values():  # type: ignore
+            totals += counts
+        total = sum(totals.values())
+        details = ", ".join(f"{n} {label}" for label, n in sorted(totals.items()) if n)
+        msg = f"Linklint: unlinked {total} refs"
+        if details:
+            msg += f": {details}"
+        logger.info(msg)
 
 
 def setup(app: Sphinx) -> ExtensionMetadata:
