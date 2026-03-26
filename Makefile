@@ -8,7 +8,7 @@ install: .venv
 	uv pip install -e .[dev]
 
 test:
-	tox -qf py312-sphinx8,coverage
+	tox -qe py312-sphinx8,coverage
 
 quality:
 	ty check
