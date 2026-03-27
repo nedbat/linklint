@@ -67,6 +67,12 @@ hard-code the decisions.
 Changes
 =======
 
+v0.4.1 (2026-03-27)
+-------------------
+
+Linklint v0.4.0 required Sphinx 9.x, which prevented it from being used by the
+CPython docs. Now linklint will work with Sphinx 8.x as well.
+
 v0.4.0 (2026-03-10)
 -------------------
 
