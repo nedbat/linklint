@@ -20,6 +20,9 @@ dependencies = [
 
 dynamic = ["version"]
 
+[project.urls]
+Source = "https://github.com/nedbat/linklint"
+
 [project.optional-dependencies]
 dev = [
     "build",
