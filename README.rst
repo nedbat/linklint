@@ -63,6 +63,22 @@ If you agree with linklint's decisions, the Sphinx extension is a better
 option, since it doesn't require changing the source files, and doesn't
 hard-code the decisions.
 
+Testing on CPython
+==================
+
+To try local changes in the CPython docs::
+
+    cd python/cpython/Docs
+    make clean venv html
+    mv build build0
+    sed -i '' "/linklint/s@.*@-e $HOME/linklint@" requirements.txt
+    make clean venv
+    uv pip install -r requirements.txt
+    make html
+    meld build0/html build/html
+    # or
+    diff -I 'Last updated on' -r build0/html build/html
+
 
 Changes
 =======
