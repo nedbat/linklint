@@ -106,6 +106,8 @@ class HtmlSummarizer(HTMLParser):
             self.indent += 1
         if dattrs.get("role") == "main":
             self.main = True
+            self.omit_levels.add(self.indent)
+            self.indent += 1
 
     def handle_endtag(self, tag: str) -> None:
         if self.main:
