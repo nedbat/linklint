@@ -616,6 +616,16 @@ SELF_TEST_CASES = [
             """,
         issues=[],
     ),
+    lint_test_case(
+        rst="frozenset",
+        issues=[
+            LintIssue(line=11, message="self-link to :class:`frozenset`", fixed=True),
+        ],
+        diff="""
+            -    represent sets of sets, the inner sets must be :class:`frozenset`
+            +    represent sets of sets, the inner sets must be :class:`!frozenset`
+        """,
+    ),
 ]
 
 

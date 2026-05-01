@@ -41,12 +41,13 @@ class RegionFinder:
                         break
 
             case addnodes.desc():
-                kind = node.get("objtype")
-                name_starts = [
-                    (kid.get("fullname"), kid.line)
-                    for kid in node.children
-                    if isinstance(kid, addnodes.desc_signature)
-                ]
+                if not node.get("no-index", False):
+                    kind = node.get("objtype")
+                    name_starts = [
+                        (kid.get("fullname"), kid.line)
+                        for kid in node.children
+                        if isinstance(kid, addnodes.desc_signature)
+                    ]
 
         last_line = getattr(node, "line", None)
         if last_line is not None:

@@ -158,14 +158,16 @@ class RefFinder(nodes.SparseNodeVisitor):
                 self.self_refs.append(node)
 
     def visit_desc(self, node: addnodes.desc) -> None:
-        objtype = node.get("objtype")
         pushed = False
-        if objtype == "class":
-            self.class_stack.append(node.children[0].get("fullname"))
-            pushed = True
-        elif objtype == "method" and not self.class_stack:
-            self.class_stack.append(node.children[0].get("class"))
-            pushed = True
+        is_target = not node.get("no-index", False)
+        if is_target:
+            objtype = node.get("objtype")
+            if objtype == "class":
+                self.class_stack.append(node.children[0].get("fullname"))
+                pushed = True
+            elif objtype == "method" and not self.class_stack:
+                self.class_stack.append(node.children[0].get("class"))
+                pushed = True
         self.pushed_class.append(pushed)
 
     def depart_desc(self, node: addnodes.desc) -> None:

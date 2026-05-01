@@ -67,6 +67,12 @@ hard-code the decisions.
 Changes
 =======
 
+Unreleased
+----------
+
+Fix: the `:noindex:` directive was ignored, so sections marked as such were
+considered targets when they shouldn't have been. This is now fixed.
+
 v0.4.1 (2026-03-27)
 -------------------
 
