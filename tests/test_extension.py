@@ -54,7 +54,7 @@ def test_summarize_html(toml_name: str) -> None:
         if SAVE_INTERMEDIATE:
             print(f"Full HTML is at tmp/html/{toml_name}.html")
             print(f"Summary is at tmp/html/{toml_name}_summary.html")
-            print(f"Update {toml_name} with the correct output")
+            print(f"Update tests/data/{toml_name}.toml with the correct output")
         else:
             print("To see full HTML, set LINKLINT_SAVE_INTERMEDIATE=1 and re-run the test.")
 
