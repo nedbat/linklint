@@ -1,0 +1,129 @@
+# frozenset is described on two different pages, one marked with :noindex:
+
+rst = '''
+    Stdtypes.rst
+    ============
+
+    The constructors for both classes work the same:
+
+    .. class:: set(iterable=(), /)
+               frozenset(iterable=(), /)
+
+       Return a new set or frozenset object whose elements are taken from
+       *iterable*.  The elements of a set must be :term:`hashable`.  To
+       represent sets of sets, the inner sets must be :class:`frozenset`
+       objects.  If *iterable* is not specified, a new empty set is
+       returned.
+
+    Functions.rst
+    =============
+
+    .. _func-frozenset:
+    .. class:: frozenset(iterable=(), /)
+       :noindex:
+
+       Return a new :class:`frozenset` object, optionally with elements taken from
+       *iterable*.  ``frozenset`` is a built-in class.  See :class:`frozenset` and
+       :ref:`types-set` for documentation about this class.
+'''
+
+html = '''
+    <section id="stdtypes-rst">
+      <h1>
+        Stdtypes.rst
+      </h1>
+      <p>
+        The constructors for both classes work the same:
+      </p>
+      <dl>
+        <dt id="set">
+          class
+          set
+          (
+          iterable
+          =
+          ()
+          ,
+          <abbr>
+            /
+          </abbr>
+          )
+        </dt>
+        <dt id="frozenset">
+          class
+          frozenset
+          (
+          iterable
+          =
+          ()
+          ,
+          <abbr>
+            /
+          </abbr>
+          )
+        </dt>
+        <dd>
+          <p>
+            Return a new set or frozenset object whose elements are taken from
+            iterable
+            . The elements of a set must be
+            hashable
+            . To represent sets of sets, the inner sets must be
+            <code>
+              frozenset
+            </code>
+            objects. If
+            iterable
+            is not specified, a new empty set is returned.
+          </p>
+        </dd>
+      </dl>
+    </section>
+    <section id="functions-rst">
+      <h1>
+        Functions.rst
+      </h1>
+      <dl id="func-frozenset">
+        <dt>
+          class
+          frozenset
+          (
+          iterable
+          =
+          ()
+          ,
+          <abbr>
+            /
+          </abbr>
+          )
+        </dt>
+        <dd>
+          <p>
+            Return a new
+            <a href="#frozenset">
+              <code>
+                frozenset
+              </code>
+            </a>
+            object, optionally with elements taken from
+            iterable
+            .
+            <code>
+              frozenset
+            </code>
+            is a built-in class. See
+            <code>
+              frozenset
+            </code>
+            and
+            types-set
+            for documentation about this class.
+          </p>
+        </dd>
+      </dl>
+    </section>
+'''
+
+output = '''
+    Linklint: unlinked 2 refs: 1 duplicate, 1 self
+'''

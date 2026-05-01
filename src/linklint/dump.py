@@ -16,6 +16,8 @@ INTERESTING_KEYS = [
     "class",
     "fullname",
     "module",
+    "no-index",
+    "no-index-entry",
 ]
 
 # INTERESTING_ATTRS = [
