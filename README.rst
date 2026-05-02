@@ -83,8 +83,8 @@ To try local changes in the CPython docs::
 Changes
 =======
 
-Unreleased
-----------
+v1.0.0 (2026-05-02)
+-------------------
 
 Fix: the `:noindex:` directive was ignored, so sections marked as such were
 considered targets when they shouldn't have been. This is now fixed.
