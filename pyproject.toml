@@ -1,6 +1,6 @@
 [project]
 name = "linklint"
-description = "A Sphinx extension to remove needless links"
+description = "A Sphinx extension to omit needless links"
 readme = "README.rst"
 authors = [
     {name = "Ned Batchelder", email = "ned@nedbatchelder.com"},
