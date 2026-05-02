@@ -14,6 +14,7 @@ quality:
 	ty check
 	ruff check
 	ruff format
+	actionlint
 
 clean:
 	rm -rf .coverage .coverage.* htmlcov tmp
