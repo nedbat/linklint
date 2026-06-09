@@ -83,8 +83,8 @@ To try local changes in the CPython docs::
 Changes
 =======
 
-Unreleased
-----------
+v1.0.1 (2026-06-09)
+-------------------
 
 Fix: references that are fully qualified when they don't need to be are now
 recognized and will be unlinked.
