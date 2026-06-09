@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def init_data(app: Sphinx) -> None:
     # Map from docname to {label: count}
-    app.env.linklint_counts: dict[str, dict[str, int]] = {}
+    app.env.linklint_counts = {}  # type: ignore
 
 
 FINDERS = [
