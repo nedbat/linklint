@@ -83,6 +83,21 @@ To try local changes in the CPython docs::
 Changes
 =======
 
+Unreleased
+----------
+
+Fix: references that are fully qualified when they don't need to be are now
+recognized and will be unlinked.
+
+Fix: references to functions that incorrectly use the ``:meth:`` role are
+recognized by Sphinx anyway, so now linklint also recognizes and unlinks
+them. Fixes `issue 13`_.
+
+These fixes change the CPython docs build from 1579 self-references unlinked to
+1649.
+
+.. _issue 13: https://github.com/nedbat/linklint/issues/13
+
 v1.0.0 (2026-05-02)
 -------------------
 

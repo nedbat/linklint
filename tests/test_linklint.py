@@ -489,6 +489,58 @@ SELF_TEST_CASES = [
             +    <https://en.wikipedia.org/wiki/Loss_of_significance>`_; the :func:`!expm1`
             """,
     ),
+    # Fully qualified references should be understood even if the full
+    # qualification is redundant. Also, :meth: instead of :func: is understood
+    # by Sphinx, so we should recognize those as unlinkable also.
+    lint_test_case(
+        id="extra-context",
+        rst="""
+            :mod:`!getpass` --- Portable password input
+            ===========================================
+
+            .. module:: getpass
+               :synopsis: Portable reading of passwords and retrieval of the userid.
+
+            The :mod:`!getpass` module provides two functions:
+
+            .. function:: getpass(prompt='Password: ', stream=None, *, echo_char=None)
+
+               Prompt the user for a password without echoing.
+
+               If echo-free input is unavailable :func:`~getpass.getpass` falls back to printing
+               a warning message to *stream* and reading from :data:`sys.stdin` and
+               issuing a :exc:`GetPassWarning`.
+
+               If echo-free input is unavailable :func:`getpass` falls back to printing
+               a warning message to *stream* and reading from :data:`sys.stdin` and
+               issuing a :exc:`GetPassWarning`.
+
+               .. note::
+                  If you call :meth:`~getpass.getpass` from within IDLE, the input may be done in the
+                  terminal you launched IDLE from rather than the idle window itself.
+
+               .. note::
+                  If you call :meth:`getpass` from within IDLE, the input may be done in the
+                  terminal you launched IDLE from rather than the idle window itself.
+
+            """,
+        issues=[
+            LintIssue(line=13, message="self-link to :func:`getpass.getpass`", fixed=True),
+            LintIssue(line=17, message="self-link to :func:`getpass`", fixed=True),
+            LintIssue(line=22, message="self-link to :meth:`getpass.getpass`", fixed=True),
+            LintIssue(line=26, message="self-link to :meth:`getpass`", fixed=True),
+        ],
+        diff="""
+            -    If echo-free input is unavailable :func:`~getpass.getpass` falls back to printing
+            +    If echo-free input is unavailable :func:`!getpass.getpass` falls back to printing
+            -    If echo-free input is unavailable :func:`getpass` falls back to printing
+            +    If echo-free input is unavailable :func:`!getpass` falls back to printing
+            -       If you call :meth:`~getpass.getpass` from within IDLE, the input may be done in the
+            +       If you call :meth:`!getpass.getpass` from within IDLE, the input may be done in the
+            -       If you call :meth:`getpass` from within IDLE, the input may be done in the
+            +       If you call :meth:`!getpass` from within IDLE, the input may be done in the
+            """,
+    ),
     lint_test_case(
         id="stars",
         rst=r"""

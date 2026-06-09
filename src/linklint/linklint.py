@@ -25,13 +25,13 @@ class Resolver:
     # object_types map from sphinx
     # sphinx/sphinx/domains/python/__init__.py:725
     object_types = {
-        "function": ObjType(_("function"), "func", "obj"),
+        "function": ObjType(_("function"), "func", "meth", "obj"),
         "data": ObjType(_("data"), "data", "obj"),
         "class": ObjType(_("class"), "class", "exc", "obj"),
         "exception": ObjType(_("exception"), "exc", "class", "obj"),
-        "method": ObjType(_("method"), "meth", "obj"),
-        "classmethod": ObjType(_("class method"), "meth", "obj"),
-        "staticmethod": ObjType(_("static method"), "meth", "obj"),
+        "method": ObjType(_("method"), "meth", "func", "obj"),
+        "classmethod": ObjType(_("class method"), "meth", "func", "obj"),
+        "staticmethod": ObjType(_("static method"), "meth", "func", "obj"),
         "attribute": ObjType(_("attribute"), "attr", "obj"),
         "property": ObjType(_("property"), "attr", "_prop", "obj"),
         "type": ObjType(_("type alias"), "type", "class", "obj"),
@@ -134,6 +134,8 @@ class RefFinder(nodes.SparseNodeVisitor):
         self.self_refs: list[nodes.Node] = []
         self.class_stack: list[str] = []
         self.pushed_class: list[bool] = []
+        self.module_stack: list[str] = []
+        self.pushed_module: list[bool] = []
 
     def visit_pending_xref(self, node: addnodes.pending_xref) -> None:
         line = node_line_number(node)
@@ -145,17 +147,31 @@ class RefFinder(nodes.SparseNodeVisitor):
             return
         target = node.get("reftarget")
 
-        if reftype == "meth" and "." not in target:
-            if self.class_stack:
-                target = f"{self.class_stack[-1]}.{target}"
-            else:
-                # Method reference without class context: can't resolve, so skip.
-                target = None
+        if reftype != "mod" and self.module_stack:
+            mod_prefix = self.module_stack[-1] + "."
+            if target.startswith(mod_prefix):
+                target = target[len(mod_prefix) :]
 
-        if target:
-            region = self.resolver.find_region(reftype, target)
-            if region is not None and region.start <= line <= region.end_total:
-                self.self_refs.append(node)
+        if reftype == "meth" and "." not in target and self.class_stack:
+            target = f"{self.class_stack[-1]}.{target}"
+
+        region = self.resolver.find_region(reftype, target)
+        if region is not None and region.start <= line <= region.end_total:
+            self.self_refs.append(node)
+
+    def visit_section(self, node: nodes.section) -> None:
+        pushed = False
+        section_names = set(node.get("names", []))
+        for section_id in node.get("ids", []):
+            if section_id.startswith("module-") and section_id not in section_names:
+                self.module_stack.append(section_id[len("module-") :])
+                pushed = True
+                break
+        self.pushed_module.append(pushed)
+
+    def depart_section(self, node: nodes.section) -> None:
+        if self.pushed_module.pop():
+            self.module_stack.pop()
 
     def visit_desc(self, node: addnodes.desc) -> None:
         pushed = False
